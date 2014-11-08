@@ -6,6 +6,8 @@ function Get-HealthCheck {
     ConfirmImpact = "Low"
 	,
 	HelpURI='http://dfch.biz/PS/Cumulus/Utilities/Get-HealthCheck/'
+	,
+	DefaultParameterSetName = 'list'
 )]
 Param (
 	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'name')]
@@ -50,7 +52,7 @@ try {
 		throw($gotoError);
 	} # if
 
-	if($ListAvailable) {
+	if($PSCmdlet.ParameterSetName -eq 'list') {
 		# $null = $svc.Utilities.HealthChecks.AddQueryOption('$top',1) | Select;
 		# $OutputParameter = $svc.Utilities.HealthChecks.AddQueryOption('$orderby', 'Id').AddQueryOption('$select','Id').Id;
 		$OutputParameter = $svc.Utilities.HealthChecks.AddQueryOption('$orderby', 'Id').Id;
@@ -125,6 +127,7 @@ return $OutputParameter;
 Export-ModuleMember -Function Get-HealthCheck;
 
 <#
+2014-11-08; rrink; ADD: DefaultParameterSetName  set to 'list'
 2014-10-13; rrink; CHG: module variable is now loaded via PSD1 PrivateData
 2014-10-13; rrink; CHG: module is now defined via PSD1 and loads assembly via PSD1
 2014-08-10; rrink; ADD: Get-HealthCheck.
