@@ -25,11 +25,11 @@
       </En>
       <En>
         <S N="Key">ServerBaseUri</S>
-        <URI N="Value">https://cumulus/cumulus/</URI>
+        <URI N="Value">https://cumulus/</URI>
       </En>
       <En>
         <S N="Key">BaseUrl</S>
-        <S N="Value">/</S>
+        <S N="Value">/cumulus/</S>
       </En>
       <En>
         <S N="Key">Controllers</S>
