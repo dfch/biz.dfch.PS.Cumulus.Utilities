@@ -9,17 +9,13 @@ Performs a login to a Cumulus server.
 
 .DESCRIPTION
 
-Performs a login to a Cumulus server.
-
-For more information about Cmdlets see 'about_Functions_CmdletBindingAttribute'.
+Performs a login to a Cumulus server. This is the first Cmdlet to be executed and required for all other Cmdlets of this module. It creates service references to the routers of the application.
 
 
 
 .OUTPUTS
 
-This Cmdlet returns a WebRequestSession parameter. On failure the string contains $null.
-
-For more information about output parameters see 'help about_Functions_OutputTypeAttribute'.
+This Cmdlet returns a hashtable with references to the DataServiceContexts of the application. On failure it returns $null.
 
 
 
@@ -27,35 +23,38 @@ For more information about output parameters see 'help about_Functions_OutputTyp
 
 See PARAMETER section for a description of input parameters.
 
-For more information about input parameters see 'help about_Functions_Advanced_Parameters'.
+
+
+.PARAMETER ServerBaseUri
+
+[Optional] The ServerBaseUri such as 'https://cumulus/'. If you do not specify this value it is taken from the module configuration file.
 
 
 
-.PARAMETER Uri
+.PARAMETER BaseUrl
 
-URI of the Cumulus server.
 
+[Optional] The BaseUrl such as '/cumulus/'. If you do not specify this value it is taken from the module configuration file.
 
 
 .PARAMETER Credential
 
-Encrypted credentials as [System.Management.Automation.PSCredential] with which to perform login.
+Encrypted credentials as [System.Management.Automation.PSCredential] with which to perform login. Default is credential as specified in the module configuration file.
 
 
 
 .EXAMPLE
 
-Perform a login to a Cumulus server with username and plaintext password.
+Perform a login to a Cumulus server with default credentials (current user) and against server defined within module configuration xml file.
 
-Enter-ServerDeprecated -Uri 'https://promo.ds01.swisscom.com' -Username 'PeterLustig' -Password 'S0nnensch3!n'
+$svc = Enter-Cumulus;
+$svc
 
-
-
-.EXAMPLE
-
-Perform a login to a Cumulus server with username and encrypted password.
-
-Enter-ServerDeprecated -Uri 'https://promo.ds01.swisscom.com' -Credentials [PSCredentials]
+Name            Value
+----            -----
+SecurityData    CumulusWrapper.SecurityData.SecurityData
+Utilities       CumulusWrapper.Utilities.Utilities
+ApplicationData CumulusWrapper.ApplicationData.ApplicationData
 
 
 
@@ -63,15 +62,11 @@ Enter-ServerDeprecated -Uri 'https://promo.ds01.swisscom.com' -Credentials [PSCr
 
 Online Version: http://dfch.biz/PS/Cumulus/Utilities/Enter-Server/
 
-Exit-Cumulus
-
 
 
 .NOTES
 
-Requires Powershell v3.
-
-Requires module 'biz.dfch.PS.System.Logging'.
+See module manifest for required software versions and dependencies at: http://dfch.biz/PS/Cumulus/Utilities/biz.dfch.PS.Cumulus.Utilities.psd1/
 
 #>
 [CmdletBinding(
@@ -180,6 +175,7 @@ Set-Alias -Name Enter- -Value 'Enter-Server';
 Export-ModuleMember -Function Enter-Server -Alias Connect-, Enter-;
 
 <#
+2014-11-08; rrink; ADD: inline help
 2014-10-13; rrink; CHG: module variable is now loaded via PSD1 PrivateData
 2014-10-13; rrink; CHG: module is now defined via PSD1 and loads assembly via PSD1
 2014-08-17; rrink; CHG: rename ls to svc
