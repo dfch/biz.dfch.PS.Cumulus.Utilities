@@ -10,3 +10,5 @@ This Microsoft PowerShell module contains Cmdlets to perform various base action
 See http://d-fens.ch/2014/11/03/module-biz-dfch-ps-cumulus-utilities/
 
 CumulusWrapper.dll and the other (Microsoft) DLLs are not part of this Apache 2.0 licensed project but are only put here for convenience.
+
+See https://github.com/dfch/biz.dfch.PS.Cumulus.Utilities/wiki for a detailed description on how to use the Cmdlets in this module.
