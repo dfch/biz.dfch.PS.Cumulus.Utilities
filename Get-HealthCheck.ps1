@@ -124,9 +124,10 @@ return $OutputParameter;
 } # END
 
 } # Get-HealthCheck
-Export-ModuleMember -Function Get-HealthCheck;
+if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Get-HealthCheck; } 
 
 <#
+2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module
 2014-11-08; rrink; ADD: DefaultParameterSetName  set to 'list'
 2014-10-13; rrink; CHG: module variable is now loaded via PSD1 PrivateData
 2014-10-13; rrink; CHG: module is now defined via PSD1 and loads assembly via PSD1

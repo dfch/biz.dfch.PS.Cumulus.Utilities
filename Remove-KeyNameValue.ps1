@@ -128,9 +128,10 @@ return $OutputParameter;
 
 } # END
 }
-Export-ModuleMember -Function Remove-KeyNameValue
+if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Remove-KeyNameValue; } 
 
 <#
+2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module
 2014-10-13; rrink; CHG: module variable is now loaded via PSD1 PrivateData
 2014-10-13; rrink; CHG: module is now defined via PSD1 and loads assembly via PSD1
 2014-08-17; rrink; CHG: rename ls to svc

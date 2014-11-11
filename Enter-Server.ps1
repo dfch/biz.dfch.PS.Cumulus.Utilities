@@ -172,9 +172,10 @@ END {
 } # function
 Set-Alias -Name Connect- -Value 'Enter-Server';
 Set-Alias -Name Enter- -Value 'Enter-Server';
-Export-ModuleMember -Function Enter-Server -Alias Connect-, Enter-;
+if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Enter-Server -Alias Connect-, Enter-; } 
 
 <#
+2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module
 2014-11-08; rrink; ADD: inline help
 2014-10-13; rrink; CHG: module variable is now loaded via PSD1 PrivateData
 2014-10-13; rrink; CHG: module is now defined via PSD1 and loads assembly via PSD1

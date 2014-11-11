@@ -152,9 +152,10 @@ return $OutputParameter;
 } # END
 
 } # Get-Credential
-Export-ModuleMember -Function Get-Credential;
+if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Get-Credential; } 
 
 <#
+2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module
 2014-10-27; rrink; CHG: fix handling of ScrambledPassword ParameterSetName (NotImplemented)
 2014-10-27; rrink; ADD: set DefaultParameterSetName to "list"
 2014-10-13; rrink; CHG: module variable is now loaded via PSD1 PrivateData
