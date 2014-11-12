@@ -47,7 +47,7 @@ try {
 
 	# Parameter validation
 	if($svc.Utilities -isnot [CumulusWrapper.Utilities.Utilities]) {
-		$msg = "ls: Parameter validation FAILED. Connect to the server before using the Cmdlet.";
+		$msg = "svc: Parameter validation FAILED. Connect to the server before using the Cmdlet.";
 		$e = New-CustomErrorRecord -m $msg -cat InvalidData -o $svc.Utilities;
 		throw($gotoError);
 	} # if
