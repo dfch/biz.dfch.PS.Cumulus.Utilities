@@ -12,7 +12,7 @@
 RootModule = 'biz.dfch.PS.Cumulus.Utilities.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.0.20141108'
+ModuleVersion = '1.0.0.20141112'
 
 # ID used to uniquely identify this module
 GUID = '1e56d68e-6b25-40c3-be14-0c78ef9b5be0'

@@ -5,6 +5,8 @@ function Get-KeyNameValue {
     ConfirmImpact = "Low"
 	,
 	HelpURI='http://dfch.biz/PS/Cumulus/Utilities/Get-KeyNameValue/'
+	,
+	DefaultParameterSetName = 'list'
 )]
 Param (
 	[Parameter(Mandatory = $false, Position = 0, ParameterSetName = 'name')]
@@ -78,7 +80,7 @@ try {
 		# $OrderByDirection = 'asc'; 
 	# } #if
 	
-	if($ListAvailable) {
+	if($PSCmdlet.ParameterSetName -eq 'list') {
 		# $OutputParameter = $svc.ApplicationData.KeyNameValues.AddQueryOption('$orderby', ('{0} {1}' -f $OrderByString, $OrderByDirection));
 		$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$orderby', $OrderByString) | Select -Property $Select -Unique;
 	} else {
@@ -159,6 +161,7 @@ return $OutputParameter;
 if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Get-KeyNameValue; } 
 
 <#
+2014-11-14; rrink; ADD: DefaultParameterSetName is now list. See #2
 2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module
 2014-10-13; rrink; CHG: module variable is now loaded via PSD1 PrivateData
 2014-10-13; rrink; CHG: module is now defined via PSD1 and loads assembly via PSD1
