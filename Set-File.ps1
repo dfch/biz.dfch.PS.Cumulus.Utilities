@@ -304,7 +304,7 @@ return $OutputParameter;
 if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Set-File; } 
 
 <#
-2014-11-12; rrink; ADD: example and help
+2014-11-12; rrink; ADD: example and help, see #1
 2014-11-12; rrink; ADD: Checksum parameter. You can now optionally specify an empty Value and only a checksum
 2014-11-12; rrink; ADD: DefaultParameterSetName is now path
 2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module
