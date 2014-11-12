@@ -5,15 +5,21 @@ function Set-File {
     ConfirmImpact = "Medium"
 	,
 	HelpURI='http://dfch.biz/PS/Cumulus/Utilities/Set-File/'
+	,
+	DefaultParameterSetName = 'path'
 )]
 PARAM (
 	[Parameter(Mandatory = $false, Position = 0)]
 	[Alias("n")]
 	[string] $Name = $Path.Name
 	,
-	[Parameter(Mandatory = $true, Position = 1, ParameterSetName = 'value')]
+	[Parameter(Mandatory = $false, Position = 1, ParameterSetName = 'value')]
 	[AllowEmptyString()]
 	[string] $Value
+	,
+	[ValidatePattern('^([a-f0-9]{2}-){31}[a-f0-9]{2}$')]
+	[Parameter(Mandatory = $false, Position = 2, ParameterSetName = 'value')]
+	[string] $Checksum
 	,
 	[ValidateScript( { Test-Path($_); } )]
 	[Parameter(Mandatory = $true, Position = 1, ParameterSetName = 'path')]
@@ -54,7 +60,7 @@ try {
 
 	# Parameter validation
 	if($svc.ApplicationData -isnot [CumulusWrapper.ApplicationData.ApplicationData]) {
-		$msg = "ls: Parameter validation FAILED. Connect to the server before using the Cmdlet.";
+		$msg = "svc: Parameter validation FAILED. Connect to the server before using the Cmdlet.";
 		$e = New-CustomErrorRecord -m $msg -cat InvalidData -o $svc.ApplicationData;
 		throw($gotoError);
 	} # if
@@ -70,6 +76,7 @@ try {
 		$file.Description = $Description;
 		$file.Value = $Value;
 		$file.Version = $Version;
+		if($Checksum) { $file.Checksum = $Checksum; }
 		$svc.ApplicationData.AddToFiles($file);
 		$svc.ApplicationData.UpdateObject($file);
 		$r = $svc.ApplicationData.SaveChanges();
@@ -133,6 +140,8 @@ return $OutputParameter;
 if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Set-File; } 
 
 <#
+2014-11-12; rrink; ADD: Checksum parameter. You can now optionally specify an empty Value and only a checksum
+2014-11-12; rrink; ADD: DefaultParameterSetName is now path
 2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module
 2014-10-13; rrink; CHG: module variable is now loaded via PSD1 PrivateData
 2014-10-13; rrink; CHG: module is now defined via PSD1 and loads assembly via PSD1
