@@ -5,6 +5,8 @@ function Get-File {
     ConfirmImpact = "Low"
 	,
 	HelpURI='http://dfch.biz/PS/Cumulus/Utilities/Get-File/'
+	,
+	DefaultParameterSetName = 'list'
 )]
 PARAM (
 	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'name')]
@@ -69,8 +71,9 @@ try {
 		throw($gotoError);
 	} # if
 	
-	if($ListAvailable) {
-		$File = $svc.ApplicationData.Files.AddQueryOption('$orderby','Name asc,Version asc,Modified asc').AddQueryOption('$select','Name, Version, Modified, Checksum') | Select Name, Version, Modified, Checksum -Unique;
+	if($PSCmdlet.ParameterSetName -eq 'list') {
+		# $File = $svc.ApplicationData.Files.AddQueryOption('$orderby','Name asc,Version asc,Modified asc').AddQueryOption('$select','Name, Version, Modified, Checksum') | Select Name, Version, Modified, Checksum -Unique;
+		$File = $svc.ApplicationData.Files.AddQueryOption('$orderby','Name asc,Version asc,Modified asc') | Select Name, Version, Modified, Checksum -Unique;
 	} else {
 		$Exp = @();
 		if($Name) { 
@@ -171,6 +174,7 @@ return $OutputParameter;
 if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Get-File; } 
 
 <#
+2014-11-12; rrink; CHG: ListAvailable is now default parameter set. removed '$select' clause from query option as this breaks the WCF Data Service
 2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module
 2014-10-13; rrink; CHG: module variable is now loaded via PSD1 PrivateData
 2014-10-13; rrink; CHG: module is now defined via PSD1 and loads assembly via PSD1
