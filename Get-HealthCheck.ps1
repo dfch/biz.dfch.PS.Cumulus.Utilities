@@ -10,7 +10,7 @@ function Get-HealthCheck {
 	DefaultParameterSetName = 'list'
 )]
 Param (
-	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'name')]
+	[Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0, ParameterSetName = 'name')]
 	[alias("Id")]
 	[alias("Key")]
 	[string] $Name
@@ -55,7 +55,11 @@ try {
 	if($PSCmdlet.ParameterSetName -eq 'list') {
 		# $null = $svc.Utilities.HealthChecks.AddQueryOption('$top',1) | Select;
 		# $OutputParameter = $svc.Utilities.HealthChecks.AddQueryOption('$orderby', 'Id').AddQueryOption('$select','Id').Id;
-		$OutputParameter = $svc.Utilities.HealthChecks.AddQueryOption('$orderby', 'Id').Id;
+		$ahc = $svc.Utilities.HealthChecks.AddQueryOption('$orderby', 'Id');
+		foreach($hc in $ahc) {
+			$null = $svc.Utilities.Detach($hc);
+		} # foreach
+		$OutputParameter = $ahc.Id;
 		$fReturn = $true;
 		throw($gotoSuccess);
 	} # if
@@ -127,6 +131,8 @@ return $OutputParameter;
 if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Get-HealthCheck; } 
 
 <#
+2014-11-13; rrink; ADD: Name now accepts ValueFromPipeLine, so you can call Get-HealthCheck | Select -Last 1 | Get-HealthCheck
+2014-11-13; rrink; CHG: Objects returned in ListAvailable are not detached
 2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module
 2014-11-08; rrink; ADD: DefaultParameterSetName  set to 'list'
 2014-10-13; rrink; CHG: module variable is now loaded via PSD1 PrivateData

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>biz.dfch.PS.Cumulus.Utilities</id>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
         <title>biz.dfch.PS.Cumulus.Utilities</title>
         <authors>d-fens GmbH</authors>
         <owners>Ronald Rink</owners>
@@ -26,7 +26,7 @@ See https://github.com/dfch/biz.dfch.PS.Cumulus.Utilities/wiki for a detailed de
         <summary>This Microsoft PowerShell module contains Cmdlets to perform various base actions and utilties/convenience functions with the our open-source based automation framework "Cumulus".</summary>
         <copyright>(c) 2014 d-fens GmbH</copyright>
         <language>en-US</language>
-        <tags>Cumulus LightSwitch</tags>
+        <tags>Cumulus LightSwitch PowerShell OData</tags>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System.Data.Entity" targetFramework="" />
             <frameworkAssembly assemblyName="System.Data.Services.Client" targetFramework="" />
