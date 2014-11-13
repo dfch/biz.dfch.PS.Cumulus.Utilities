@@ -1,5 +1,123 @@
 function Get-Credential {
+<#
 
+.SYNOPSIS
+
+Gets a ManagementCredential from a Cumulus Server.
+
+
+
+.DESCRIPTION
+
+Gets a ManagementCredential from a Cumulus Server.
+
+Retrieves a ManagementCredential and decrypts the password if the caller has the 'ManagementCredentialHelperCanRead' permission.
+
+
+
+.OUTPUTS
+
+default | json | json-pretty | xml | xml-pretty | PSCredential | Clear
+
+
+
+.INPUTS
+
+You can either specify a name of a ManagementCredential or a complete ManagementCredential entity.
+
+
+
+.PARAMETER Name
+
+The name of the ManagementCredential entity.
+
+
+
+.PARAMETER ManagementCredential
+
+A ManagementCredential you have retrieved by returning entities from the ApplicationData.ManagementCredentials entity set.
+
+
+
+.EXAMPLE
+
+List all available ManagementCredential. Same as if you specified '-ListAvailable'.
+
+Get-CumulusCredential
+
+CumulusAdmin
+CumulusDatabase
+CumulusService
+CumulusWorker01
+Test-HealthCheck
+
+
+.EXAMPLE
+
+Get a ManagementCredential and return it as the native object.
+
+$mc = Get-CumulusCredential Test-HealthCheck
+$mc.GetType()
+
+IsPublic IsSerial Name                       BaseType
+-------- -------- ----                       --------
+True     False    ManagementCredentialHelper System.Object
+
+$mc
+
+Id          : 4005
+Name        : Test-HealthCheck
+Description : Test-HealthCheck
+Username    : Test-HealthCheck
+Password    : Test-HealthCheck
+Created     : 8/10/2014 8:11:31 PM
+CreatedBy   : SERVER1\Administrator
+Modified    : 8/10/2014 8:11:31 PM
+ModifiedBy  : SERVER1\Administrator
+
+
+.EXAMPLE
+
+Get a ManagementCredential and return it as a PSCredential object.
+
+$cred = Get-CumulusCredential Test-HealthCheck -As PSCredential
+$cred.GetType()
+
+IsPublic IsSerial Name         BaseType
+-------- -------- ----         --------
+True     True     PSCredential System.Object
+
+
+.EXAMPLE
+
+Get a ManagementCredential and return it as a json pretty-printed string.
+
+Get-CumulusCredential Test-HealthCheck -As json-pretty
+{
+  "Id":  4005,
+  "Name":  "Test-HealthCheck",
+  "Description":  "Test-HealthCheck",
+  "Username":  "Test-HealthCheck",
+  "Password":  "Test-HealthCheck",
+  "Created":  "\/Date(1407694291744)\/",
+  "CreatedBy":  "SERVER1\\Administrator",
+  "Modified":  "\/Date(1407694291744)\/",
+  "ModifiedBy":  "SERVER1\\Administrator"
+}
+
+
+.LINK
+
+Online Version: http://dfch.biz/PS/Cumulus/Utilities/Get-Credential/
+
+
+
+
+.NOTES
+
+See module manifest for dependencies and further requirements.
+
+#>
 [CmdletBinding(
     SupportsShouldProcess = $false
 	,
@@ -10,10 +128,10 @@ function Get-Credential {
 	HelpURI='http://dfch.biz/PS/Cumulus/Utilities/Get-Credential/'
 )]
 Param (
-	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'name')]
+	[Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0, ParameterSetName = 'name')]
 	[string] $Name
 	,
-	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'o')]
+	[Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0, ParameterSetName = 'o')]
 	[CumulusWrapper.ApplicationData.ManagementCredential] $ManagementCredential
 	,
 	[Parameter(Mandatory = $true, ParameterSetName = 'scrambled')]
@@ -155,6 +273,8 @@ return $OutputParameter;
 if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Get-Credential; } 
 
 <#
+2014-11-13; rrink; ADD: ValueFromPipeline for Name and ManagementCredential.
+2014-11-13; rrink; ADD: Example help. See #1
 2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module
 2014-10-27; rrink; CHG: fix handling of ScrambledPassword ParameterSetName (NotImplemented)
 2014-10-27; rrink; ADD: set DefaultParameterSetName to "list"
