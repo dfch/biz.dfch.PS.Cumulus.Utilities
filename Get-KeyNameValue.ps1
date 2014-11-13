@@ -1,4 +1,153 @@
-function Get-KeyNameValue {
+function ]()
+ {
+<#
+
+.SYNOPSIS
+
+Retrieves keyed name/value pairs from the Cumulus server.
+
+
+
+.DESCRIPTION
+
+Retrieves keyed name/value pairs from the Cumulus server.
+
+The K/N/V store stores arbitrary data that can be selected by either key, name, value or a combination of both. Besides specifying a selection you can furthermore define the order, the selected columns and the return format.
+
+
+
+.OUTPUTS
+
+default | json | json-pretty | xml | xml-pretty
+
+
+
+.INPUTS
+
+You basically specify key, name and value to be retrieved. If one or more of these parameters are omitted all entities are returned that match these criteria.
+
+
+
+.PARAMETER Key
+
+Specifies the Key property of the entity. Most of the time this will be a specifier like 'cumulus.topic.subtopic'.
+
+
+
+.PARAMETER Name
+
+Specifies the Name property of the entity.
+
+
+
+.PARAMETER Value
+
+Specifies the Name property of the entity.
+
+
+
+.PARAMETER OrderBy
+
+Specifies the order of the returned entites. You can specify more than one property (e.g. Key and Name).
+
+
+
+.EXAMPLE
+
+Retrieves the first 5 entities from the entity set. Not specifing Key, Name or Value is the same as you would specify the 'ListAvailable' parameter.
+
+Get-CumulusKeyNameValue | Select -First 5
+
+Key                               Name              Value
+---                               ----              -----
+com.ebay.infrastructure.inventory ApplicationSystem Application Server
+com.ebay.infrastructure.inventory ApplicationSystem Genesys
+com.ebay.infrastructure.inventory ApplicationSystem Other
+com.ebay.infrastructure.inventory ApplicationSystem Print Server
+com.ebay.infrastructure.inventory ApplicationSystem Term Server
+
+
+.EXAMPLE
+
+Gets all entris with Key 'biz.dfch.infrastructure.inventory'.
+
+Get-CumulusKeyNameValue biz.dfch.infrastructure.inventory
+
+Key                               Name       Value
+---                               ----       -----
+biz.dfch.infrastructure.inventory ServerRole DEV
+biz.dfch.infrastructure.inventory ServerRole INT
+biz.dfch.infrastructure.inventory ServerRole PROD
+biz.dfch.infrastructure.inventory ServerTier Tier 2
+biz.dfch.infrastructure.inventory ServerTier Tier 3
+biz.dfch.infrastructure.inventory ServerTier Tier 4
+biz.dfch.infrastructure.inventory ServerTier Tier 5
+biz.dfch.infrastructure.inventory ServerTier Unknown
+biz.dfch.infrastructure.inventory Status     Deployed
+biz.dfch.infrastructure.inventory Status     Disposed
+
+
+.EXAMPLE
+
+As previous example. Gets all entris with Key 'biz.dfch.infrastructure.inventory' but now also specifies Name 'ServerRole'.
+
+Get-CumulusKeyNameValue biz.dfch.infrastructure.inventory
+
+Key                               Name       Value
+---                               ----       -----
+biz.dfch.infrastructure.inventory ServerRole DEV
+biz.dfch.infrastructure.inventory ServerRole INT
+biz.dfch.infrastructure.inventory ServerRole PROD
+
+
+.EXAMPLE
+
+As previous example. Gets all entris with Key 'biz.dfch.infrastructure.inventory' but now also specifies Name 'ServerRole' and also specify return format as 'json-pretty'.
+
+Get-CumulusKeyNameValue biz.dfch.infrastructure.inventory -As json-pretty
+
+[
+  {
+    "Key":  "biz.dfch.infrastructure.inventory",
+    "Name":  "ServerRole",
+    "Value":  "DEV"
+  },
+  {
+    "Key":  "biz.dfch.infrastructure.inventory",
+    "Name":  "ServerRole",
+    "Value":  "INT"
+  },
+  {
+    "Key":  "biz.dfch.infrastructure.inventory",
+    "Name":  "ServerRole",
+    "Value":  "PROD"
+  }
+]
+
+
+.EXAMPLE
+
+Gets all entris with Key 'biz.dfch.infrastructure.inventory' and Name 'ServerTier' but only return the Value.
+
+(Get-CumulusKeyNameValue biz.dfch.infrastructure.inventory ServerTier -Select Value).Value
+
+Tier 2
+Tier 3
+Tier 4
+
+
+.LINK
+
+Online Version: http://dfch.biz/PS/Cumulus/Utilities/Get-KeyNameValue/
+
+
+
+
+.NOTES
+
+See module manifest for dependencies and further requirements.
+
+#>
 [CmdletBinding(
     SupportsShouldProcess = $false
 	,
@@ -158,15 +307,18 @@ return $OutputParameter;
 
 } # END
 }
-if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Get-KeyNameValue; } 
+if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function ]()
+; } 
 
 <#
-2014-11-14; rrink; ADD: DefaultParameterSetName is now list. See #2
+2014-11-13; rrink; ADD: Example help. See #1
+2014-11-12; rrink; ADD: DefaultParameterSetName is now list. See #2
 2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module
 2014-10-13; rrink; CHG: module variable is now loaded via PSD1 PrivateData
 2014-10-13; rrink; CHG: module is now defined via PSD1 and loads assembly via PSD1
 2014-08-17; rrink; CHG: rename ls to svc
-2014-08-16; rrink; ADD: Get-KeyNameValue.
+2014-08-16; rrink; ADD: ]()
+.
 2014-08-16; rrink; CHG: CumulusWrapper assembly loader can now load assembly from module path (when only file name is specified)
 2014-08-16; rrink; CHG: Left over code from vCAC module in finally/cleanup (Remove-VcacBackupContext)
 2014-08-16; rrink; CHG: Object name CumulusWrapper.Utilities.Container to CumulusWrapper.Utilities.Utilities
