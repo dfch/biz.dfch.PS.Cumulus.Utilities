@@ -1,5 +1,4 @@
-function ]()
- {
+function Get-KeyNameValue {
 <#
 
 .SYNOPSIS
@@ -307,8 +306,7 @@ return $OutputParameter;
 
 } # END
 }
-if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function ]()
-; } 
+if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Get-KeyNameValue; } 
 
 <#
 2014-11-13; rrink; ADD: Example help. See #1
@@ -317,8 +315,7 @@ if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function ]()
 2014-10-13; rrink; CHG: module variable is now loaded via PSD1 PrivateData
 2014-10-13; rrink; CHG: module is now defined via PSD1 and loads assembly via PSD1
 2014-08-17; rrink; CHG: rename ls to svc
-2014-08-16; rrink; ADD: ]()
-.
+2014-08-16; rrink; ADD: Get-KeyNameValue
 2014-08-16; rrink; CHG: CumulusWrapper assembly loader can now load assembly from module path (when only file name is specified)
 2014-08-16; rrink; CHG: Left over code from vCAC module in finally/cleanup (Remove-VcacBackupContext)
 2014-08-16; rrink; CHG: Object name CumulusWrapper.Utilities.Container to CumulusWrapper.Utilities.Utilities
