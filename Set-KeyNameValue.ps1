@@ -1,4 +1,94 @@
 function Set-KeyNameValue {
+<#
+.SYNOPSIS
+
+Sets or creates a K/N/V entry in Cumulus.
+
+
+
+.DESCRIPTION
+
+Sets or creates a K/N/V entry in Cumulus.
+
+By updating a K/N/V entry you can specify if you want to update the Key, Name, Value or any combination thereof.
+
+
+
+.OUTPUTS
+
+default | json | json-pretty | xml | xml-pretty | PSCredential | Clear
+
+.EXAMPLE
+
+Create a new K/N/V entry if it not exists.
+
+Set-CumulusKeyNameValue myKey myName myValue -CreateIfNotExist
+
+Id         : 3131
+Key        : myKey
+Name       : myName
+Value      : myValue
+CreatedBy  : SERVER1\Administrator
+Created    : 11/13/2014 11:08:46 PM +00:00
+ModifiedBy : SERVER1\Administrator
+Modified   : 11/13/2014 11:08:46 PM +00:00
+RowVersion : {0, 0, 0, 0...}
+
+
+.EXAMPLE
+
+Update an existing K/N/V with new key and new value.
+
+Set-CumulusKeyNameValue myKey -NewKey myNewKey myName myValue -NewValue myNewValue
+
+Id         : 3131
+Key        : myNewKey
+Name       : myName
+Value      : myNewValue
+CreatedBy  : SERVER1\Administrator
+Created    : 11/13/2014 11:08:46 PM +00:00
+ModifiedBy : SERVER1\Administrator
+Modified   : 11/13/2014 11:08:46 PM +00:00
+RowVersion : {0, 0, 0, 0...}
+
+
+.EXAMPLE
+
+Update an existing K/N/V with new key and new value. Return format is json with pretty-print.
+
+
+Set-CumulusKeyNameValue myNewKey -NewKey myNewKey2 myName myNewValue -NewValue myNewValue2 -as json-pretty
+{
+  "Id":  3131,
+  "Key":  "myNewKey2",
+  "Name":  "myName",
+  "Value":  "myNewValue2",
+  "CreatedBy":  "SERVER1\\Administrator",
+  "Created":  "\/Date(1415920126010)\/",
+  "ModifiedBy":  "SERVER1\\Administrator",
+  "Modified":  "\/Date(1415920126010)\/",
+  "RowVersion":  [
+	0,
+	0,
+	0,
+	0,
+	0,
+	2,
+	152,
+	17
+    ]
+}
+
+.LINK
+
+Online Version: http://dfch.biz/PS/Cumulus/Utilities/Set-KeyNameValue/
+
+
+.NOTES
+
+See module manifest for dependencies and further requirements.
+
+#>
 [CmdletBinding(
     SupportsShouldProcess = $false
 	,
@@ -165,6 +255,7 @@ return $OutputParameter;
 if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Set-KeyNameValue; } 
 
 <#
+2014-11-13; rrink; ADD: examples, see #1
 2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module
 2014-10-13; rrink; CHG: module variable is now loaded via PSD1 PrivateData
 2014-10-13; rrink; CHG: module is now defined via PSD1 and loads assembly via PSD1
