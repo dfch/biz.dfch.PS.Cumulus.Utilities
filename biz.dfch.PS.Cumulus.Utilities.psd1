@@ -139,7 +139,7 @@ PrivateData = @{
 }
 
 # HelpInfo URI of this module
-HelpInfoURI = 'http://dfch.biz/PS/Cumulus/Utilities/'
+HelpInfoURI = 'http://dfch.biz/biz/dfch/PSCumulus/Utilities/'
 
 # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
 DefaultCommandPrefix = 'Cumulus'

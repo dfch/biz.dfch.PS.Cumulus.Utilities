@@ -154,13 +154,13 @@ Expect: 100-continue
 
 .LINK
 
-Online Version: http://dfch.biz/PS/Cumulus/Utilities/Set-File/
+Online Version: http://dfch.biz/biz/dfch/PSCumulus/Utilities/Set-File/
 
 
 
 .NOTES
 
-See module manifest for required software versions and dependencies at: http://dfch.biz/PS/Cumulus/Utilities/biz.dfch.PS.Cumulus.Utilities.psd1/
+See module manifest for required software versions and dependencies at: http://dfch.biz/biz/dfch/PSCumulus/Utilities/biz.dfch.PS.Cumulus.Utilities.psd1/
 
 .HELPURI
 
@@ -170,7 +170,7 @@ See module manifest for required software versions and dependencies at: http://d
 	,
     ConfirmImpact = "Medium"
 	,
-	HelpURI='http://dfch.biz/PS/Cumulus/Utilities/Set-File/'
+	HelpURI='http://dfch.biz/biz/dfch/PSCumulus/Utilities/Set-File/'
 	,
 	DefaultParameterSetName = 'path'
 )]

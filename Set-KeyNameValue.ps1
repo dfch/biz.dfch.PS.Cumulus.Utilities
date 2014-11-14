@@ -81,7 +81,7 @@ Set-CumulusKeyNameValue myNewKey -NewKey myNewKey2 myName myNewValue -NewValue m
 
 .LINK
 
-Online Version: http://dfch.biz/PS/Cumulus/Utilities/Set-KeyNameValue/
+Online Version: http://dfch.biz/biz/dfch/PSCumulus/Utilities/Set-KeyNameValue/
 
 
 .NOTES
@@ -96,7 +96,7 @@ See module manifest for dependencies and further requirements.
 	,
     ConfirmImpact = "Low"
 	,
-	HelpURI='http://dfch.biz/PS/Cumulus/Utilities/Set-KeyNameValue/'
+	HelpURI='http://dfch.biz/biz/dfch/PSCumulus/Utilities/Set-KeyNameValue/'
 )]
 Param (
 	[Parameter(Mandatory = $true, Position = 0)]

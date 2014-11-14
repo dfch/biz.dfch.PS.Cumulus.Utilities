@@ -4,7 +4,7 @@ function Remove-File {
 	,
     ConfirmImpact = "High"
 	,
-	HelpURI='http://dfch.biz/PS/Cumulus/Utilities/Remove-File/'
+	HelpURI='http://dfch.biz/biz/dfch/PSCumulus/Utilities/Remove-File/'
 )]
 PARAM (
 	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'name')]

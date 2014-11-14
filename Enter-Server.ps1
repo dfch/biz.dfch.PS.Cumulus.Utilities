@@ -60,17 +60,17 @@ ApplicationData CumulusWrapper.ApplicationData.ApplicationData
 
 .LINK
 
-Online Version: http://dfch.biz/PS/Cumulus/Utilities/Enter-Server/
+Online Version: http://dfch.biz/biz/dfch/PSCumulus/Utilities/Enter-Server/
 
 
 
 .NOTES
 
-See module manifest for required software versions and dependencies at: http://dfch.biz/PS/Cumulus/Utilities/biz.dfch.PS.Cumulus.Utilities.psd1/
+See module manifest for required software versions and dependencies at: http://dfch.biz/biz/dfch/PSCumulus/Utilities/biz.dfch.PS.Cumulus.Utilities.psd1/
 
 #>
 [CmdletBinding(
-	HelpURI='http://dfch.biz/PS/Cumulus/Utilities/Enter-Server/'
+	HelpURI='http://dfch.biz/biz/dfch/PSCumulus/Utilities/Enter-Server/'
 )]
 [OutputType([hashtable])]
 Param (

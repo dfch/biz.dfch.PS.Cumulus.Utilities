@@ -5,7 +5,7 @@ function Get-HealthCheck {
 	,
     ConfirmImpact = "Low"
 	,
-	HelpURI='http://dfch.biz/PS/Cumulus/Utilities/Get-HealthCheck/'
+	HelpURI='http://dfch.biz/biz/dfch/PSCumulus/Utilities/Get-HealthCheck/'
 	,
 	DefaultParameterSetName = 'list'
 )]

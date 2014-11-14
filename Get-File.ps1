@@ -4,7 +4,7 @@ function Get-File {
 	,
     ConfirmImpact = "Low"
 	,
-	HelpURI='http://dfch.biz/PS/Cumulus/Utilities/Get-File/'
+	HelpURI='http://dfch.biz/biz/dfch/PSCumulus/Utilities/Get-File/'
 	,
 	DefaultParameterSetName = 'list'
 )]

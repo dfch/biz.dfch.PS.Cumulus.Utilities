@@ -109,7 +109,7 @@ Set-IaasGroup -Name vCenter1 -Site ABC -Tiering GOLD -Datacenter "Datacenter01" 
 
 .LINK
 
-Online Version: http://dfch.biz/PS/Cumulus/Utilities/Set-IaasGroup/
+Online Version: http://dfch.biz/biz/dfch/PSCumulus/Utilities/Set-IaasGroup/
 
 
 
@@ -129,7 +129,7 @@ Requires module 'biz.dfch.PS.System.Logging'.
 	,
 	DefaultParameterSetName="list"
 	,
-	HelpURI='http://dfch.biz/PS/Cumulus/Utilities/Set-IaasGroup/'
+	HelpURI='http://dfch.biz/biz/dfch/PSCumulus/Utilities/Set-IaasGroup/'
 )]
 PARAM (
 	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'name')]
