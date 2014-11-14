@@ -4,7 +4,7 @@ function Get-DispatchItem {
 	,
     ConfirmImpact = "Low"
 	,
-	HelpURI='http://dfch.biz/biz/dfch/PSCumulus/Utilities/Get-DispatchItem/'
+	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-DispatchItem/'
 )]
 PARAM (
 	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'id')]

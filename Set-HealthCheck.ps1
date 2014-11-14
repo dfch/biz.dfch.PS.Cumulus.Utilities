@@ -5,7 +5,7 @@ function Set-HealthCheck {
 	,
     ConfirmImpact = "Low"
 	,
-	HelpURI='http://dfch.biz/biz/dfch/PSCumulus/Utilities/Set-HealthCheck/'
+	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Set-HealthCheck/'
 )]
 Param (
 	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'name')]

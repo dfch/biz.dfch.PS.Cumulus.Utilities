@@ -4,7 +4,7 @@ function Remove-KeyNameValue {
 	,
     ConfirmImpact = "High"
 	,
-	HelpURI='http://dfch.biz/biz/dfch/PSCumulus/Utilities/Remove-KeyNameValue/'
+	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Remove-KeyNameValue/'
 )]
 Param (
 	[Parameter(Mandatory = $false, Position = 0, ParameterSetName = 'name')]

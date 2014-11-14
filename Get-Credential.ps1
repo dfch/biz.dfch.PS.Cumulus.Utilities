@@ -108,7 +108,7 @@ Get-CumulusCredential Test-HealthCheck -As json-pretty
 
 .LINK
 
-Online Version: http://dfch.biz/biz/dfch/PSCumulus/Utilities/Get-Credential/
+Online Version: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-Credential/
 
 
 
@@ -127,7 +127,7 @@ See module manifest for dependencies and further requirements.
 	,
 	DefaultParameterSetName="list"
 	,
-	HelpURI='http://dfch.biz/biz/dfch/PSCumulus/Utilities/Get-Credential/'
+	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-Credential/'
 )]
 Param (
 	[Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0, ParameterSetName = 'name')]

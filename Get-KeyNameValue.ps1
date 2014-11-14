@@ -137,7 +137,7 @@ Tier 4
 
 .LINK
 
-Online Version: http://dfch.biz/biz/dfch/PSCumulus/Utilities/Get-KeyNameValue/
+Online Version: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-KeyNameValue/
 
 
 
@@ -154,7 +154,7 @@ See module manifest for dependencies and further requirements.
 	,
     ConfirmImpact = "Low"
 	,
-	HelpURI='http://dfch.biz/biz/dfch/PSCumulus/Utilities/Get-KeyNameValue/'
+	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-KeyNameValue/'
 	,
 	DefaultParameterSetName = 'list'
 )]
