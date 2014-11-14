@@ -146,6 +146,8 @@ Online Version: http://dfch.biz/PS/Cumulus/Utilities/Get-KeyNameValue/
 
 See module manifest for dependencies and further requirements.
 
+.HELPURI
+
 #>
 [CmdletBinding(
     SupportsShouldProcess = $false
@@ -309,6 +311,7 @@ return $OutputParameter;
 if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Get-KeyNameValue; } 
 
 <#
+2014-11-14; rrink; ADD: .HELPURI in inline help to fix HelpURI attribute in CmdletBinding
 2014-11-13; rrink; ADD: Example help. See #1
 2014-11-12; rrink; ADD: DefaultParameterSetName is now list. See #2
 2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module

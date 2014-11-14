@@ -117,6 +117,8 @@ Online Version: http://dfch.biz/PS/Cumulus/Utilities/Get-Credential/
 
 See module manifest for dependencies and further requirements.
 
+.HELPURI
+
 #>
 [CmdletBinding(
     SupportsShouldProcess = $false
@@ -273,6 +275,7 @@ return $OutputParameter;
 if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Get-Credential; } 
 
 <#
+2014-11-14; rrink; ADD: .HELPURI in inline help to fix HelpURI attribute in CmdletBinding
 2014-11-13; rrink; ADD: ValueFromPipeline for Name and ManagementCredential.
 2014-11-13; rrink; ADD: Example help. See #1
 2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module

@@ -162,6 +162,8 @@ Online Version: http://dfch.biz/PS/Cumulus/Utilities/Set-File/
 
 See module manifest for required software versions and dependencies at: http://dfch.biz/PS/Cumulus/Utilities/biz.dfch.PS.Cumulus.Utilities.psd1/
 
+.HELPURI
+
 #>
 [CmdletBinding(
     SupportsShouldProcess = $true
@@ -304,6 +306,7 @@ return $OutputParameter;
 if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Set-File; } 
 
 <#
+2014-11-14; rrink; ADD: .HELPURI in inline help to fix HelpURI attribute in CmdletBinding
 2014-11-12; rrink; ADD: example and help, see #1
 2014-11-12; rrink; ADD: Checksum parameter. You can now optionally specify an empty Value and only a checksum
 2014-11-12; rrink; ADD: DefaultParameterSetName is now path

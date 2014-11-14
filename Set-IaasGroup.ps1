@@ -119,6 +119,8 @@ Requires Powershell v3.
 
 Requires module 'biz.dfch.PS.System.Logging'.
 
+.HELPURI
+
 #>
 [CmdletBinding(
     SupportsShouldProcess = $true
@@ -385,6 +387,7 @@ return $OutputParameter;
 if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Set-IaasGroup; } 
 
 <#
+2014-11-14; rrink; ADD: .HELPURI in inline help to fix HelpURI attribute in CmdletBinding
 2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module
 2014-10-30; rrink; ADD: Initial version.
 #>
