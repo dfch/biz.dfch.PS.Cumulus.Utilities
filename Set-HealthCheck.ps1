@@ -152,7 +152,7 @@ return $OutputParameter;
 } # END
 
 } # Set-HealthCheck
-if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Set-HealthCheck; } 
+if($MyInvocation.ScriptName) { Export-ModuleMember -Function Set-HealthCheck; } 
 
 <#
 2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module

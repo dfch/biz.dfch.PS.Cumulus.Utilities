@@ -128,7 +128,7 @@ return $OutputParameter;
 } # END
 
 } # Get-HealthCheck
-if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Get-HealthCheck; } 
+if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-HealthCheck; } 
 
 <#
 2014-11-13; rrink; ADD: Name now accepts ValueFromPipeLine, so you can call Get-HealthCheck | Select -Last 1 | Get-HealthCheck

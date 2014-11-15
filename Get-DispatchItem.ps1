@@ -144,7 +144,7 @@ return $OutputParameter;
 
 } # END
 }
-if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Get-DispatchItem } 
+if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-DispatchItem } 
 
 <#
 2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module

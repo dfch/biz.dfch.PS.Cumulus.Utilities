@@ -308,7 +308,7 @@ return $OutputParameter;
 
 } # END
 }
-if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Get-KeyNameValue; } 
+if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-KeyNameValue; } 
 
 <#
 2014-11-14; rrink; ADD: .HELPURI in inline help to fix HelpURI attribute in CmdletBinding

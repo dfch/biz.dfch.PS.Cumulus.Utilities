@@ -384,7 +384,7 @@ return $OutputParameter;
 
 } # END
 }
-if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Set-IaasGroup; } 
+if($MyInvocation.ScriptName) { Export-ModuleMember -Function Set-IaasGroup; } 
 
 <#
 2014-11-14; rrink; ADD: .HELPURI in inline help to fix HelpURI attribute in CmdletBinding

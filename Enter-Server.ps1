@@ -174,7 +174,7 @@ END {
 } # function
 Set-Alias -Name Connect- -Value 'Enter-Server';
 Set-Alias -Name Enter- -Value 'Enter-Server';
-if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Enter-Server -Alias Connect-, Enter-; } 
+if($MyInvocation.ScriptName) { Export-ModuleMember -Function Enter-Server -Alias Connect-, Enter-; } 
 
 <#
 2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module

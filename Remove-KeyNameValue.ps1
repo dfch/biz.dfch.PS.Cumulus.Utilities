@@ -128,7 +128,7 @@ return $OutputParameter;
 
 } # END
 }
-if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Remove-KeyNameValue; } 
+if($MyInvocation.ScriptName) { Export-ModuleMember -Function Remove-KeyNameValue; } 
 
 <#
 2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module

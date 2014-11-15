@@ -171,7 +171,7 @@ return $OutputParameter;
 
 } # END
 }
-if($MyInvocation.PSScriptRoot) { Export-ModuleMember -Function Get-File; } 
+if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-File; } 
 
 <#
 2014-11-12; rrink; CHG: ListAvailable is now default parameter set. removed '$select' clause from query option as this breaks the WCF Data Service
