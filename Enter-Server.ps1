@@ -68,6 +68,8 @@ Online Version: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Enter-Server/
 
 See module manifest for required software versions and dependencies at: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/biz.dfch.PS.Cumulus.Utilities.psd1/
 
+.HELPURI
+
 #>
 [CmdletBinding(
 	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Enter-Server/'
