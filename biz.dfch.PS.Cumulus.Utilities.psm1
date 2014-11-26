@@ -20,6 +20,21 @@ if($true -ne (Test-Path variable:$($mvar))) {
 } # if()
 Export-ModuleMember -Variable $mvar;
 
+[string] $ManifestFile = '{0}.psd1' -f (Get-Item $PSCommandPath).BaseName;
+$ManifestPathAndFile = Join-Path -Path $PSScriptRoot -ChildPath $ManifestFile;
+if( Test-Path -Path $ManifestPathAndFile)
+{
+	$Manifest = (Get-Content -raw $ManifestPathAndFile) | iex;
+	foreach( $ScriptToProcess in $Manifest.ScriptsToProcess) 
+	{ 
+		$ModuleToRemove = (Get-Item (Join-Path -Path $PSScriptRoot -ChildPath $ScriptToProcess)).BaseName;
+		if(Get-Module $ModuleToRemove)
+		{ 
+			Remove-Module $ModuleToRemove -ErrorAction:SilentlyContinue;
+		}
+	}
+}
+
 (Get-Variable -Name $mvar).Value.Credential = [System.Net.CredentialCache]::DefaultCredentials;
 
 <#
@@ -48,8 +63,8 @@ Export-ModuleMember -Variable $mvar;
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUbV19SGaFG8iqRC4VUp1Khb1+
-# yHegghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUl4suvZMUpC9G4qQSo+R8FntP
+# Q36gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -147,25 +162,25 @@ Export-ModuleMember -Variable $mvar;
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBR6v0mRXbfWSl8g2Rkt
-# GNYnhY9mvTANBgkqhkiG9w0BAQEFAASCAQAg1bLwFfyU773hbJDrn0gFPf/Xa7QT
-# hErvJmYBLjvGS0lTgRtot6hkjo+YeYevZL4A18bDRmCdqZQcpmdf17VKSx9NJDk3
-# 1DcspJrAxmIb7JjQDU+nIDyrswUzyA+YYnSu+9naRt8HE07cTU6vbkJ2iqZwLOch
-# Z/wpb5NgGAMSRJeAWyt2bOogTKYVo9xq5qhhRFsS7rjNvT16kN7HrAmub2W2t/EZ
-# 8TWtLK73j0CD1xhuvkXiDrzvUcKlVMHrIKW6KDoxoKI+0Ja+vLVzt+2t3y4m0GCB
-# +qKYPgWxLpzyLrD1FXI5SEacdKBP6xvWf7Hfdg23D4ciUPNYL0x4QsQqoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRDtwg/VNkrwzoEZAvJ
+# abK8u8e1azANBgkqhkiG9w0BAQEFAASCAQCrPzutfIAEnqwS2nJeIQzvgwRs4W7r
+# v5j7sD2J4KDjY4HOu0b6ZxZm3OCnK2qoGhWWPkPv/9VE4ff0ZN9YSEKvoEm75SsO
+# tB2MVKpahTm0RPoHt5GbCpOcczsHA3bFnSS8g3YWQ4Schx0JaHfIbHP1DKBA8vJ6
+# nvH8Wp/O7U9cFsmSFIwqT0EJ4g1j+5UhkrNd8+l9TL5ZzPSybqWeIoyMjT3Z/F9I
+# EkEMvdahtJOmPuh6KIm7uG8eMIpi6KZYlwnnKtpHPYlWdTmGpNLfZ65lVjd0jjs0
+# ooZa64yqoeCdfuKloSCUgzGS4uMs0bYHN3M1uk9D4jLn8ePOXh6I2OIJoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTEy
-# NTE2MjYxOVowIwYJKoZIhvcNAQkEMRYEFHXyKHXWo1K6h0L4xgtKB2844amZMIGd
+# NjA3Mzg0NlowIwYJKoZIhvcNAQkEMRYEFJQPetxEqp9vXFj4s0+pdeuorkA2MIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAy6PYLiWt//4JEC59nzGlo
-# i2G9n+OY/hc4Jk28StAOlmRcZ/sg9TSqjRxwuGl6frtD8lftPc2QKn+ayei6UR1I
-# 3X8gUsg/uoX8Ua/jWWexu5o2x1m+9/oRWHwFb6UEsTeIDG2Bvib6Iy8WdxnVigcN
-# cer/TV1qqt954n7bMs+UxCWH280Uw6mdwuLDvmOxlAmXjsBzSBMfVGJsr8NpLbil
-# tm6Y165o+CwVtxhE40Nr2c5EvBIRRF7+yhbTYmWMob/H4A+2bs0VmHiLP+zLjqWu
-# gbYou35MxY/8D4oHUhu82/Gdq35Yw/UXyI9DtvHrseox/Bn6eRjNMh50dXwGL2PA
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQA7CiP/q4of3KRB/89Ui7Hb
+# pKvA6YUkAvCwaVf3z5s4tSpGEZMW140aKxmM+UWGC5GhVgKib4MASvIL+cpyFW9C
+# RX7tR66KR/YZcSsKRF/uwVb2JglS4VmIX7pele98zOnma94r+dvCPFepVV8i9WNf
+# 4+zeM7GrLxWA1PMzA5seXGYPSAszQvmskx98JPvAHnEIyISLlWFvG1fAaL38hYZj
+# Q7IL/d19jK89eybWe/z4eXOeCOtwQsHGJnhMttVD9KmAmj+HTD7AJBT4p3CXbdev
+# TC0MtX2wM4vnfhfej/5FwppgcZQSMgiQw1wXXej8sAhoI8ZAerJcnGT1/kqoTwVN
 # SIG # End signature block
