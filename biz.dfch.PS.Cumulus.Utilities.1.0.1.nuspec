@@ -57,5 +57,6 @@ See https://github.com/dfch/biz.dfch.PS.Cumulus.Utilities/wiki for a detailed de
     <file src="Get-DispatchItem.ps1" target="Get-DispatchItem.ps1" />
     <file src="Set-IaasGroup.ps1" target="Set-IaasGroup.ps1" />
     <file src="Set-Command.ps1" target="Set-Command.ps1" />
+    <file src="Remove-Address.ps1" target="Remove-Address.ps1" />
   </files>
 </package>

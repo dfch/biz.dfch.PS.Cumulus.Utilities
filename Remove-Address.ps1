@@ -1,46 +1,28 @@
-function Set-Command {
+function Remove-Address {
 <#
-.SYNOPSIS 
-This Cmdlet updates a Command entity.
+.SYNOPSIS
 
-.DESCRIPTION
-This Cmdlet updates a Command entity.
-	
-The Cmdlet allows the modification of either Description, Parameters or Status property.	
+Removes an address from the Cumulus database and any attached IPAM backends.
+
 #>
-
 [CmdletBinding(
-    SupportsShouldProcess = $false
+    SupportsShouldProcess = $true
 	,
-    ConfirmImpact = "Low"
+    ConfirmImpact = "Medium"
 	,
-	DefaultParameterSetName="list"
-	,
-	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Set-Command/'
+	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Remove-Address/'
 )]
 
 PARAM
 (
-	# Specifies a Command entity to update
-	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'o')]
-	$Command
+	[ValidateScript( { foreach($item in $_) { [System.Net.IPAddress]::TryParse($item, [ref] $null); } } )]
+	[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+	[ValidateNotNullOrEmpty()]
+	[Alias('IPAddress')]
+	$InputObject
 	,
-	# Specifies the id of a Command entity to update
-	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'id')]
-	[alias('id')]
-	[int] $CommandId
-	,
-	# Specifies the new description contents of the given Command entity
-	[Parameter(Mandatory = $false)]
-	[string] $Description
-	,
-	# Specifies the new Status contents of the given Command entity
-	[Parameter(Mandatory = $false)]
-	[string] $Parameters
-	,
-	# Specifies the new Status contents of the given Command entity
-	[Parameter(Mandatory = $false)]
-	[string] $Status
+	[Parameter(Mandatory = $false, Position = 1)]
+	[String] $NetworkName
 	,
 	# Specifies the reference to the Cumulus service reference
 	[Parameter(Mandatory = $false)]
@@ -48,14 +30,19 @@ PARAM
 	[hashtable] $svc = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services
 )
 
+BEGIN
+{
 	$datBegin = [datetime]::Now;    
 	[string] $fn = $MyInvocation.MyCommand.Name;
 	Log-Debug -fn $fn -msg ("CALL")
 	[boolean] $fReturn = $false;
 	$OutputParameter = $null;
 	
-try
-{
+	if(!$NetworkName)
+	{
+		$NetworkName = 'Not specified'
+	}
+	
 	# Parameter validation 
 	if($svc.Utilities -isnot [CumulusWrapper.Utilities.Utilities]) 
 	{ 
@@ -63,48 +50,40 @@ try
 		$e = New-CustomErrorRecord -m $msg -cat InvalidData -o $svc.Utilities; 
 		throw($gotoError); 
 	}
-	# Get command via ID ...
-	if($CommandId)
-	{	
-		$Command = $svc.ApplicationData.Commands.AddQueryOption('$filter',("Id eq {0}" -f $CommandId)) | Select;
-	} 
-	# ... or check if command was already specified
-	if(!$Command)
+}
+# BEGIN
+
+PROCESS
+{
+
+try
+{
+	foreach($Object in $InputObject)
 	{
-		$msg = "Command: Parameter validation FAILED. No 'Command' specified.";
-		Log-Error $fn $msg;
-		$e = New-CustomErrorRecord -m $msg -cat ObjectNotFound -o $PSBoundParameters; 
-		throw($gotoError); 
+		if(!$PSCmdlet.ShouldProcess($Object))
+		{
+			continue;
+		}
+		Log-Debug -fn $fn -msg ("Removing IP Address '{0}' on Network '{1}'" -f $Object, $NetworkName )
+		# if( ( [System.Net.IPAddress]::tryparse($Object,[ref]$null) ) -and $Object -ne '0.0.0.0')
+		if( ![System.Net.IPAddress]::TryParse($Object, [ref] $null) )
+		{	
+			$e = New-CustomErrorRecord -m ("{0}: Removing IP address {1} FAILED. IP Address provided was null or not a valid." -f $NetworkName, $Object);
+			throw($gotoError);
+		}
+		Log-Debug -fn $fn -msg ('Retrieving address from Cumulus: {0} on Network: {1}' -f $Object, $NetworkName)
+		$aToBeDeleted = $svc.ApplicationData.Addresses.AddQueryOption('$filter',("Value eq '{0}'" -f $Object)).AddQueryOption('$top',1) | Select;
+		if($aToBeDeleted -is [CumulusWrapper.ApplicationData.Address])
+		{
+			$svc.ApplicationData.DeleteObject($aToBeDeleted);
+			$Status = $svc.ApplicationData.SaveChanges();
+		} 
+		$OutputParameter = $Status;
+		$fReturn = $true;
+		$OutputParameter;
 	}
-	Log-Debug -fn $fn -msg ("Updating Command description from '{0}' to '{1}' ..." -f $Command.Description, $Description);
-	
-	if($PSBoundParameters.ContainsKey('Description'))
-	{
-		$Command.Description = $Description;
-	}
-	if($PSBoundParameters.ContainsKey('Parametes'))
-	{
-		$Command.Parametes = $Parametes;
-	}
-	if($PSBoundParameters.ContainsKey('Status'))
-	{
-		$Command.Status = $Status;
-	}
-	$svc.ApplicationData.UpdateObject($Command);
-	$Status = $svc.ApplicationData.SaveChanges();
-	if( !$Status -or ($Status.StatusCode -NotIn 200..299) )
-	{
-		# ToDo - Failed to update Command object
-		$msg = 'Failed to update Command object: Name:{0} ID: {1} - Status Code: {2}' -f $Command.Name, $Command.ID, $Status.StatusCode;
-		$e = New-CustomErrorRecord -m $msg -cat InvalidData -o $Status;
-		throw($gotoError);
-	}
-	Log-Debug -fn $fn -msg ('Update Command description success: Name:{0} ID: {1}' -f $Command.Name, $Command.ID)
-	
-	$OutputParameter = $true;
-    $fReturn = $true;
-	
-} 
+
+}
 catch 
 {
 	if($gotoSuccess -eq $_.Exception.Message) 
@@ -133,25 +112,33 @@ catch
 		else 
 		{
 			# N/A
-			$OutputParameter = $e.Exception.Message;
+			$OutputParameter = $_.Exception.Message;
 		} # if
 		# other exceptions            
 		$fReturn = $false;
-		$OutputParameter = $true
+		# $OutputParameter = $true
+		$OutputParameter
 	}
 }
 
-Log-Debug -fn $fn -msg "RET. fReturn: [$fReturn]. Execution time: [$(($datEnd - $datBegin).TotalMilliseconds)]ms. Started: [$($datBegin.ToString('yyyy-MM-dd HH:mm:ss.fffzzz'))]." -fac 2;        
-return $OutputParameter;
+}
+# PROCESS
+
+END
+{
+	Log-Debug -fn $fn -msg "RET. fReturn: [$fReturn]. Execution time: [$(($datEnd - $datBegin).TotalMilliseconds)]ms. Started: [$($datBegin.ToString('yyyy-MM-dd HH:mm:ss.fffzzz'))]." -fac 2;        
+}
+# END
 
 } # function
-if($MyInvocation.ScriptName) { Export-ModuleMember -Function Set-Command; } 
+
+if($MyInvocation.ScriptName) { Export-ModuleMember -Function Remove-Address; } 
 
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUhQvuI6ujlnCBu93tK15K6gPt
-# ZVKgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUswybvlMTPdwUM2pYlVnGKE2h
+# 2GCgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -249,25 +236,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Set-Command; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBS3Fnb/UGjOY/eSTTzn
-# +BgCNy1sbjANBgkqhkiG9w0BAQEFAASCAQBegbrKvkPbO9ze7I1hTnKhl0cS1TDk
-# R/8eeSAf6x9RDMhhq3kD77u397hGa7RFTYlud7HOoWhGbx8nJz16dfgKPkto1GEc
-# sr1tg870e2FqGNnUrNuEore2+Le2Dj1WeT1xDlfCHce2ipXx2NLmBkbWNZrkOE9q
-# CzyiDNKjusRhGvyk4iSywyaSuHv1vB4NmuyZDiZq32nhiDuhteYYmKcfbB8aQmVr
-# AtWjS3kAuaPftCkcShxG3uigGMLFE/G9zL0Vwku+/YzDKTJS1zz7hwwdgoWH7kAe
-# wXArqyiTJG6gYo9Qunt3DbzeMAJR14SRqiQjv+uR7pj2b5g24WBSWM7QoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRZdisq35WBLrzw6SfK
+# rtfJ7RN7YDANBgkqhkiG9w0BAQEFAASCAQBrNb1bLoc7FlGh35o8Pim9rtoGPkb5
+# 6qO6mpJatWJCm9K66wUUV9NEdyPH6T7lAe/lPuDu3KycA4SZ5MRiVK6NnS43zZmy
+# 5vW4EPYO5LuF7b5HYsTe6FDt0OKgc77hZPTvP7rGsQPsblIqtYxg77DvMrPqs9bU
+# t4Q32tsSdrIrccrjrJ0Q73yiP3LHqWuO/dNVIvtWVpVobXxEhzJU/zWdwlZhd+IX
+# Jn/Qs3SGjOXGWFI88/LzSbfUbvq78YyEkVJ2a+8wMfc9bB6KDIjTgq5R+aXiiiE2
+# gpmckSWNhGw+TuorxrH0JBFmBua7Vxl5gPK7yRg3HHaBhgpBiJnF2L+uoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# MzE0MzA0NlowIwYJKoZIhvcNAQkEMRYEFEM4RvBvU1k2DJuf5aze53YD8OfuMIGd
+# MzE0NDk0NFowIwYJKoZIhvcNAQkEMRYEFJNkXohzbvcqA/cWhkrHnNMY3gutMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBDDr2XqHqcnOMSfGhmj/5e
-# lVxMk/CeL9t47sklGOdw1KNJehQcO5kNHs1Isl58qf/ipl6c8rNqdku4fGpQYXiE
-# vbQBZCqCucl13nDnVsJ/eFzgZ/DME8fvc1skNTqaExiKZ6SZLSmgWSkTq5g37aY1
-# RnM2jdPWwoNtAkutBup8S9mw3GNELWlu6aLivf3QAHMIKU1OfgkNrl8cm3eOy5EQ
-# C3OMVN4BiNUweEaCIsfqXPhISU8ekIZxUGOMMC+2UauUk9y+y5cj1s4/L9IN+lSC
-# 3I+W3GNuJ1gsXtQmwuklzzUc6qBPHzTfH3ifdwnqjaa7U2st+OCFaEpbrFzZIVKa
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQATFdN1qakyrFykF17LmUyi
+# xS6VqUuAOgoyIU07wuE64ZG5FoKiYvfQ275oypPMzNzqMyz9xxEYSa6rJUmDz9EC
+# 78s0ze5EpG0gp9bPFMg4aSTSk3KbAH0BYMfqRnAsNIbd3wBef4sQRWVt0GduUE/p
+# zjfm7285tAdhr6TGNqWMKaVtlxgE+jB5h6NwCjsJ/kIGYop53/LEFyn/xiXmgGAd
+# lUd8Oz66LRdUbkfzoj/oF4P2Oxs7D0P9Ipf+MwG7QuRxnIs6KnBgs2mQB24QLOAd
+# 8HQNFwGgYADLSXcNaS9p51SrKm587mEtJtbFTePLtythqLZg+UMUzqOiBxLcOfy4
 # SIG # End signature block
