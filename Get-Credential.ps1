@@ -129,7 +129,8 @@ See module manifest for dependencies and further requirements.
 	,
 	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-Credential/'
 )]
-Param (
+Param 
+(
 	[Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0, ParameterSetName = 'name')]
 	[string] $Name
 	,
@@ -160,109 +161,138 @@ Param (
 	[Parameter(Mandatory = $false, ParameterSetName = 'scrambled')]
 	[alias("ReturnFormat")]
 	[string] $As = 'default'
-) # Param
+) 
 
-BEGIN {
+BEGIN 
+{
 
 $datBegin = [datetime]::Now;
 [string] $fn = $MyInvocation.MyCommand.Name;
 Log-Debug -fn $fn -msg ("CALL. MgmtContext '{0}'. Name '{1}'." -f ($svc -is [Object]), $Name) -fac 1;
 
-} # BEGIN
-PROCESS {
+} 
+# BEGIN
+
+PROCESS 
+{
 
 # Default test variable for checking function response codes.
 [Boolean] $fReturn = $false;
 # Return values are always and only returned via OutputParameter.
 $OutputParameter = $null;
 
-try {
+try 
+{
 
 	# Parameter validation
-	if($svc.Utilities -isnot [CumulusWrapper.Utilities.Utilities]) {
+	if($svc.Utilities -isnot [CumulusWrapper.Utilities.Utilities]) 
+	{
 		$msg = "svc: Parameter validation FAILED. Connect to the server before using the Cmdlet.";
 		$e = New-CustomErrorRecord -m $msg -cat InvalidData -o $svc.Utilities;
 		throw($gotoError);
-	} # if
+	}
 
-	if($PSCmdlet.ParameterSetName -eq 'list') {
+	if($PSCmdlet.ParameterSetName -eq 'list') 
+	{
 		# $null = $svc.ApplicationData.ManagementCredentials.AddQueryOption('$top',1);
 		# $OutputParameter = $svc.ApplicationData.ManagementCredentials.AddQueryOption('$orderby', 'Name').AddQueryOption('$select','Name').Name;
 		$OutputParameter = $svc.ApplicationData.ManagementCredentials.AddQueryOption('$orderby', 'Name').Name;
 		$fReturn = $true;
 		throw($gotoSuccess);
-	} # if
+	}
 
-	if($PSCmdlet.ParameterSetName -eq 'name') {
+	if($PSCmdlet.ParameterSetName -eq 'name') 
+	{
 		# Load credentials of management endpoint
 		$mc = $svc.Utilities.ManagementCredentialHelpers.AddQueryOption('$filter',("Name eq '{0}'" -f $Name)).AddQueryOption('$top',1) | Select;
-		if(!$mc) {
+		if(!$mc) 
+		{
 			$msg = "Name: Parameter validation FAILED: '{0}'" -f $Name;
 			$e = New-CustomErrorRecord -m $msg -cat ObjectNotFound -o $Name;
 			throw($gotoError);
-		} # if
-	} elseif($PSCmdlet.ParameterSetName -eq 'o') {
+		}
+	} 
+	elseif($PSCmdlet.ParameterSetName -eq 'o') 
+	{
 		$mc = $svc.Utilities.ManagementCredentialHelpers.AddQueryOption('$filter',("Id eq {0}" -f $ManagementCredential.Id)) | Select;
-		if(!$mc) {
+		if(!$mc) 
+		{
 			$msg = "Id: Parameter validation FAILED: '{0}'" -f $ManagementCredential.Id;
 			$e = New-CustomErrorRecord -m $msg -cat ObjectNotFound -o $mc;
 			throw($gotoError);
-		} # if
-	} else {
+		}
+	} 
+	else 
+	{
 		$msg = "ParameterSetName: Not implemented: '{0}'" -f $PSCmdlet.ParameterSetName;
 		$e = New-CustomErrorRecord -m $msg -cat NotImplemented -o $PSCmdlet;
 		throw($gotoError);
-	} # if/else
+	}
 
 	$r = $mc;
-	switch($As) {
-	'xml' { $OutputParameter = (ConvertTo-Xml -InputObject $r).OuterXml; }
-	'xml-pretty' { $OutputParameter = Format-Xml -String (ConvertTo-Xml -InputObject $r).OuterXml; }
-	'json' { $OutputParameter = ConvertTo-Json -InputObject $r -Compress; }
-	'json-pretty' { $OutputParameter = ConvertTo-Json -InputObject $r; }
-	'PSCredential' { $Cred = New-Object System.Management.Automation.PSCredential($r.Username, (ConvertTo-SecureString -String $r.Password -AsPlainText -Force)); $OutputParameter = $Cred; }
-	'Clear' { $OutputParameter = @{'UserName' = $r.UserName; 'Password' = $r.Password; }}
-	Default { $OutputParameter = $r; }
-	} # switch
+	switch($As) 
+	{
+		'xml' { $OutputParameter = (ConvertTo-Xml -InputObject $r).OuterXml; }
+		'xml-pretty' { $OutputParameter = Format-Xml -String (ConvertTo-Xml -InputObject $r).OuterXml; }
+		'json' { $OutputParameter = ConvertTo-Json -InputObject $r -Compress; }
+		'json-pretty' { $OutputParameter = ConvertTo-Json -InputObject $r; }
+		'PSCredential' { $Cred = New-Object System.Management.Automation.PSCredential($r.Username, (ConvertTo-SecureString -String $r.Password -AsPlainText -Force)); $OutputParameter = $Cred; }
+		'Clear' { $OutputParameter = @{'UserName' = $r.UserName; 'Password' = $r.Password; }}
+		Default { $OutputParameter = $r; }
+	}
 	$fReturn = $true;
 
 } # try
-catch {
-	if($gotoSuccess -eq $_.Exception.Message) {
+catch 
+{
+	if($gotoSuccess -eq $_.Exception.Message) 
+	{
 		$fReturn = $true;
-	} else {
+	} 
+	else 
+	{
 		[string] $ErrorText = "catch [$($_.FullyQualifiedErrorId)]";
 		$ErrorText += (($_ | fl * -Force) | Out-String);
 		$ErrorText += (($_.Exception | fl * -Force) | Out-String);
 		$ErrorText += (Get-PSCallStack | Out-String);
 		
-		if($_.Exception -is [System.Net.WebException]) {
+		if($_.Exception -is [System.Net.WebException]) 
+		{
 			Log-Critical $fn ("[WebException] Request FAILED with Status '{0}'. [{1}]." -f $_.Status, $_);
 			Log-Debug $fn $ErrorText -fac 3;
-		} # [System.Net.WebException]
-		else {
+		}
+		else 
+		{
 			Log-Error $fn $ErrorText -fac 3;
-			if($gotoError -eq $_.Exception.Message) {
+			if($gotoError -eq $_.Exception.Message) 
+			{
 				Log-Error $fn $e.Exception.Message;
 				$PSCmdlet.ThrowTerminatingError($e);
-			} elseif($gotoFailure -ne $_.Exception.Message) { 
+			} 
+			elseif($gotoFailure -ne $_.Exception.Message) 
+			{ 
 				Write-Verbose ("$fn`n$ErrorText"); 
-			} else {
+			} 
+			else 
+			{
 				# N/A
-			} # if
-		} # other exceptions
+			}
+		}
 		$fReturn = $false;
 		$OutputParameter = $null;
-	} # !$gotoSuccess
-} # catch
-finally {
+	}
+}
+finally 
+{
 	# Clean up
 	# N/A
-} # finally
+}
 
-} # PROCESS
+} 
+# PROCESS
 
-END {
+END 
+{
 
 $datEnd = [datetime]::Now;
 Log-Debug -fn $fn -msg ("RET. fReturn: [{0}]. Execution time: [{1}]ms. Started: [{2}]." -f $fReturn, ($datEnd - $datBegin).TotalMilliseconds, $datBegin.ToString('yyyy-MM-dd HH:mm:ss.fffzzz')) -fac 2;
@@ -270,9 +300,10 @@ Log-Debug -fn $fn -msg ("RET. fReturn: [{0}]. Execution time: [{1}]ms. Started: 
 # Return values are always and only returned via OutputParameter.
 return $OutputParameter;
 
-} # END
+} 
+# END
 
-} # Get-Credential
+} # function
 if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-Credential; } 
 
 <#
@@ -291,8 +322,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-Credential; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUlm/SZ3j1eVAcUkmDFmWghr6Q
-# mWWgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU50L1NDmOwHI5MxSx8Grq5gyP
+# p8qgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -390,25 +421,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-Credential; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSk/vsp79HhdGUuqELj
-# +O888DR9HTANBgkqhkiG9w0BAQEFAASCAQBWgimpo4PXO3nykSsdpC7fGxavvufV
-# Wy2/L9c3IQ+yHC+2YW9E+6omaRSrmXGHuIsfPZLc7ZaxPoXHA5o0N8pJuANQP3aD
-# mZBd1GN1yAj2LsERrY/N5RX9LUVtDC1sa791GgBiau9cmlAsyMMNOyyhQr9/hK7K
-# H3wtaw16Cx55MibNeu1Ow4zuGw089rXURLzp5FdoSMMlQqeANd2/GolEZRhngeT9
-# CgfR0YtALj64qcy9Lb9kK8OUnMoje1mFuLzdTmc08vkw+lmTv5ow4peK8Nl5F4Xs
-# 6ErmzcjdgWjuK9rHfIXKyoUIvz/94iXVCSktIF/+TFg4lGcUTFnMgfUOoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQzp4VThatdsZJauEmw
+# 33LduMJSiDANBgkqhkiG9w0BAQEFAASCAQDQETYvjrDRyAH9B6V2NvQQcFxplzu6
+# itPFUw8GMilk+DlzRiuL9gEPRpXoaqbQNndNUUEUuIIzmZSI91m/4usTw3uvq9nK
+# m86elsHROeOVrCNO9OAAkIPXjHaoRiKpa2q8hmVKemgueOQF9pO6FnNRNwnC/HaB
+# TJO/cYZW1g0mf52v/kz9cm4jxH1ze2R8NAl8p5Hrve1T/SAlp/VjbsVK3R4ilOGZ
+# UP81CbN5kKksk/RUUtG7mxOvGrcT1t1D4V+Q1+pajfoKbepdJTX/NsUYT8pmU5FL
+# /wBhWHDy1y6jloghsFfHtftmPSu8Y5CzcyICcOduyzHEEtnbhzoU0bEkoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# MzE0MzA0NlowIwYJKoZIhvcNAQkEMRYEFNWWMwm3bJWU0IZKdEbBLRQwtiM9MIGd
+# MzE1NTkzOVowIwYJKoZIhvcNAQkEMRYEFMJ1X1a/4twAqT8Bf8SfTXkeLrSoMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQCBJ2rSNSqJo+8cENzaEcc+
-# eDycDWXzCLg4QL5Ed6/VFkALpujj87l4wBI389ldvSyw8Nv0TMJEtoskRXVFXwu8
-# TtD86iFPbMnFEtc7dAdE7u7TdSpPR7Q7kjvJ9tQpmZicJPWI8/6z2XiNchnzDYBR
-# w8W5f7qkh/rXFqeWUeZfYAdyNr6hmch/Ev8D2UL629o+AVBVStiHEp8Q3nuzB6bq
-# MImXf0XNx7zxiCg7TBYBZicI03tdjqfcJh7Ilcqv2qSe0cm3LurCAvZOM89qld3h
-# mUzpWDIrr+6RyO6zArleJgqiy50Pb07z45bOx7m0woDdDr9WsO0HDh+SppOGkiyZ
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAgcdhglbW2Uo6uMt/afRft
+# gBFIFI46bnnIDYZop8KcpzcSFv2hvAakEKbEQd0mAI7lZg8JgROGiqDisShieQyf
+# m1Tzr+invZ/jHShJrXMcaTjmE6nCaee5i7YEvpEO7kgID3lp2gAULC4tURatZWe9
+# LvSPet74LRfRa0dZyuu6Jtt3fQWMOdRab7ynCNGO9wFaZBY93fq45qMZtQByTg15
+# 08YdE3EhPKhfPbYNBEETzRftycfKl9taIyF3Kt5yBqCGDMTxQTer2NZ5bcicNKTy
+# Z5dgOgD/dW3zDY7jjUWasrboFWkdtbejepmsGAncsCZPc6lYYwfq2z3XfiF0DjVv
 # SIG # End signature block
