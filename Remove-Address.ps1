@@ -64,13 +64,6 @@ try
 		{
 			continue;
 		}
-		Log-Debug -fn $fn -msg ("Removing IP Address '{0}' on Network '{1}'" -f $Object, $NetworkName )
-		# if( ( [System.Net.IPAddress]::tryparse($Object,[ref]$null) ) -and $Object -ne '0.0.0.0')
-		if( ![System.Net.IPAddress]::TryParse($Object, [ref] $null) )
-		{	
-			$e = New-CustomErrorRecord -m ("{0}: Removing IP address {1} FAILED. IP Address provided was null or not a valid." -f $NetworkName, $Object);
-			throw($gotoError);
-		}
 		Log-Debug -fn $fn -msg ('Retrieving address from Cumulus: {0} on Network: {1}' -f $Object, $NetworkName)
 		$aToBeDeleted = $svc.ApplicationData.Addresses.AddQueryOption('$filter',("Value eq '{0}'" -f $Object)).AddQueryOption('$top',1) | Select;
 		if($aToBeDeleted -is [CumulusWrapper.ApplicationData.Address])

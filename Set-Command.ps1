@@ -82,23 +82,16 @@ try
 	{
 		$Command.Description = $Description;
 	}
-	if($PSBoundParameters.ContainsKey('Parametes'))
+	if($PSBoundParameters.ContainsKey('Parameters'))
 	{
-		$Command.Parametes = $Parametes;
+		$Command.Parameters = $Parameters;
 	}
 	if($PSBoundParameters.ContainsKey('Status'))
 	{
 		$Command.Status = $Status;
 	}
 	$svc.ApplicationData.UpdateObject($Command);
-	$Status = $svc.ApplicationData.SaveChanges();
-	if( !$Status -or ($Status.StatusCode -NotIn 200..299) )
-	{
-		# ToDo - Failed to update Command object
-		$msg = 'Failed to update Command object: Name:{0} ID: {1} - Status Code: {2}' -f $Command.Name, $Command.ID, $Status.StatusCode;
-		$e = New-CustomErrorRecord -m $msg -cat InvalidData -o $Status;
-		throw($gotoError);
-	}
+	$OperationResponse = $svc.ApplicationData.SaveChanges();
 	Log-Debug -fn $fn -msg ('Update Command description success: Name:{0} ID: {1}' -f $Command.Name, $Command.ID)
 	
 	$OutputParameter = $true;
