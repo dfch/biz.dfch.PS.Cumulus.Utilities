@@ -60,17 +60,17 @@ Get-CumulusKeyNameValue | Select -First 5
 Key                               Name              Value
 ---                               ----              -----
 com.acme.infrastructure.inventory ApplicationSystem Application Server
-com.acme.infrastructure.inventory ApplicationSystem Genesys
+com.acme.infrastructure.inventory ApplicationSystem Exchange
 com.acme.infrastructure.inventory ApplicationSystem Other
 com.acme.infrastructure.inventory ApplicationSystem Print Server
 com.acme.infrastructure.inventory ApplicationSystem Term Server
 
 
 .EXAMPLE
+Get-CumulusKeyNameValue biz.dfch.infrastructure.inventory
+
 
 Gets all entris with Key 'biz.dfch.infrastructure.inventory'.
-
-Get-CumulusKeyNameValue biz.dfch.infrastructure.inventory
 
 Key                               Name       Value
 ---                               ----       -----
@@ -87,10 +87,9 @@ biz.dfch.infrastructure.inventory Status     Disposed
 
 
 .EXAMPLE
+Get-CumulusKeyNameValue biz.dfch.infrastructure.inventory ServerRole
 
 As previous example. Gets all entris with Key 'biz.dfch.infrastructure.inventory' but now also specifies Name 'ServerRole'.
-
-Get-CumulusKeyNameValue biz.dfch.infrastructure.inventory
 
 Key                               Name       Value
 ---                               ----       -----
@@ -100,10 +99,20 @@ biz.dfch.infrastructure.inventory ServerRole PROD
 
 
 .EXAMPLE
+Get-CumulusKeyNameValue biz.dfch.infrastructure.inventory ServerRole -First 2
+
+As previous example. Gets all entris with Key 'biz.dfch.infrastructure.inventory' and Name 'ServerRole' but only return first 2 entries.
+
+Key                               Name       Value
+---                               ----       -----
+biz.dfch.infrastructure.inventory ServerRole DEV
+biz.dfch.infrastructure.inventory ServerRole INT
+
+
+.EXAMPLE
+Get-CumulusKeyNameValue biz.dfch.infrastructure.inventory -As json-pretty
 
 As previous example. Gets all entris with Key 'biz.dfch.infrastructure.inventory' but now also specifies Name 'ServerRole' and also specify return format as 'json-pretty'.
-
-Get-CumulusKeyNameValue biz.dfch.infrastructure.inventory -As json-pretty
 
 [
   {
@@ -122,6 +131,12 @@ Get-CumulusKeyNameValue biz.dfch.infrastructure.inventory -As json-pretty
     "Value":  "PROD"
   }
 ]
+
+
+.EXAMPLE
+(Get-CumulusKeyNameValue ExistingKey NonExistingName -Select Value -DefaultValue "myDefaultValue").Value
+
+myDefaultValue
 
 
 .EXAMPLE
@@ -379,8 +394,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-KeyNameValue; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUjtZLfsrYPKDC97KnHwcc/u9z
-# 0S2gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUnQ6e+b5UZq8chrsaVP+nqHUy
+# JrGgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -478,25 +493,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-KeyNameValue; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSBg2VsOUO73zGHwUFo
-# mjEAFeTKLzANBgkqhkiG9w0BAQEFAASCAQBEAnAQMtGJ2MDtARxvSkt/GumJmD+6
-# ZGvT306D6jIPCrmvWQUEkgKqEn3LOZkNuGOh4PR2kO1x+psPluzN2l0mo78n4Q40
-# nbphFnr/yGlxa9wKfEbrKeN2qsc8tTWapvD+60NFxvHVr+uVq3F2C6tzgTVm8fpi
-# YzZF7AaufIgwajfZpJGqd74UNGJIlbbZGnW4WR5x9FCgCy+MgXaoINwSSwcypWyG
-# A7lLbOWb4ydj3BpIrXPVoq6RCIPAtSGqvyxMqFOq9RCEIbrHPs1CO/fYnW2LaTix
-# v1F9S2uoBf/b4oJGpI4LOjtUPzPpSiBCWhm3+hdixkORZlHMVXcBOINJoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSFeaVEHEz1vxRQIV3M
+# DsM8/cTbCzANBgkqhkiG9w0BAQEFAASCAQB55+IEeHEZurAcNjkRWnkH8/KP/LAL
+# vxROJJxN6YoINJmVbqpSYpgfcSFkIqjjCctD5yZEgk4wOEPGCPfA5Ad5BcBttViX
+# nOyv0g9u/xms/WtVM4TW5OHD0WtQ3B7QHQfcEOwKgpKlkce2OVRcv27wRc880zxN
+# WlspGpjFDuu1liGBPO60HitvWbs5ZP7vjpn+Rq3N3eFcpzm4oYJg1795VdG4r3RL
+# 9ZY4SXrwtQYi7xM3CuZGEQjeLtbplXXjJP/hOQSuNZkFLcI/d14EbE6X22q5HXxV
+# OpfaVtX2avZ8+WKi/Qrm6XC/x8YviYNd+2GiYxG67YHnIFY85wCBKJcboYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# NDExMDg0NFowIwYJKoZIhvcNAQkEMRYEFMsHGPArf77BwGXlx02fZteKryhrMIGd
+# NDExMTQ1NFowIwYJKoZIhvcNAQkEMRYEFCZycHqLhHnTIUFBQ9qLffbHANUCMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAQHJPBgEspOPUJoUfVaUaF
-# 4y/juJKdJnXKpfcdawNrhIAEbKJJJHp9i3YL4Kx5DKUX3YDhZW79/N36cFxr0BVg
-# ypCy70LeJqi7XHVnlqDjvk4we8uje6v4Nljygw8EDtVwgwg5L4S1Av8dFhB9QCoY
-# NqgFOJzxhOio6/sKipe5zCP1iYtdCKOFi3KuSV2XVH7+lr/6hreb7vdl0uzfkFk1
-# jeZuoqQTyTHOYwP+ZaOxCrNwiC/AOTh9Svi5UsP+CeEFf0bqO3PxdAD67zlex5Ge
-# CsrZ7dgQut9i9qxuKRcibOVik0mdZmA3C0yRUvgwZ7ju+gsCu60ORArqGWKDo+Le
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAXFr8r5bxpTkiL92qrIQlD
+# 8yjYpx0YZXDFTbrF5iLSVzOqw8cu7ebxTTr5qpkGtxO3BpKZb9UnnBfpGDPTH4vy
+# E8Y5JoQmpeNH6Am9/OPp0QhYIy7JKip8EBAjsQF7aVsOBhESaPAZKq9Rfa8HkyFT
+# /6Z7Mux4+f31gAPy44q20YQj+29KwBFubiNXKE7FjIngXwqWiw78BVSiS1lKZtzl
+# jcQ8RZDOfhih4tPl/QjT6F0/0qIYIFqaESC4YepVRrgTzxTfV7LZH31GNa0NSJOd
+# 8dMN6oNixcI05eUWdGNK0CgasQVgmm80c9JzSzkk9DrTUyiFZxrGkvbNCH6WXH0d
 # SIG # End signature block
