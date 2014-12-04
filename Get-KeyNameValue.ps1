@@ -59,11 +59,11 @@ Get-CumulusKeyNameValue | Select -First 5
 
 Key                               Name              Value
 ---                               ----              -----
-com.ebay.infrastructure.inventory ApplicationSystem Application Server
-com.ebay.infrastructure.inventory ApplicationSystem Genesys
-com.ebay.infrastructure.inventory ApplicationSystem Other
-com.ebay.infrastructure.inventory ApplicationSystem Print Server
-com.ebay.infrastructure.inventory ApplicationSystem Term Server
+com.acme.infrastructure.inventory ApplicationSystem Application Server
+com.acme.infrastructure.inventory ApplicationSystem Genesys
+com.acme.infrastructure.inventory ApplicationSystem Other
+com.acme.infrastructure.inventory ApplicationSystem Print Server
+com.acme.infrastructure.inventory ApplicationSystem Term Server
 
 
 .EXAMPLE
@@ -146,8 +146,6 @@ Online Version: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-KeyNameValue/
 
 See module manifest for dependencies and further requirements.
 
-.HELPURI
-
 #>
 [CmdletBinding(
     SupportsShouldProcess = $false
@@ -158,7 +156,8 @@ See module manifest for dependencies and further requirements.
 	,
 	DefaultParameterSetName = 'list'
 )]
-Param (
+PARAM 
+(
 	[Parameter(Mandatory = $false, Position = 0, ParameterSetName = 'name')]
 	[Alias("k")]
 	[string] $Key
@@ -186,6 +185,14 @@ Param (
 	# [Switch] $Descending = $false
 	# ,
 	[Parameter(Mandatory = $false)]
+	[Alias("top")]
+	[int] $First
+	,
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
+	[Alias("default")]
+	$DefaultValue
+	,
+	[Parameter(Mandatory = $false)]
 	[Alias("Services")]
 	[hashtable] $svc = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services
 	,
@@ -196,7 +203,7 @@ Param (
 	[Parameter(Mandatory = $false)]
 	[alias("ReturnFormat")]
 	[string] $As = 'default'
-) # Param
+)
 
 BEGIN {
 
@@ -204,22 +211,26 @@ $datBegin = [datetime]::Now;
 [string] $fn = $MyInvocation.MyCommand.Name;
 Log-Debug -fn $fn -msg ("CALL. ls '{0}'. Name '{1}'." -f ($svc -is [Object]), $Name) -fac 1;
 
-} # BEGIN
-PROCESS {
+} 
+# BEGIN
+PROCESS 
+{
 
 # Default test variable for checking function response codes.
 [Boolean] $fReturn = $false;
 # Return values are always and only returned via OutputParameter.
 $OutputParameter = $null;
 
-try {
+try 
+{
 
 	# Parameter validation
-	if($svc.ApplicationData -isnot [CumulusWrapper.ApplicationData.ApplicationData]) {
+	if($svc.ApplicationData -isnot [CumulusWrapper.ApplicationData.ApplicationData]) 
+	{
 		$msg = "svc: Parameter validation FAILED. Connect to the server before using the Cmdlet.";
 		$e = New-CustomErrorRecord -m $msg -cat InvalidData -o $svc.ApplicationData;
 		throw($gotoError);
-	} # if
+	}
 
 	$OrderBy = $OrderBy | Select -Unique;
 	$OrderByString = [string]::Join(',', $OrderBy);
@@ -230,75 +241,114 @@ try {
 		# $OrderByDirection = 'asc'; 
 	# } #if
 	
-	if($PSCmdlet.ParameterSetName -eq 'list') {
+	if($PSCmdlet.ParameterSetName -eq 'list') 
+	{
 		# $OutputParameter = $svc.ApplicationData.KeyNameValues.AddQueryOption('$orderby', ('{0} {1}' -f $OrderByString, $OrderByDirection));
-		$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$orderby', $OrderByString) | Select -Property $Select -Unique;
-	} else {
+		if($PSBoundParameters.ContainsKey('First'))
+		{
+			$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$orderby', $OrderByString).AddQueryOption('$top',$First) | Select -Property $Select -Unique;
+		}
+		else
+		{
+			$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$orderby', $OrderByString) | Select -Property $Select -Unique;
+		}
+	} 
+	else 
+	{
 		$Exp = @();
-		if($Key) { 
+		if($Key) 
+		{ 
 			$Key = $Key.ToLower();
 			$Exp += ("(tolower(Key) eq '{0}')" -f $Key);
-		} # if
-		if($Name) { 
+		}
+		if($Name) 
+		{ 
 			$Key = $Name.ToLower();
 			$Exp += ("(tolower(Name) eq '{0}')" -f $Name);
-		} # if
-		if($Value) { 
+		}
+		if($Value) 
+		{ 
 			$Value = $Value.ToLower();
 			$Exp += ("(tolower(Value) eq '{0}')" -f $Value);
-		} # if
+		}
 		$FilterExpression = [String]::Join(' and ', $Exp);
 
-		$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$filter',$FilterExpression).AddQueryOption('$orderby', $OrderByString) | Select -Property $Select -Unique;
-	} # if
+		if($PSBoundParameters.ContainsKey('First'))
+		{
+			$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$filter',$FilterExpression).AddQueryOption('$orderby', $OrderByString).AddQueryOption('$top',$First) | Select -Property $Select -Unique;
+		}
+		else
+		{
+			$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$filter',$FilterExpression).AddQueryOption('$orderby', $OrderByString) | Select -Property $Select -Unique;
+		}
+		if($PSBoundParameters.ContainsKey('DefaultValue') -And !$knv)
+		{
+			$knv = $DefaultValue;
+		}
+	}
 
 	$r = $knv;
-	switch($As) {
-	'xml' { $OutputParameter = (ConvertTo-Xml -InputObject $r).OuterXml; }
-	'xml-pretty' { $OutputParameter = Format-Xml -String (ConvertTo-Xml -InputObject $r).OuterXml; }
-	'json' { $OutputParameter = ConvertTo-Json -InputObject $r -Compress; }
-	'json-pretty' { $OutputParameter = ConvertTo-Json -InputObject $r; }
-	Default { $OutputParameter = $r; }
-	} # switch
+	switch($As) 
+	{
+		'xml' { $OutputParameter = (ConvertTo-Xml -InputObject $r).OuterXml; }
+		'xml-pretty' { $OutputParameter = Format-Xml -String (ConvertTo-Xml -InputObject $r).OuterXml; }
+		'json' { $OutputParameter = ConvertTo-Json -InputObject $r -Compress; }
+		'json-pretty' { $OutputParameter = ConvertTo-Json -InputObject $r; }
+		Default { $OutputParameter = $r; }
+	} 
 	$fReturn = $true;
 
-} # try
-catch {
-	if($gotoSuccess -eq $_.Exception.Message) {
+}
+catch 
+{
+	if($gotoSuccess -eq $_.Exception.Message) 
+	{
 		$fReturn = $true;
-	} else {
+	} 
+	else 
+	{
 		[string] $ErrorText = "catch [$($_.FullyQualifiedErrorId)]";
 		$ErrorText += (($_ | fl * -Force) | Out-String);
 		$ErrorText += (($_.Exception | fl * -Force) | Out-String);
 		$ErrorText += (Get-PSCallStack | Out-String);
 		
-		if($_.Exception -is [System.Net.WebException]) {
+		if($_.Exception -is [System.Net.WebException]) 
+		{
 			Log-Critical $fn ("[WebException] Request FAILED with Status '{0}'. [{1}]." -f $_.Status, $_);
 			Log-Debug $fn $ErrorText -fac 3;
-		} # [System.Net.WebException]
-		else {
+		} 
+		else 
+		{
 			Log-Error $fn $ErrorText -fac 3;
-			if($gotoError -eq $_.Exception.Message) {
+			if($gotoError -eq $_.Exception.Message) 
+			{
 				Log-Error $fn $e.Exception.Message;
 				$PSCmdlet.ThrowTerminatingError($e);
-			} elseif($gotoFailure -ne $_.Exception.Message) { 
+			} 
+			elseif($gotoFailure -ne $_.Exception.Message) 
+			{ 
 				Write-Verbose ("$fn`n$ErrorText"); 
-			} else {
+			} 
+			else 
+			{
 				# N/A
-			} # if
-		} # other exceptions
+			}
+		} 
 		$fReturn = $false;
 		$OutputParameter = $null;
-	} # !$gotoSuccess
-} # catch
-finally {
+	} 
+} 
+finally 
+{
 	# Clean up
 	# N/A
-} # finally
+}
 
-} # PROCESS
+} 
+# PROCESS
 
-END {
+END 
+{
 
 $datEnd = [datetime]::Now;
 Log-Debug -fn $fn -msg ("RET. fReturn: [{0}]. Execution time: [{1}]ms. Started: [{2}]." -f $fReturn, ($datEnd - $datBegin).TotalMilliseconds, $datBegin.ToString('yyyy-MM-dd HH:mm:ss.fffzzz')) -fac 2;
@@ -306,8 +356,10 @@ Log-Debug -fn $fn -msg ("RET. fReturn: [{0}]. Execution time: [{1}]ms. Started: 
 # Return values are always and only returned via OutputParameter.
 return $OutputParameter;
 
-} # END
-}
+} 
+# END
+
+} # function
 if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-KeyNameValue; } 
 
 <#
@@ -327,8 +379,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-KeyNameValue; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUDUVB2yzIoDKhBPendkLiKDbU
-# ItygghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUjtZLfsrYPKDC97KnHwcc/u9z
+# 0S2gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -426,25 +478,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-KeyNameValue; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTtmRkbx5F346b0BgJa
-# nqugYWkkojANBgkqhkiG9w0BAQEFAASCAQBZaXI1CNsMDhS/5eAn/mEHIwfphG/G
-# 0Br71iKOrenAleDuQUerszxUNeeB1+x4rkDMgvBFzpNrpZKPXghIVwI/QYWsr67X
-# y+jvAyB62gVppiMQ5H4/LvjiT093nBrw/SRIi3YrGUmIS06NP0Hzazw5rbptAFk1
-# 4WtnmnCZuT7KlnavCFHoY5eXhvbkbVS6V0koOuyBuu50LZ8oXsxmbtZQ5MiRldsR
-# Ddabht802sQw/kskLEaJM4tAWdpZIUiljZZWP9OC++fE73YdPrw04FAadPY+r0ck
-# Si1GoQQvpJ/qwuZjvqeK7oMC+MefMY5ilvu/hV4ROSxoguboJprNAffxoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSBg2VsOUO73zGHwUFo
+# mjEAFeTKLzANBgkqhkiG9w0BAQEFAASCAQBEAnAQMtGJ2MDtARxvSkt/GumJmD+6
+# ZGvT306D6jIPCrmvWQUEkgKqEn3LOZkNuGOh4PR2kO1x+psPluzN2l0mo78n4Q40
+# nbphFnr/yGlxa9wKfEbrKeN2qsc8tTWapvD+60NFxvHVr+uVq3F2C6tzgTVm8fpi
+# YzZF7AaufIgwajfZpJGqd74UNGJIlbbZGnW4WR5x9FCgCy+MgXaoINwSSwcypWyG
+# A7lLbOWb4ydj3BpIrXPVoq6RCIPAtSGqvyxMqFOq9RCEIbrHPs1CO/fYnW2LaTix
+# v1F9S2uoBf/b4oJGpI4LOjtUPzPpSiBCWhm3+hdixkORZlHMVXcBOINJoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
-# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTEy
-# NTE2MjUyOFowIwYJKoZIhvcNAQkEMRYEFLWCpd3T0P3xLRqNNsVNSnWTT5QuMIGd
+# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
+# NDExMDg0NFowIwYJKoZIhvcNAQkEMRYEFMsHGPArf77BwGXlx02fZteKryhrMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQADWLicgouLj0DBEDLwYrJj
-# NvT5vdILdUmLiHjnwfRpQY6cHcetC2UfdYz5kceVZ9UWJ/0Qi3hneDonAxj4G6AW
-# IzeD0QzBznADX3snP7N9M1B/27kRZFIlCG8SrXEWHsJWiCdQog7aBgcBTv1waUeO
-# Ml/qOYZItOqTiaMD0USmrc56OS/6Ok2bofxS4iQagqr3Ak1PGrsntXm7xJusB5wh
-# RXRv8bGXl2Y+SAUkEaGFqWdsH1C1P8gWsvuPDKQn6Q+qBbjt1jv0Tye/OIt1BZU6
-# EaLU7OxtzRSJahHAWq6ioEOJRQVoPiCucrIrTbYCvDxUs9+7Ez3Gx9E6s96pg63p
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAQHJPBgEspOPUJoUfVaUaF
+# 4y/juJKdJnXKpfcdawNrhIAEbKJJJHp9i3YL4Kx5DKUX3YDhZW79/N36cFxr0BVg
+# ypCy70LeJqi7XHVnlqDjvk4we8uje6v4Nljygw8EDtVwgwg5L4S1Av8dFhB9QCoY
+# NqgFOJzxhOio6/sKipe5zCP1iYtdCKOFi3KuSV2XVH7+lr/6hreb7vdl0uzfkFk1
+# jeZuoqQTyTHOYwP+ZaOxCrNwiC/AOTh9Svi5UsP+CeEFf0bqO3PxdAD67zlex5Ge
+# CsrZ7dgQut9i9qxuKRcibOVik0mdZmA3C0yRUvgwZ7ju+gsCu60ORArqGWKDo+Le
 # SIG # End signature block
