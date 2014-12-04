@@ -6,7 +6,6 @@ function Get-KeyNameValue {
 Retrieves keyed name/value pairs from the Cumulus server.
 
 
-
 .DESCRIPTION
 
 Retrieves keyed name/value pairs from the Cumulus server.
@@ -14,41 +13,14 @@ Retrieves keyed name/value pairs from the Cumulus server.
 The K/N/V store stores arbitrary data that can be selected by either key, name, value or a combination of both. Besides specifying a selection you can furthermore define the order, the selected columns and the return format.
 
 
-
 .OUTPUTS
 
 default | json | json-pretty | xml | xml-pretty
 
 
-
 .INPUTS
 
 You basically specify key, name and value to be retrieved. If one or more of these parameters are omitted all entities are returned that match these criteria.
-
-
-
-.PARAMETER Key
-
-Specifies the Key property of the entity. Most of the time this will be a specifier like 'cumulus.topic.subtopic'.
-
-
-
-.PARAMETER Name
-
-Specifies the Name property of the entity.
-
-
-
-.PARAMETER Value
-
-Specifies the Name property of the entity.
-
-
-
-.PARAMETER OrderBy
-
-Specifies the order of the returned entites. You can specify more than one property (e.g. Key and Name).
-
 
 
 .EXAMPLE
@@ -140,10 +112,21 @@ myDefaultValue
 
 
 .EXAMPLE
+(Get-CumulusKeyNameValue biz.dfch.infrastructure.inventory ServerTier -Select Value).Value
 
 Gets all entris with Key 'biz.dfch.infrastructure.inventory' and Name 'ServerTier' but only return the Value.
 
-(Get-CumulusKeyNameValue biz.dfch.infrastructure.inventory ServerTier -Select Value).Value
+Tier 2
+Tier 3
+Tier 4
+
+
+.EXAMPLE
+Get-CumulusKeyNameValue biz.dfch.infrastructure.inventory ServerTier -ValueOnly
+
+As previous example. Gets all entris with Key 'biz.dfch.infrastructure.inventory' 
+and Name 'ServerTier' but only return the Value. This example makes use of the 
+new 'ValueOnly' switch that facilitates the return of values only.
 
 Tier 2
 Tier 3
@@ -173,47 +156,63 @@ See module manifest for dependencies and further requirements.
 )]
 PARAM 
 (
+	# Specifies the Key property of the entity.
 	[Parameter(Mandatory = $false, Position = 0, ParameterSetName = 'name')]
 	[Alias("k")]
 	[string] $Key
 	,
+	# Specifies the Name property of the entity.
 	[Parameter(Mandatory = $false, Position = 1, ParameterSetName = 'name')]
 	[Alias("n")]
 	[string] $Name
 	,
+	# Specifies the Value property of the entity.
 	[Parameter(Mandatory = $false, Position = 2, ParameterSetName = 'name')]
 	[Alias("v")]
 	[string] $Value
 	,
+	# Specifies the order of the returned entites. You can specify more than one property (e.g. Key and Name).
 	[ValidateSet('Key', 'Name', 'Value')]
 	[Parameter(Mandatory = $false, Position = 3)]
 	[string[]] $OrderBy = @('Key','Name','Value')
 	,
+	# Specifies what to return from the search
 	[ValidateSet('Key', 'Name', 'Value')]
 	[Parameter(Mandatory = $false, Position = 4)]
 	[Alias("s")]
 	[Alias("Return")]
 	[string[]] $Select = @('Key','Name','Value')
 	,
+	# Specifies to return only values without header information. 
+	# This parameter takes precendes over the 'Select' parameter.
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
+	[Alias("HideTableHeaders")]
+	[switch] $ValueOnly
+	,
 	# [Parameter(Mandatory = $false)]
 	# [Alias("Desc")]
 	# [Switch] $Descending = $false
 	# ,
+	# Limits the output to the specified number of entries
 	[Parameter(Mandatory = $false)]
 	[Alias("top")]
 	[int] $First
 	,
+	# This value is only returned if the regular search would have returned no results
 	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
 	[Alias("default")]
 	$DefaultValue
 	,
+	# Specifies a references to the cumulus endpoints
 	[Parameter(Mandatory = $false)]
 	[Alias("Services")]
 	[hashtable] $svc = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services
 	,
+	# Specifies to return all existing KNV entities
 	[Parameter(Mandatory = $false, ParameterSetName = 'list')]
 	[switch] $ListAvailable = $false
 	,
+	# Specifies the return format of the search
 	[ValidateSet('default', 'json', 'json-pretty', 'xml', 'xml-pretty')]
 	[Parameter(Mandatory = $false)]
 	[alias("ReturnFormat")]
@@ -250,6 +249,10 @@ try
 	$OrderBy = $OrderBy | Select -Unique;
 	$OrderByString = [string]::Join(',', $OrderBy);
 	$Select = $Select | Select -Unique;
+	if($ValueOnly)
+	{
+		$Select = 'Value';
+	}
 	# if($Descending) {
 		# $OrderByDirection = 'desc'; 
 	# } else {
@@ -261,7 +264,7 @@ try
 		# $OutputParameter = $svc.ApplicationData.KeyNameValues.AddQueryOption('$orderby', ('{0} {1}' -f $OrderByString, $OrderByDirection));
 		if($PSBoundParameters.ContainsKey('First'))
 		{
-			$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$orderby', $OrderByString).AddQueryOption('$top',$First) | Select -Property $Select -Unique;
+			$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$orderby', $OrderByString).AddQueryOption('$top', $First) | Select -Property $Select -Unique;
 		}
 		else
 		{
@@ -290,18 +293,22 @@ try
 
 		if($PSBoundParameters.ContainsKey('First'))
 		{
-			$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$filter',$FilterExpression).AddQueryOption('$orderby', $OrderByString).AddQueryOption('$top',$First) | Select -Property $Select -Unique;
+			$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$filter',$FilterExpression).AddQueryOption('$orderby', $OrderByString).AddQueryOption('$top', $First) | Select -Property $Select -Unique;
 		}
 		else
 		{
 			$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$filter',$FilterExpression).AddQueryOption('$orderby', $OrderByString) | Select -Property $Select -Unique;
+		}
+		if('Value' -eq $Select -And $ValueOnly)
+		{
+			$knv = ($knv).Value;
 		}
 		if($PSBoundParameters.ContainsKey('DefaultValue') -And !$knv)
 		{
 			$knv = $DefaultValue;
 		}
 	}
-
+	
 	$r = $knv;
 	switch($As) 
 	{
@@ -394,8 +401,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-KeyNameValue; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUnQ6e+b5UZq8chrsaVP+nqHUy
-# JrGgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUsc1Sm39RsKR4u+oL7WG/691h
+# YT+gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -493,25 +500,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-KeyNameValue; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSFeaVEHEz1vxRQIV3M
-# DsM8/cTbCzANBgkqhkiG9w0BAQEFAASCAQB55+IEeHEZurAcNjkRWnkH8/KP/LAL
-# vxROJJxN6YoINJmVbqpSYpgfcSFkIqjjCctD5yZEgk4wOEPGCPfA5Ad5BcBttViX
-# nOyv0g9u/xms/WtVM4TW5OHD0WtQ3B7QHQfcEOwKgpKlkce2OVRcv27wRc880zxN
-# WlspGpjFDuu1liGBPO60HitvWbs5ZP7vjpn+Rq3N3eFcpzm4oYJg1795VdG4r3RL
-# 9ZY4SXrwtQYi7xM3CuZGEQjeLtbplXXjJP/hOQSuNZkFLcI/d14EbE6X22q5HXxV
-# OpfaVtX2avZ8+WKi/Qrm6XC/x8YviYNd+2GiYxG67YHnIFY85wCBKJcboYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQVhN2VK0g24cQMbZFI
+# 4ERaCspHiTANBgkqhkiG9w0BAQEFAASCAQCcT54VfMGzGCAhgByY/4rhbiMT8Ukj
+# B/UOUFMAdiGFrUAJrOK9krUjFkmayRMBHQLxSyr6MJJv8KB7GQvY376tS3e9Uddk
+# /gi9KjOhBOux/E4tXaR7pbVQbtNCP0BISEXf6mci7BCIdowpsCp7seT5ReL4DN18
+# g7RdH3i1Z3PGHUXfuKcwxDlIIvWt73RcnHF8nqf92XwAA/+OPrttDELj4AJpvhkZ
+# XtwebNMd582QP9SnEAGaVyG0UpqxIMDkQ6TRaGXf+m3Hzh8xtEAHpMOCe8G5qLiI
+# lbyz8R9qTelybj1HKDoYuU+kCzhSmynJQae8Kq4kbgbuJIFSqC42vQ/ZoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# NDExMTQ1NFowIwYJKoZIhvcNAQkEMRYEFCZycHqLhHnTIUFBQ9qLffbHANUCMIGd
+# NDExNTkwN1owIwYJKoZIhvcNAQkEMRYEFMgM6QnkxdRlC0YHZXOG2UxP1othMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAXFr8r5bxpTkiL92qrIQlD
-# 8yjYpx0YZXDFTbrF5iLSVzOqw8cu7ebxTTr5qpkGtxO3BpKZb9UnnBfpGDPTH4vy
-# E8Y5JoQmpeNH6Am9/OPp0QhYIy7JKip8EBAjsQF7aVsOBhESaPAZKq9Rfa8HkyFT
-# /6Z7Mux4+f31gAPy44q20YQj+29KwBFubiNXKE7FjIngXwqWiw78BVSiS1lKZtzl
-# jcQ8RZDOfhih4tPl/QjT6F0/0qIYIFqaESC4YepVRrgTzxTfV7LZH31GNa0NSJOd
-# 8dMN6oNixcI05eUWdGNK0CgasQVgmm80c9JzSzkk9DrTUyiFZxrGkvbNCH6WXH0d
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQCY9bjKKxToLYNGtdOOZzc0
+# 1BE+O3Y2rTc4l10Wzt9TSSjvlAE/do6KXkS9tTukM0TNKQ8kJ4ToAYTKW2BB8m6Z
+# bjGCv0VwWTFTRlom9s0knMgNvhDEJuKl6gNC6/0OQt3oAkUn3f6oyxlWP7A8Us4W
+# rzFWwGj72nPSyVABPokoVSPDRVVoA4bSI+mOdXJ1yCDe3FyyERyfsodVUybBCPeJ
+# MRCN1tp7o1oTL+wdzC1EuE+A5cOc7sHXN/F9Z4XM/H4JiY+IISS2dNpv/ibJLGfr
+# rfLsHD4XwiDIP2nQScGsIftqXcZXG5b2O9FlUcgWJCONaQ9DXvwg/Ix2V2sftv52
 # SIG # End signature block
