@@ -39,6 +39,9 @@ See https://github.com/dfch/biz.dfch.PS.Cumulus.Utilities/wiki for a detailed de
   <files xmlns="">
     <file src="biz.dfch.PS.Cumulus.Utilities.psm1" target="biz.dfch.PS.Cumulus.Utilities.psm1" />
     <file src="biz.dfch.PS.Cumulus.Utilities.psd1" target="biz.dfch.PS.Cumulus.Utilities.psd1" />
+    <file src="LICENSE" target="LICENSE" />
+    <file src="NOTICE" target="NOTICE" />
+    <file src="README.md" target="README.md" />
     <file src="biz.dfch.PS.Cumulus.Utilities.xml" target="biz.dfch.PS.Cumulus.Utilities.xml" />
     <file src="Microsoft.Data.Edm.dll" target="Microsoft.Data.Edm.dll" />
     <file src="Microsoft.Data.OData.dll" target="Microsoft.Data.OData.dll" />
