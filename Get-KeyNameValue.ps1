@@ -133,6 +133,60 @@ Tier 3
 Tier 4
 
 
+.EXAMPLE
+PS > Get-KeyNameValue ConvertFromJsonTest
+
+Key         Name  Value
+---         ----  -----
+ConvertFromJsonTest Name1 ["arr11","arr12"]
+ConvertFromJsonTest Name2 ["arr21","arr22"]
+ConvertFromJsonTest Name3 ["arr31","arr32"]
+
+PS > Get-KeyNameValue ConvertFromJsonTest -ValueOnly
+["arr11","arr12"]
+["arr21","arr22"]
+["arr31","arr32"]
+
+PS > Get-KeyNameValue ConvertFromJsonTest -ValueOnly -Convert json
+arr11
+arr12
+arr21
+arr22
+arr31
+arr32
+
+PS > Get-KeyNameValue ConvertFromJsonTest -ValueOnly -Convert json -First 1
+arr11
+arr12
+
+PS > Set-KeyNameValue ConvertFromJsonTest Name20 Non-Valid-Json
+PS > Set-KeyNameValue ConvertFromJsonTest Name20 Non-Valid-Json -CreateIfNotExist;
+PS > Get-KeyNameValue ConvertFromJsonTest -ValueOnly
+["arr11","arr12"]
+["arr21","arr22"]
+Non-Valid-Json
+["arr31","arr32"]
+PS > Get-KeyNameValue ConvertFromJsonTest -ValueOnly -Convert json -as json-pretty
+[
+  [
+    "arr11",
+    "arr12"
+  ],
+  [
+    "arr21",
+    "arr22"
+  ],
+  "Non-Valid-Json",
+  [
+    "arr31",
+    "arr32"
+  ]
+]
+
+This example shows how to decode JSON values while querying them from the KNV store.
+When the returned data is not JSON it returned unchanged
+
+
 .LINK
 
 Online Version: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-KeyNameValue/
@@ -188,6 +242,13 @@ PARAM
 	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
 	[Alias("HideTableHeaders")]
 	[switch] $ValueOnly
+	,
+	# Specifies to return only values without header information. 
+	# This parameter takes precendes over the 'Select' parameter.
+	[ValidateSet('json')]
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
+	[Alias("Convert")]
+	[string] $ConvertFrom
 	,
 	# [Parameter(Mandatory = $false)]
 	# [Alias("Desc")]
@@ -307,6 +368,22 @@ try
 		{
 			$knv = $DefaultValue;
 		}
+		if('Value' -eq $Select -And $ConvertFrom)
+		{
+			$knvtemp = New-Object System.Collections.ArrayList;
+			foreach($item in $knv)
+			{
+				try
+				{
+					$null = $knvtemp.Add((ConvertFrom-Json -InputObject $item));
+				}
+				catch
+				{
+					$null = $knvtemp.Add($item);
+				}
+			}
+			$knv = $knvtemp.ToArray();
+		}
 	}
 	
 	$r = $knv;
@@ -401,8 +478,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-KeyNameValue; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUyMwk46pi8TIlGiD1CS8cslKy
-# KDagghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUJDzsFHmfoe5hy1iOOqCbiy0s
+# PKugghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -500,25 +577,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-KeyNameValue; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQZCEDUlihnrMy0yuv6
-# McvVfxh0yTANBgkqhkiG9w0BAQEFAASCAQAk8vlyAltUjhcaxX+hJtVVyNJeIDFQ
-# /TPKaYHMP9xwkhXffk8jvXXzpEONzocajFTs9Ig1Qo8epE7V2Z42GhnnyYQ6M16z
-# qI4riheFnFDbtLh40znNHu8ygByV1pDaqJzuapPVFkvwD7QiAZEZEdFCgwYTjpmY
-# 4WrqdyrCvxQU1XNeidNW1dMZT87YFy+38w8ynhBfqmajLP6fRKdXPNoJfZeuZ9rC
-# 8Bu/qFR93wqi3yNTWFPeUHP7qmXzK28j4miGEvHrL35WlbQ8C9kByPa9NoPQkN10
-# vsO7nCLkGhDeBC0NkuPY7ktjOb/bS8+AzTL6AO0UExTBZem38LTbL7tEoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSgXJvqrrgkDKcp1E21
+# vVxa6IrjLDANBgkqhkiG9w0BAQEFAASCAQCsqhLptFo9C2qhD7qvxvNZK6Pi06Ls
+# dkcQgCXRGuLzFU/yMgRU6Vl2nxMh0pLdgpdKP3OcadCG5QWM0co82YSsrUfoca+6
+# 5KW+BhI3ucMrvTbnGGH91c+LMHlWmoqZMRgEr6kvrbnMJeQV+Mm79EaRdDSbgF2k
+# hg+QrSRJBfdsTx9SaGWxMlPEDbK45B/w38TaSIeEG3b+KFyx+qwIXLT1TMQLTxke
+# dbpflsEf3kkrtLtVkQo+n2Ecs6yWRXomE+b2aa6SmbAIVj6YGDEbx/gQE3M7S8Vv
+# Iti8C7iKIyEc3VbCXiNQhw1uV4aAE/O5XOjaX4Kww/DvUFweS+6niBzooYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# NDEyMTAzNVowIwYJKoZIhvcNAQkEMRYEFLAa8j2fNbGdw3YvAX8NtQpzS/LaMIGd
+# NDIwMjgzNFowIwYJKoZIhvcNAQkEMRYEFK6m8pLSK1vr8015fCfoABusgtatMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQCVDIgwEJXUvDDxfYT4MGbU
-# 5BLEb70vhE24ki8vBfHlLT5CKboZTiVK/1Ci2aUrAyG1nMX46Ehscy50HpHYyMoG
-# v4ODAyVrXx/ACGk2COr0DdzqtnfLyTgYvJD/IfM4LMxrt6wHb4pp3FmuD+hvMMkO
-# 19xFzkzca0i/TBfWblOY1FyZpi9J5K7zJPPGxAUZ20b+r5ETy5Fx8VHakvozMGk4
-# bhL9TSqoTbWNIsevhRTXWf6veoOOybu7PXBZ/zet84e2gDqwBZ4LtB/BS23iWVB7
-# 43PKMgqZZ6YLAWxMRZFynS3O1Py8KloQzYeZqAOwUjUwHJFts21HIvfcsKxWIP3w
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAQ/bXbONrft6MmDXEX98Xt
+# IerZO6FuKaGzKtWpqYEv35dCnmpU+drEJNWYsJYVKytb+mAnKNbOSYulkh1jpbFm
+# sfSZkDUnn+w481lhUONfkr3eMHG33CAaZkgbQy+75j1p+fvTyQ2iUqQqv0ItkD10
+# /COGqmma4YMX/ZbmMXyk+gcbfMsCJ+2BEqVqFwYTsucccL01q3yv1RY7d9T8D2Cj
+# NQJ7D2HA23WViNgcb7ZRv2nzXjtTlS2Tey3ya9wFWzME+Z5jCM9V6MGkPJDc6OxQ
+# V6BJV0ECtzSEV85Y5aE8OVlPZjjSlFzY3linxZVHFv6V78cVdYmWHpDS/E/qzLg+
 # SIG # End signature block
