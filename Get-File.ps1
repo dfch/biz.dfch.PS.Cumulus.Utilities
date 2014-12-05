@@ -1,4 +1,24 @@
 function Get-File {
+<#
+.SYNOPSIS
+
+Retrieves a file from the file store.
+
+
+.DESCRIPTION
+
+Retrieves a file from the file store.
+
+You can retrieve any files and versions from the file store. By default only the latest version is returned.
+
+
+.EXAMPLE
+Get-File "myFile" -Version 4
+
+Retrieves the file 'myFile' with the version '4' from the file store.
+
+
+#>
 [CmdletBinding(
     SupportsShouldProcess = $false
 	,
@@ -9,39 +29,49 @@ function Get-File {
 	DefaultParameterSetName = 'list'
 )]
 PARAM (
+	# Specifies the name of the file
 	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'name')]
 	[Alias("n")]
 	[string] $Name
 	,
+	# Filter by version
 	[Parameter(Mandatory = $false, Position = 1, ParameterSetName = 'name')]
 	[int] $Version
 	,
+	# Filter by creation date
 	[Parameter(Mandatory = $false, Position = 2, ParameterSetName = 'name')]
 	[string] $CreatedBy
 	,
+	# Filter by modification date
 	[Parameter(Mandatory = $false, Position = 3, ParameterSetName = 'name')]
 	[string] $ModifiedBy
 	,
+	# Specify the attribute of the file to return
 	[ValidateSet('Name', 'Version', 'Description', 'Value', 'Checksum')]
 	[Parameter(Mandatory = $false, Position = 4, ParameterSetName = 'name')]
 	[Alias("s")]
 	[Alias("Return")]
 	[string[]] $Select = @()
 	,
+	# Service reference to Cumulus
 	[Parameter(Mandatory = $false)]
 	[Alias("Services")]
 	[hashtable] $svc = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services
 	,
+	# Indicates to return all file information
 	[Parameter(Mandatory = $false, ParameterSetName = 'list')]
 	[switch] $ListAvailable = $false
 	,
+	# Indicates to return all version information
 	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
 	[Alias("a")]
 	[switch] $AllVersions = $false
 	,
+	# Specifies to perform an exact search on the given name
 	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
 	[switch] $ExactName = $true
 	,
+	# Specifies the return format of the Cmdlet
 	[ValidateSet('default', 'json', 'json-pretty', 'xml', 'xml-pretty')]
 	[Parameter(Mandatory = $false)]
 	[alias("ReturnFormat")]
@@ -185,8 +215,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-File; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUntGZpcwC5tfVVoode/fewSay
-# iYygghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUWA1E7axO59tdf2Y3kalrMw1g
+# uF6gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -284,25 +314,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-File; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRbXVQENw6wHevR05wW
-# 61XH99dDIzANBgkqhkiG9w0BAQEFAASCAQAWToRJRTfa3COP9o1RmBN5WDkZ3nOg
-# mndFtukSvpK/fVoqRKbSLM7scO6McHiteFn3HbySOnMBrseCpUsTmi9HckKqvNFS
-# QtQnpNU9WuE6WQ+SGQ+kzNEz7BRNfAieN4qlrTg1t5jLI/bH7Kdj6gMcpqbp8tCQ
-# lVYhjUFTZ6RSSv5ERr+lSKtnIfXMv33smiv4vG25KZpgDsqmSRqepmkGQHPhKDYf
-# OkMr2tjpy9DuzvdfaEGttyQvO/vCMyd7iL897jNX8P/z3UmzPRWwFts8myjgH+bM
-# OTdmxOAZh6T9AtHed55w+ISfMUusS2hMwwK7ONIkG0A/5pmhGj9SmXqSoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQCRPh94Ld+c6c47iVv
+# Pstt6wnfxDANBgkqhkiG9w0BAQEFAASCAQDHsowLuCxOE0Iuwwp5nxVG8P8xO1AD
+# PKsGIohxKuQClVjA5hxMtdEs+z10/sjA3sVjl9XWrFslJHt38heCMWIFWbZxJK4e
+# m/UYGlKvKNqbSivT6XO7q7PQ69oF3xxp4NVPBOVSOSuTAlrhOcF42APfQe3VcpXn
+# 9yYgSUiZwY6hwmr8uko5204K8c5TLQn55FvZAhp85Ey0PE8WcGlIf85bdqwKh6N1
+# cnkYcDk5iE3C/7Bw4mh+oeIE+vVnsx8E2oG7XbVN/S7mX9H3sZIA8xfFJ0huxK0G
+# Apqf7H5g3OnE7On+aNQepu2O1ntkAnMqkaZ9p8hDPYKTfH5MPuHN4USOoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
-# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTEy
-# NTE2MjUyN1owIwYJKoZIhvcNAQkEMRYEFNlkreVooN4RSizFBD314P94+wBAMIGd
+# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
+# NTA4NTA0MlowIwYJKoZIhvcNAQkEMRYEFEWdT7P3IWJW7/UbcEoSdOBOjqxiMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQA6v4sCtD9nKBP4XK9LehUA
-# tEPYp9t5atHZjiHx2MbGKpe6taKk0hMAPDm5yQv/djkXBL2C4kbpcTYDAYDZAaJO
-# pSGaM/dA7EY1KvsS1NC52va6Hc/67/EOM2Plu+tM0LNAk+lJexx81gLl81wwEA1u
-# Oe3jvsTH5ZmoYWO1CtCrs+qfSlGyBlorDcUoGkT8rj0D/wolBsHdoqqGwdeI58Yb
-# Vj8l4bA3alIayLN19zWA0mXON1aEkgOQvRC9hUi4xXd8v4gvIdHDAftjKKsPaFI6
-# vBm/vuf6fGD0po2lGAAftmjk59tNiEr9MJv1NmWMyB543Z/dTN+whKjb9xfkPeTY
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQA3gpxVcObbVW8txFZixsVf
+# pGp8iw2CPD5Gzks3EP2+K6yrY1zjv1RYWm6au90KYgeF33f86Gk9mreVSepy92XV
+# jIOTj6YZE+qHsp/MwSN7JvtchBs3lZeGDffLLtXddO7IRuvyd1CmOaMhukrHsQUY
+# lhZ9UMsdFI0Sr7s/rhsJr4oZJgkS+egCNe6mKcK3eaiZAwZak32WRFwRk29Ktn4n
+# CgPAKC4N1fHtT8vtjY/kFNOUspMrZ5rx5Rs5t9KBTTjFb0EmtumsfLjHRZxHwvFO
+# yJRahjrj97Ye/r2YbWatkkMvnmCPCa2pGS66sPaoWPCoF+sKMRL0pRDmGX03GTHw
 # SIG # End signature block

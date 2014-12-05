@@ -1,4 +1,25 @@
 function Remove-KeyNameValue {
+<#
+.SYNOPSIS
+
+Removes a KNV entry from the KNV store.
+
+
+.DESCRIPTION
+
+Removes a KNV entry from the KNV store.
+
+
+Teh Cmdlet lets you remove an existing entry from the KNV store.
+
+
+.EXAMPLE
+Remove-KeyNameValue myKey myName myValue -Confirm
+
+Removes the KNV myKey/myName/myValue with explicit confirmation.
+
+
+#>
 [CmdletBinding(
     SupportsShouldProcess = $true
 	,
@@ -7,19 +28,24 @@ function Remove-KeyNameValue {
 	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Remove-KeyNameValue/'
 )]
 Param (
+	# The key name portion of the KNV to remove
 	[Parameter(Mandatory = $false, Position = 0, ParameterSetName = 'name')]
 	[string] $Key
 	,
+	# The name name portion of the KNV to remove
 	[Parameter(Mandatory = $false, Position = 1, ParameterSetName = 'name')]
 	[string] $Name
 	,
+	# The value name portion of the KNV to remove
 	[Parameter(Mandatory = $false, Position = 2, ParameterSetName = 'name')]
 	[string] $Value
 	,
+	# Service reference to Cumulus
 	[Parameter(Mandatory = $false)]
 	[Alias("Services")]
 	[hashtable] $svc = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services
 	,
+	# Specifies the return format of the Cnmdlet
 	[ValidateSet('default', 'json', 'json-pretty', 'xml', 'xml-pretty')]
 	[Parameter(Mandatory = $false)]
 	[alias("ReturnFormat")]
@@ -142,8 +168,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Remove-KeyNameValue
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQULoY9jUrtWDPAaS0aiWYO2fEO
-# sl6gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU0nLq3OCiYCbIemfpmdrlGINS
+# B2ugghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -241,25 +267,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Remove-KeyNameValue
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRlHBiqLhU2aksczPAz
-# dgwmpnyiMjANBgkqhkiG9w0BAQEFAASCAQAtdb8sD/Ejj9Ep6/NPEIoedpuy/yiE
-# OJ7wOhsBX5CKGFW4qK/PZQb/T1Mc5SS24oYMArQmXPiFs5m7C97ONO6ooRZywY34
-# GMOz+TrpHO/mLCbL38IGhOjpNPmeXQrx9/blt1wOlhqdQpq9K9niTfYQPvCESRBb
-# KMEiwXSorBZLjK26v6eYb8aRDncZ0Eu/z92/Z603Zh2FR5LwkVbIvtRQ8tWoAiTU
-# 7INXnvubWDhB+xsunG6MBe9Z0RGiaai5yG6+gXwqkWTG29RSfD+UUk10wUJSjN9A
-# 5q7BCXzNFCWWh0Q8OEEKpZT6a0DcY7aNb0Kv3XVy+E1ST8mUq65/ERjpoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQCvHOmDv4/S8+9oIiq
+# jsyXVUK0CTANBgkqhkiG9w0BAQEFAASCAQDHf8fT1XBwJuhMbUifACxHrM92jJgi
+# ui7LID20HcAvdP0AxPCRVZsEaLpZe9wMIXhESnnfEjbCauL317CpPA6fBx8CoBXD
+# I08hbAMZASmxRkmTtzHt/ORPGzs7v8EnPFYT2E7Wkim0sk499U3JptXdwJLk/Wdm
+# OaCbrfPjG39AH9SvP7VXTvPhEqcQnIGtaInsCJnQEmvFvwY8tTo/PDf4cvtKcDyB
+# zU5x03IitYdULXMVv0Wq7FgjV0Al2cjeuxBCr/xZO94gqqEgYdD39Yg2GkAOkHNW
+# ycFfKad7FV9cQiufzlFFyJr2/FHCWj9cJN7XGu8im5Dsqs468uT5BFvmoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
-# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTEy
-# NTE2MjUyOVowIwYJKoZIhvcNAQkEMRYEFEN1PAB9o6G1CTFwE+1xOvnDQyYOMIGd
+# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
+# NTA4NTA0NVowIwYJKoZIhvcNAQkEMRYEFA5M9Hy3rhZwMt8Tg9vTum4829U0MIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBnzjTD0SZZ8VPy8h9E1nGK
-# nYV0Rq2yx6MLoFayCOD/ZvY0W7vS+8lnqKUWoPpfUlghzTVEymLpDW3THVln7mdU
-# g1m0s8Qip32Xjm0aJIUaEKDcLzneh6i3zVxQu7OgxwXMhAJKufnKvK7Zo62yrlab
-# 242YIlSwd0GZn1qzeq80WZCrNfEYXun4a5bYdy2k1rpxvo9Y8WP2pJZqxsAn8T6R
-# 0GH7dKRiFi/EMJ/2qCmP87Y+OGhh44g+qRzscSbjmOKAGhJcoyvR5ngC6Gx6xvsO
-# 0sHzDpnBXarVK3dRn2IsZBh+mdH/xHs6CXaWcy5DLa4egX8P2kr6Y1fD9+zGpdhc
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQChbOZcBm/yxEjBn0Q34UOB
+# 6S9+BexCy7xi8nvZY6GQP+1GBg8WMmiF+iicNMX9rsweL2qh4ia4VT0QuEIiLFhR
+# SCH17zNvvTtcSn5j7cXAbzHrpcP/NtH0+RBXq7d9StzuP1cMEROw38+Q3R17fRqS
+# GTL/AzEVvKADqTEb2wtN6Z2byU6f0ODWGQPg1KBsQs1eRlaShMoy20GnxhzSGlWt
+# NsUM+iGe6/0927zrP/SLRax46j4jalqYNZkwQzLo9Yx02GfbDvlox0lZjWSzJQ0A
+# zNcAKv8+mQzK/Y6XX65AuURWI/0X9dMwYcxvhtgGNSHFHIPbeIEij4JRKyGuUS8q
 # SIG # End signature block

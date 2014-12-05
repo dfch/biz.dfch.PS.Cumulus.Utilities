@@ -7,6 +7,13 @@ This Cmdlet updates a Command entity.
 This Cmdlet updates a Command entity.
 	
 The Cmdlet allows the modification of either Description, Parameters or Status property.	
+
+
+.EXAMPLE
+
+Set-Command $command -Description "Invoking IPAM module ..." -Status "PENDING"
+
+
 #>
 
 [CmdletBinding(
@@ -14,9 +21,9 @@ The Cmdlet allows the modification of either Description, Parameters or Status p
 	,
     ConfirmImpact = "Low"
 	,
-	DefaultParameterSetName="list"
+	DefaultParameterSetName = "list"
 	,
-	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Set-Command/'
+	HelpURI = 'http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Set-Command/'
 )]
 
 PARAM
@@ -143,8 +150,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Set-Command; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUUQm9eL05tfQt6FOPYFB4mVtO
-# hJugghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUL3qXmzDopoiWE1UImA38gOSo
+# bCSgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -242,25 +249,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Set-Command; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRaKMEK3d88wFPk4Dp5
-# ChDX0MwEZjANBgkqhkiG9w0BAQEFAASCAQBkcVwuFntKw+uRpgTJLC0DU3RiP3os
-# C1RA9JYK8QEcy88W7Qk5FN4Om+QgBaamNzybS4zlWKMLKNA03+roWcH7eWB0sIFM
-# 8JNOPysrebJ02XI+wuqdTfcsRKNWmcZf4YHA10hvSbawJkLT8wP8I6A8Sd68OtRM
-# WtQ3aRT422Y8mWH52J+e4QEUqE/pTtzsX3wF/HyRJDM6KBWrh78JEEInZTEUTV4/
-# SnW5Sh9icpeuPSYCr/Cr+fTqZ+GWibBxsxQ6jpxqD6ngBEOTg45wtqHTQAd2n8/v
-# 25q3E3WH1TUeC5Y2vrQdj8cfMcdj3bUEkTayr4R72GV5oVEQWVsypFieoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRE4bQwJnJshNr2vurn
+# E3TPSPXGUDANBgkqhkiG9w0BAQEFAASCAQBib6yFc1aAW/2b87/bEM2gC5fAxQT1
+# Np2hb8+Y9FSNtyMwI/agwDrLL+XntU6YBiww4mCLEJbYYacFKIvWKScwnNfSmNR9
+# ZeICYEvJxIdNea6Er49S4RVhNtlmEtWotLW8pjAP5f6nzdyRXyIE7maub6/J86ng
+# /vnj4oI+DaWFxhldnBfszGaNDzBgfL5+VYwxINLYGD2vohsZXDCtsXNefm4VTlxu
+# tRG8QcmvExvpEgg4PAEatv1sOaS5/oVuQD+b0f6/eQXmwCrsiye4ERv8A7wh8NXj
+# DBF3djEUlb6WwBDp85tXkaV7R4Guv2Zn4iqi7Xd0YXmm7e38QWlba0eNoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# MzE3NDAzM1owIwYJKoZIhvcNAQkEMRYEFDCTaxkRp3puuF1W7VZpukB3FsxHMIGd
+# NTA4NTA0NVowIwYJKoZIhvcNAQkEMRYEFPwlZ1pShGJxo2OB1c0rvja0T6pKMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBRPjfvBuBHQQFctB4iI6FK
-# eFB+Ctw+o3cHZzN8C0WAJTdRBWJq2sL7M+YF+r1I0FU2IOVS8yjTd25ntc5NTTjU
-# qa3DCeO7D9HaBmpU76a/ymXSdW19rWEnXoUgFyuFwoNaRHpbQ3qlk/YiwF1y/f0U
-# +cwLDCz/eM3Y+MryasORpATotd7r5p6CJ76oa4ghm+CQeuXgRlvSmBeiR83sOJQ4
-# FjyUsxxxrMjJo0LThD2Nv9hPam7GouzOA7JkJAUcfXf5/Wxc0Rc8U47SxSimTACb
-# 3WMVLr95BR8YHJQ1aJIRLgBTAaYYoCSgF0XqZI0viDy0Iq9P6gQZLe55rhhvzGlp
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBWEhlgJTIiN+/gfiGHuJDa
+# LeH8PJqVPRN7rknPhYogvOoMCfVfLEF54myfv9SCHA9wF4uBfQIvE0Nvf6gEBed+
+# sdhbvs3kx860VZjjn7iZwUcw2JuuolLhWV7XnR+82U5W5Dg5cMRyFkKz+T/JjI7Z
+# kt1DQ3nKs/qjBVkLh4GCpZXYW8TJ1y/5M1AlRMqYHuftSiKH0En9Kxve3E5zU545
+# cjHlOV+gTDg8qP8m57jkKd/Zm5x0rMtJoIT6Y4XPXg+kcH2p9hv6OurngLLxkPso
+# EQHDZCTr2CE2MKKY+UEriDVxE/wkmxmATcwXXG7FvUiYKkGzBjNXZXOM4dG1Vbwu
 # SIG # End signature block

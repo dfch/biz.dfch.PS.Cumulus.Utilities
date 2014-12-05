@@ -4,6 +4,18 @@ function Remove-Address {
 
 Removes an address from the Cumulus database and any attached IPAM backends.
 
+
+.EXAMPLE
+Remove-Address 1.1.1.1 myNetwork
+
+Removes the address 1.1.1.1 from the network 'myNetwork'
+
+
+.NOTES
+
+Not consistent with other Cmdlets in this module. Needs to be revised.
+
+
 #>
 [CmdletBinding(
     SupportsShouldProcess = $true
@@ -15,12 +27,14 @@ Removes an address from the Cumulus database and any attached IPAM backends.
 
 PARAM
 (
+	# The IP address to remove. Supports pipeline input
 	[ValidateScript( { foreach($item in $_) { [System.Net.IPAddress]::TryParse($item, [ref] $null); } } )]
 	[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
 	[ValidateNotNullOrEmpty()]
 	[Alias('IPAddress')]
 	$InputObject
 	,
+	# The name of the network of the IP address to remove
 	[Parameter(Mandatory = $false, Position = 1)]
 	[String] $NetworkName
 	,
@@ -130,8 +144,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Remove-Address; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUtYtQrqnT5/urk5HziXJxp8C1
-# V7igghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUbbDrd909hd+zlkOBoxxXbcnA
+# JKWgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -229,25 +243,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Remove-Address; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRWMw0R1UwVSK2WBXS4
-# KDG7GEMT2DANBgkqhkiG9w0BAQEFAASCAQAjJ3mV1ji4PsKrn3tho1OuqJnYvjMd
-# eXKyOrvSsCjwtIRoU7/MpGS0dLUVJ5fi8YnlQcyiZlS5/kjEywtp9TWE8w1aWE7p
-# QRi7nGq3BN5uxkWoc7UqV9rK/t3H9hN9rdoHnD8WlpBK0s8okmmhlXsndvw6AAzc
-# gyMZ+Z+M1THGbSJzfDbQtk74lRRO/CZ/e4VSQvr9qEhJvfI6Iok2lUVaN/u8mksM
-# f/Pw5W82lPCFDtyLn5PzbO2LcQUnkY/hGRpkGJyquSfYPc7xcRks/1LutygGn7IO
-# hlkYcZNrNmlraxHi/o98JYHAVArTxZfRlWquoyUAiPB4GfWbFxsG0bnloYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQxv5PUkUXk5mS0TgCR
+# VifDZxDSnzANBgkqhkiG9w0BAQEFAASCAQCEqb+0wM2Ess6JrvMENTvnuQbuAoz2
+# 5g6u4Z+sH3BCzLt3uhtOXqDyeSN2k+8xoqAADky9kRRgvaCFGJ07FHz8N7IpvvXk
+# CY/5ey73kiGpzN/ZmFk2K1mT7vBChzhEvnn44p5W/eVA3XSWP4YGTw23CTO4+ZEh
+# XDwBfk2lp6jHmIOvnY4/3C37ds4oHtMnSiQf9eX9kegzDpHFj3lyJ2Xs5O4lXC7g
+# ck01B9yuI6KIqtOFq/hxBP0T/w6c3TFa/AHyO8kMvyoVtxkvaH6WHOWTHb7iSbPN
+# DOJCgNfOv2VcJh5BSJ+5HW193/gm174hvRB5KAqQnScyng4xfV3RLn+DoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# MzE3NDAzM1owIwYJKoZIhvcNAQkEMRYEFHMjCaXl2aKcXBjvPpkrO1Ipeh5wMIGd
+# NTA4NTA0M1owIwYJKoZIhvcNAQkEMRYEFP8znw9tPOFrIW/gu0QwJlGnWTlZMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQCCMryIbBqkekHGvgyGwPhW
-# wuIGFKFdNWW8UYjtXY1gSNn7MT6NaC7HpMlYgrU2f9aW17vGVvJrssxmZ876qotg
-# dfHzf1BSNfPR2Pi3RjLiNg/RL/j8dhcFno2iH7J5rkgUH686Zp6Fyl2F5ptq0gL0
-# HhyaqnV/D3ucV0n+1IFd17aVcO6EsJRIJTLEDl1YD/bbS6UIcR5S11+EtOltkwBk
-# md7OeKFpzwZdIpLMnBitpBlEe23fPLOvyU3Pg8/N65kGcUH4Y9hzd35RpI9IjWsH
-# uZXXfPxe/ELx/MfSeEtsWi5GAQgqc4/F+5lRZALot3SCqLPct4ZdHaOFUhscKa07
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQArYPBmJeMlvcIH8pER+MHa
+# C/fpPIKc6KV5njYGJUYCi6JFZb0ZMGNX7xutaNdZjKD/UKGxI6q106xLKY07bfj9
+# ThIXxCakrUfxGwViWAmtLKvzwV/kCs9NR8heeknGiyyAfS0UKd15tENldXKT87HN
+# +CdMbSn8Z7W+T4bmXIMpwm7txn59NpVubXZDXkpyv+IAY6HlPUK8G/CllBGQ9eFJ
+# UCcbrhOPh8f4EJqff6JRrP3vz0mub8Fcbz8jJhN1ENTSiAwFCGeZbJYqYATIRsIF
+# lJ4Yn1IUiDmS481TvQAlcqGkL9mU0dSV7Ytk+OVtsktLd/LeWj6zsi6uOnU7uGIw
 # SIG # End signature block

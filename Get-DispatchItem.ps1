@@ -1,4 +1,22 @@
 function Get-DispatchItem {
+<#
+.SYNOPSIS
+
+This Cmdlet assigns a Command or RequestItem to a caller and sets the state of the entity accordingly
+
+
+.DESCRIPTION
+
+This Cmdlet assigns a Command or RequestItem to a caller and sets the state of the entity accordingly
+
+
+.EXAMPLE
+Get-DispatchItem 42 Command
+
+Get the Command entity with id 42 assigned to the caller.
+
+
+#>
 [CmdletBinding(
     SupportsShouldProcess = $false
 	,
@@ -7,26 +25,33 @@ function Get-DispatchItem {
 	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-DispatchItem/'
 )]
 PARAM (
+	# The id of the entity to modify.
 	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'id')]
 	[int] $Id
 	,
+	# The entity type to modify
 	[ValidateSet('RequestItem', 'Command')]
 	[Parameter(Mandatory = $true, Position = 1, ParameterSetName = 'id')]
 	[string] $EntityName
 	,
+	# The entity to modify
 	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'o')]
 	$Entity
 	,
+	# The REST uri of the entity
 	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'uri')]
 	[Uri] $Uri
 	,
+	# The requester to assign the entity to
 	[Parameter(Mandatory = $false)]
 	[string] $Requester = $ENV:COMPUTERNAME
 	,
+	# Service reference to Cumulus
 	[Parameter(Mandatory = $false)]
 	[Alias("Services")]
 	[hashtable] $svc = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services
 	,
+	# Specifies the return format of this Cmdlet
 	[ValidateSet('default', 'json', 'json-pretty', 'xml', 'xml-pretty')]
 	[Parameter(Mandatory = $false)]
 	[alias("ReturnFormat")]
@@ -154,8 +179,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-DispatchItem }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQULMh4DXkHg7OuzL29803+kCjv
-# 4cagghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUhj7iaOysmGSu3C0rqiFs4cjp
+# K0mgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -253,25 +278,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-DispatchItem }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRUBEcBg5x/7L4OvKxb
-# z1vLCNnxJTANBgkqhkiG9w0BAQEFAASCAQB8gr492cCn3J8i3o9+xAOoo+Wa5f06
-# HkaxCvrGUzt7xJswOtg38F0N0bPwvSQ6Bk/GL1OKCYkqQanwt4k9SqCc/j3BbUbY
-# 6B6X8Hu3pg3qHUh/z4OAtMEOYJa3TkRgCcgHH4X68e/3sixo/Kutg7HiuLNqiv/A
-# Avg+w3Zw3EvF/CjxJipZ3/qBbitRRri8wVZUj0AsJF6HIBOFAnNfVaHza1nQLK3B
-# R6Y0vU5TfgPBbt/T/AI/pWf/QW9S69bKoIRirktnXDtRTByMY5FNXc/3fs3ZF6Cg
-# 4vFi86q7Yrvi4iAjOAFZyEu77n3ye4PyFP/aoXXhma0fFkgSTDVve4QwoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQqzwibCZpEdPaTE6cX
+# dG1dbTbScjANBgkqhkiG9w0BAQEFAASCAQAEXjEKps9oOdui0JYMyUjPWFciu5bB
+# 4g++xmJ8GSTetReIHj3UdXGobQVJAYCz7vPA/EqlExWKP7f7svTv/hJo6DNNBNha
+# T/a2WkMoZR3Yu7JWcpR7OwlniAJj0hJhimBjZ3DLB6h0OXNOfmoPBgQgfF1rlhXD
+# 6dRPrcc2BF9A9E1SVw+bFjbtgnWvk9mqbxMAIlIG6bTAwSa5pJpf6HKxJhUHvYzl
+# R4PbnGnjlvQJZ+r46Fx2DRWLmCTVLuWvP5vI0lrpvrln63ehUBA52u7uOPmBkfD4
+# ZzpwvxN1XYOnp0JqfLCHGE78opkgInx16Pte7E3lL2QNlFftA+peB19FoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
-# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTEy
-# NTE2MjUyN1owIwYJKoZIhvcNAQkEMRYEFF2GtCVBNdAylQxDZnDfQ7BS+qWfMIGd
+# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
+# NTA4NTA0MVowIwYJKoZIhvcNAQkEMRYEFAHPEEb6c4pCXRb8WLVTg0PzGFF3MIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBXGTXH9jidxecWm1sMYwti
-# rycoD40wFeAhjfiAOz1C8nYmJeM+8kMw4GZZ6h35viDhb0XBpLjyGFE59PEjVOpl
-# V42FAYjIA9aJpdwKJqjy0x7rmzCh04l8P8M3GFrXiGSx5/E30adWfyTcUw0ucC/C
-# 2jJBHDUVPQp3+bLCNDKd9/f9cJimThy+Rn40BUTsadynA3Cx4yu6cjqznuQ6ppG/
-# lPNkRXxKtLE7/a1963RcxyjW6ykkLrHtXeIfZxviGHsy5ZkOTPh3pur5E40515jn
-# nq7t/Yxvqe5jzFFdZzFkFShSLZNz5nFv/tzxe+bf7B7ma4lNIbTwmgecvzsTemn+
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQCW4FEcxgnqDYDlfeZjMX8T
+# FYGWM04UliS3xHGJw7u17Ghr3s8Ryi2HdaX3Lxw4WqKueGbKpLRiRkbBviZI5fPd
+# BItmnndwVLwIhnzcpDp/5ZbQdCTlSmjzpXIZ+XVKa+tae/ybf2H6FL7st2rGgnyU
+# sHMaIERIZVxfUheMdI75BsPt0FyIwm013DZWUDQlbi7w89C85OIi0ynsVTNfw7r/
+# RkpZyQK9GIbpg089QWO6pia4ICBKYtla/Sc/pOm6wCDzMskzpGnyR76EDxBd42s+
+# KFqPtn1UJxLBpQFURrjiswACXKecxcdbNTkPpSRlMQJK3CJ54g1/g9hJ8OEq6INM
 # SIG # End signature block

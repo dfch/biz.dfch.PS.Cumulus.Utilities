@@ -1,4 +1,22 @@
 function Remove-File {
+<#
+.SYNOPSIS
+
+Removes a file from the file store.
+
+
+.DESCRIPTION
+
+Removes a file from the file store.
+
+
+.EXAMPLE
+Remove-File myFile -Confirm
+
+Removes a file with the name 'myFile' and lets you confirm its removal.
+
+
+#>
 [CmdletBinding(
     SupportsShouldProcess = $true
 	,
@@ -7,17 +25,21 @@ function Remove-File {
 	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Remove-File/'
 )]
 PARAM (
+	# Specifies the name of the file to remove
 	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'name')]
 	[Alias("n")]
 	[string] $Name
 	,
+	# Specifies the version of the file to remove
 	[Parameter(Mandatory = $false, Position = 1, ParameterSetName = 'name')]
 	[int] $Version
 	,
+	# Service reference to Cumulus
 	[Parameter(Mandatory = $false)]
 	[Alias("Services")]
 	[hashtable] $svc = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services
 	,
+	# Specifies the return format of this Cmdlet
 	[ValidateSet('default', 'json', 'json-pretty', 'xml', 'xml-pretty')]
 	[Parameter(Mandatory = $false)]
 	[alias("ReturnFormat")]
@@ -136,8 +158,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Remove-File; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUCSdLhainqb/SYENxM/Ytv3vU
-# cwugghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUpQHIsUFUNSMJd71WIaFAH3g0
+# VSWgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -235,25 +257,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Remove-File; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRBs12cHK1w59/dAFkB
-# uEIK/jpZHjANBgkqhkiG9w0BAQEFAASCAQC9hnSsRRcmhM5ho2StqOxD5BRaYBRh
-# 3QvyVDaH/QsLThGICaG+SlIhe7T0w0rJSzIeYu0G+WqmC39j49g62Ed78SIV0TJA
-# GloSRcUFMoCxGJiLHAXkAKpTi+8hKGXb+ZgxvsEegeO6Hb+a9+bup/TqlbrxgFmm
-# Sf5HTFMGacRnGfWDxmKYB25Rr9rhBey6yTZSI45BL7UASuJNQNx1CcAOhgU4NI1+
-# r7Vnf3GqUXbaz27b6cGgNlHeK9SilCw1J3LvrcHSflUD1GEjxA0eutfIsIRwkkHP
-# Cnt7miX3cxgolPke3Xjz7v9plg3tk2twjZRYGKgHp4cQhO2/KcLXfJh6oYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTR+QPp0bZCLsDhHTKB
+# mB4+0bfeXzANBgkqhkiG9w0BAQEFAASCAQB2INBD/D8l1ox+/brr9a0WMI+Y0rcA
+# 33PLmV3snP4A5fe0cJHhFS5RqZi6md2P3YZ2aTxmBfmVE8MCJma3oRK/VLnplLVm
+# /+6xnepUFTbznAX4SPpwQORQdA4Im1sUXax7i+3m56JYobJzRGfuj+bR+0KySbbd
+# 7+9MyDgoD82PkVLyWivTaeyI/fO10AXkX9AhBfpqjxw1r3fpcaWFa/PQopQeEn+R
+# 5KXbjNqOn0ZF1YKNIlu/skqjvPivpGrc4GC5KEqcafUq2ZYfwCue9m0KngVwdDA6
+# dQ1g7y+evRM1q+SjqSwZLujbb7APHBDVXxZ6YQiusBTCsNhMEJres09KoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
-# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTEy
-# NTE2MjUyOVowIwYJKoZIhvcNAQkEMRYEFC2YBVLFRi1RC9AedM9PRCAkrEU0MIGd
+# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
+# NTA4NTA0NFowIwYJKoZIhvcNAQkEMRYEFCszdTegvESUIkPpfY0cv3T+rzolMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAkGxGrb5Xq1bH39dUJuU0Y
-# qNvvzfCr5kooBcpfGEJocwY6eGEiaP/unENj9L9TgqMRjuqZZK58MI8g0Ul+FyPl
-# 9RLAWh7ciHi7+HylysvfS2xVRde6mpvQsETA+3T43HyjQZr+B1oXKPG2uPwUYQK4
-# /3KOkD4e5BZ+SPjP6O+RaC0VmqXRs7BtepMGybwXx4RSWtJp6FxK3Mr04WP+R6ib
-# HlMGF6ftOU2gCqXnMEuBThHFmf8s9MjEclTDvFXpdbR2fEeJNSfrjjvqrzko6Pm5
-# UY6PdOXKbt4Pj3T0GpQkQFzXMZyFQnhssthyDgUgQN9KSHeKVaTsCMw4vh9SC4gW
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQB+/+PRe4lKIvPCm7c4XWYm
+# 6X5AbQODy/kDf7NcCmxHJgpjIDbxlKDPc4jsYBOSJfK6zVjddMwpD5hr7grmGOGh
+# N/zzGx37sqCVnWq0EmZ5bzxwEQ7WK4j7kF8KGR+Ge7dUqGdFten+ngoytDvEYMso
+# +3ypcz2rM6KrC6XRLdFC+f/G9BS7WKCPYcnyEAIVS1fxbAgwpoH+D6PxwCuh81c0
+# NeA6wAR0LHYTR4oWj+q+l3fJibQMv/KndnIhEiXs3+QwutlQPWXr5PDeJPVtvA4+
+# kD2Li1xGLv3ldCD4+wSv0p4EPWFS2LJk1l81cD1IKmcpzYhBGkKdVPWlCSLI3FeS
 # SIG # End signature block

@@ -1,5 +1,30 @@
 function Get-HealthCheck {
+<#
+.SYNOPSIS
 
+Gets the Cumulus status and its connected subsystems.
+
+
+.DESCRIPTION
+
+Gets the Cumulus status and its connected subsystems.
+
+You can either get a list of all systems or select a single health check.
+
+
+.EXAMPLE
+Get-HealthCheck -ListAvailable
+
+Lists all health checks and its status
+
+
+.EXAMPLE
+Get-HealthCheck SystemStatus
+
+Get the overall Cumulus system status
+
+
+#>
 [CmdletBinding(
     SupportsShouldProcess = $false
 	,
@@ -10,19 +35,23 @@ function Get-HealthCheck {
 	DefaultParameterSetName = 'list'
 )]
 Param (
+	# Specifies the name of the healthcheck
 	[Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0, ParameterSetName = 'name')]
 	[alias("Id")]
 	[alias("Key")]
 	[string] $Name
 	,
+	# Service reference to Cumulus
 	[Parameter(Mandatory = $false)]
 	[alias("Services")]
 	[hashtable] $svc = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services
 	,
+	# Indicate wether to return all healthcheck information
 	[Parameter(Mandatory = $false, ParameterSetName = 'list')]
 	[alias("Registered")]
 	[switch] $ListAvailable = $false
 	,
+	# Specifies the return format of this Cmdlet
 	[ValidateSet('default', 'json', 'json-pretty', 'xml', 'xml-pretty')]
 	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
 	[alias("ReturnFormat")]
@@ -143,8 +172,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-HealthCheck; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUh0V1R/YJZ+aURlL+iILerXeL
-# XACgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUyzhzNBk2wXSWphkePkSVt21Y
+# r36gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -242,25 +271,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-HealthCheck; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBT0nP7XjfPUasiHu6oR
-# OKEmrhcEHDANBgkqhkiG9w0BAQEFAASCAQCFYfr/Shm1dAXUsbf52iwcgWCZubyU
-# mn7g5mzg195NTYokdtLEwWVeT1g/EbubGSGGdAkXPxbITXmB0+bMHym/sTY0zc+O
-# Pt4LcwwJpWEPbqyM1ogOVxP/GLM3svUVl/xKqXTmo3sv7PQ8v5nJGd2nq40zqn7l
-# +mFKdD+lQferaYEcrpw4D2136DB+kFzMhYSVxmDtGpqW11zwMlvUy+xilnC30Z/g
-# qnB/kbyGvFGRR2oyQldHjB7e+r7eXgKHQP8u4hJmIR7FrJHUXPT8ot0JBn9x+/aO
-# kIPNhDL40Ii/6yVX7THLoGOwT6rvYcASem/Mqpt3wxrRZoawjQ5xhkXtoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRVrdB+1hUm90KohEqV
+# SI9KNsxjjjANBgkqhkiG9w0BAQEFAASCAQBr1GJWcVy1z8o3FVScZ/vzOvq0Nppl
+# NO1X7STqVtNnATgYYRKce9mm5dvWWfL9ZI2I5cTJuq7QQo7HtBjt0NNs0DhNC3Fx
+# n8z4dWGRBdkci4xPQI77VbAjvGSCCKwf1UiJQ7z1F2BbzAzS9EigMNArjAv4GqMd
+# pW91qqF4si+SIKr0PdEjP1w8DC5kdLWlrgxr3Ziawz3QdhiUGkjCp6ir35qKyDU0
+# /MAyRxLXYcC9Q3/0BEKjOpM2ZK5ZNYhnKQbSCg78U/c0vyM12yO76VaPl11LsEB2
+# w2GZ7wnZfHaYa6TZVTMwqVxZp/DyV1Ipo89UNvo2hoavME3GEhhPMHv6oYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
-# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTEy
-# NTE2MjUyN1owIwYJKoZIhvcNAQkEMRYEFHneJtf+y2vhZLKBAgRoD4XF0WmFMIGd
+# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
+# NTA4NTA0MlowIwYJKoZIhvcNAQkEMRYEFBwACHuLxdmbL/oxZ2rNarb6s+D6MIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBvO+oW+uA2D8Bbqad9yWdQ
-# 7bh/rXRcwUApvS7FsFnG+yjSKpex9sPW28SaVHydbAd7rGqXzEEje4dDhMpfw/5g
-# 1jPNc2maZRHmJew53GP7lhYHcOIexoFPOlLQXgqDEs0WLW/OADVYJDpEDjD0KTsN
-# DU1meGeBTGoMATuiLjrap7Y50G8EBnR+9AWd537h2EZBMWK74Q5kvoszQgcE3D7Q
-# Vyu66bg97ivczATbHA9E5AF9WlR+QcJBZRj3uhb6MFKWzIhZz8MkWluRSD6fbA6j
-# 1LIKl6fWv7knKFdSTTkiGp1+LGgLb/JxA+S84SO1fMi+ggavST5XHcx/YIRsYDxu
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQCRurXPXWLy68uSnXHsVy1r
+# Y4A/hguck1OHRTlfXD4WJhIsUbnT5gX3uFpdIwL/CgDjiLidNi1CWgsvvKrFETH1
+# ALIAE5eanBAdshTKTwhSicr7LNb+U9Cevni+0eMqtVkW0Oyy08hH5S8uGYPmLx98
+# SND7PKWm8TI/IffvGe51PvKbL3fxWMyQzPkct1kT8GLFVgL09DRSrrql0K0zc4ls
+# PIbinqu15NkQWXwTR85FTVE6lrsQ19YtmkxcFyt5AimUO0BtpnJiL1864O/coSXi
+# 3QlWDrTJOw+8NuCKfQ6SZiX5ixnT2heMtZWguyyKSYJSfAD2Rzsf5kymOypZp5eS
 # SIG # End signature block

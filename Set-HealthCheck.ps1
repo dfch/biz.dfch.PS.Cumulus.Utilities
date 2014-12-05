@@ -1,5 +1,28 @@
 function Set-HealthCheck {
+<#
+.SYNOPSIS
 
+Updates a health check of creates a new entry.
+
+
+.DESCRIPTION
+
+Updates a health check of creates a new entry.
+
+This Cmdlet lets you update an existing health check or create a new health check if the specified health check does not exist.
+
+
+.EXAMPLE
+
+Set-HealthCheck IPAM -Description "Partition EMEA is currently not available" -Status "DEGRADED"
+
+
+.EXAMPLE
+
+Set-HealthCheck SCCM -Description "All systems running fine. Have fun!" -Status "OK" -CreateIfNotExist
+
+
+#>
 [CmdletBinding(
     SupportsShouldProcess = $false
 	,
@@ -8,22 +31,27 @@ function Set-HealthCheck {
 	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Set-HealthCheck/'
 )]
 Param (
+	# Specifies the name of the health check to modify
 	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'name')]
 	[alias("Id")]
 	[alias("Key")]
 	[string] $Name
 	,
+	# specifies a description for this health check
 	[Parameter(Mandatory = $true, Position = 1, ParameterSetName = 'name')]
 	[string] $Description
 	,
+	# specifies the status of this health check
 	[ValidateSet('OK', 'FAILED', 'DEGRADED', 'INIT')]
 	[Parameter(Mandatory = $true, Position = 2, ParameterSetName = 'name')]
 	[string] $Status
 	,
+	# Specifies the timestamp of the healthcheck
 	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
 	[alias("DateTime")]
 	[DateTime] $TimeStamp = [DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ss.ffffffzzz')
 	,
+	# Indicate whether the health check is active or not
 	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
 	[switch] $Active = $true
 	,
@@ -31,13 +59,16 @@ Param (
 	# [alias("hc")]
 	# [CumulusWrapper.Utilities.HealthCheck] $InputObject
 	# ,
+	# Specifies to create a new healthcheck if it does not exist
 	[Parameter(Mandatory = $false)]
 	[switch] $CreateIfNotExist = $false
 	,
+	# Service reference to Cumulus
 	[Parameter(Mandatory = $false)]
 	[alias("Services")]
 	[hashtable] $svc = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services
 	,
+	# Specifies the return format of the Cmdlet
 	[ValidateSet('default', 'json', 'json-pretty', 'xml', 'xml-pretty')]
 	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
 	[Parameter(Mandatory = $false, ParameterSetName = 'o')]
@@ -166,8 +197,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Set-HealthCheck; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUvhOfJqQsf126tOOILVvMIoSz
-# q32gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUc2ymEQsxSAVKZN7sTRSPK/QH
+# ntqgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -265,25 +296,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Set-HealthCheck; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRpsCm1wfrB+/US2D8P
-# mEZxMb03WjANBgkqhkiG9w0BAQEFAASCAQB3JD0TztDB1hyie26ASfeUpEVj5RzN
-# 9k5USKfN/d3l9ewCJeunPNKjRENeZXbyO5bcxbwsdOtPbTJe6V6gdpmSIsm9rmG4
-# 0w/nUjgcbrVjdcef5+oQSQCkKwpDQiUuGVkBSKw0OCc3jOoMtGrf6v/OYHbidTyk
-# Qimu3GJFEorsWYDZK9k1uCXAsNFksAHEJY6l300Q0kdnfMXD4azCNY71CN7Z9VzJ
-# m9lPh5YazYSlVkBKwmYT+qaWGTaNSYsmW2JgkrzJfavoR4YW4WrTEUpPEKeN22VI
-# O6t+hwEAfzKeEAYWkZC2w2qOjdmZHve+OOa3AJqo+ONRmEjAc6vpWOEsoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBR0HYMgInLX/bTYRFGB
+# 7vf/JXVnxDANBgkqhkiG9w0BAQEFAASCAQDIIfsNFhN1bG+wfn5qEh94NKuqQtDY
+# 92PwPNcJJdBZ4f2gyWN7HOS8qolHIPhiZcKJsQbjUHtpei2gWdIYVSIbAGgKHvzV
+# Q/jEKQITtLQkGx1cOv56XbQQFaTL3BD4Pj+ZLiI055hWWjVf4IzYk5SW6FdfnhHP
+# 7EIhxRpUPxsB8zo6PppD5p4yCuo3MnJUWd+UsVOxevYStoGwGXGVnYqkaWYofAZA
+# ONbQj0vRclGldXFM+p7mHWZBN2jjJMwGc861hXBrQZvgZgSW06Ms35X3Jvdrhuk8
+# 9WSUEf7BFJUHeEVgwv7EdXQyoU+ApESGbg9bJHc1jkofUVuS7OU2FsLNoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
-# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTEy
-# NTE2MjUzMFowIwYJKoZIhvcNAQkEMRYEFEgVtS2y8SnZeiLzWvZqSJdTKQfWMIGd
+# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
+# NTA4NTA0N1owIwYJKoZIhvcNAQkEMRYEFKP3NFsNua9DsRdZ2GtJH8JENKYvMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBANd/HMvY/57qF+qYyezGr
-# bcRY0Hym/Lt0A/4GmCl0pzoEG+bVzlZtzC1ohliR0MtPqc2o8gIJTbNgevzgzx70
-# EYbn6CgwTYQKEFelMlC1OB6534FvBXbUWb4RbGM6F5W3y8U3UhHBe/vzDXOYybeB
-# eNH/Sf21ZGS4ffT01/NZjyBe1RpytiBH9tSBwhHYJXE9bozzCj2CP+eth3mvtjaT
-# 6JscU19BdBkuWbFCLK7EUgwxrRLKWqXRFDM/k1ZDMDebL1DErcPpkcYSJjrmwRMk
-# 2/fkIZbNer68pI0u2mqiaFUClSX+TpQpWe/jOVa/V5KmqHmZUJPml1RcC5+pXHfA
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQCtkBcx5EHSwP2dAxBoDDKQ
+# +e+Ac7eWIhlMJEfsDdwC4fgPY3a5kUxy1LV+HLa6LvN9OttqzNS9oiFoFdLpvOZ1
+# b2G0bdfL3NXR+HUPq+usbYfNafrVgJpy6S9dQ0XDaWRs8W/MvsH84NxNS3N5I2ge
+# NC/YYSPuacZZPh8yDDDroTa5KoeoMGMDuNo8LmpIsQOSSKfpEr6bv7ctSMOtPTv2
+# k8/uzYPyAP8KrD2w/+FnOH/jX2upVAd5mkrQ4Zy/yGTFzXiESy4RbsbxfuCu5kpi
+# IK4OHNoFNrKcigoVS+ejZUph+2cUMmVrxTzYR1JVt0V+ZMtlMBgOT1ACy4EgIr0m
 # SIG # End signature block

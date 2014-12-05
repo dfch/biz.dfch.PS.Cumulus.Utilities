@@ -99,35 +99,44 @@ See module manifest for dependencies and further requirements.
 	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Set-KeyNameValue/'
 )]
 Param (
+	# Specifies the key to modify
 	[Parameter(Mandatory = $true, Position = 0)]
 	[Alias("k")]
 	[string] $Key
 	,
+	# Specifies the new key name
 	[Parameter(Mandatory = $false)]
 	[string] $NewKey
 	,
+	# Specifies the name to modify
 	[Parameter(Mandatory = $true, Position = 1)]
 	[Alias("n")]
 	[string] $Name
 	,
+	# Specifies the new name name
 	[Parameter(Mandatory = $false)]
 	[string] $NewName
 	,
+	# Specifies the value to modify
 	[Parameter(Mandatory = $true, Position = 2)]
 	[Alias("v")]
 	[string] $Value
 	,
+	# Specifies the new value name to modify
 	[Parameter(Mandatory = $false)]
 	[string] $NewValue
 	,
+	# Specifies to create a KNV if it does not exist
 	[Parameter(Mandatory = $false)]
 	[Alias("c")]
 	[switch] $CreateIfNotExist = $false
 	,
+	# Service reference to Cumulus
 	[Parameter(Mandatory = $false)]
 	[Alias("Services")]
 	[hashtable] $svc = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services
 	,
+	# Specifies the return format of the Cmdlet
 	[ValidateSet('default', 'json', 'json-pretty', 'xml', 'xml-pretty')]
 	[Parameter(Mandatory = $false)]
 	[alias("ReturnFormat")]
@@ -269,8 +278,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Set-KeyNameValue; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUsbeQEKeZbhq9cCTEGbEFuPDu
-# NEegghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUg49daCpiffIBGcY3TCyEnVAh
+# T/WgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -368,25 +377,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Set-KeyNameValue; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBT0ho6yEdL48oRH27iK
-# mChqIt7krTANBgkqhkiG9w0BAQEFAASCAQBb56RB35JTB0kGhdxriUTqZmRLAuGr
-# WFxJqdapOLrUzYwRdF3AjLottEI9SG+gV0dWBQ39vHc+jurMBYghNuZPDvY+4hAR
-# 1VFiYn2nMnZh+y/93PilRvG88Kl11TNtbcDC4sG62ZjZIWZtAolrwnnoGoKtSXUl
-# VotAA19kObenSgXb+DlFU36tPCjJUVXUQhMMK+TgmM6JWpvVI3NvCVFSYlAcTCCa
-# GJY1ERFMBG+cX3o+tmdFbDoTesglJSHng6H0XzP5NXtNiQOKFWW8aoPvJD7gCiZv
-# noVXlUAj+v3SiYMWK4VZX5mLaOoQSkw7RW70SMsdcKaw3F6raf5Tx2eDoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRb9bctvf6k7ndJgZn7
+# fCOzDPij6TANBgkqhkiG9w0BAQEFAASCAQCOwfmllkvVycvQG8IIT3ST3yDxA+iv
+# 9pvOnZo2St43K5LofBthcc44atwSaim7vv5FIDA/iIKfsQ6krALXJDYS8X04uw2O
+# QvLuYg2nZ9YBWZeryhlh10Ws7jIy2IsNQEdGz7IY2OyirCorjFT+jes12KB8/46f
+# ZiY57ViWj9G6nlciZ9iQkrdpFCVoOKyh2PTW4CZGYOxpkYugqAUolQ2kAW11PqaS
+# U4muGkjSnua9Nazzh3D47VQNdPaxKk5f3yNBPu3p1ofn4JDKuKMzUKGFHjANThNl
+# 64NPxkbjM+JuEjL57lqAxG9IfUREBghVMWIE6dILT0Vmuw0avKO7Y72/oYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
-# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTEy
-# NTE2MjUzMVowIwYJKoZIhvcNAQkEMRYEFLXrrdvrGTF288kbSjbkBUZxamttMIGd
+# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
+# NTA4NTA0OFowIwYJKoZIhvcNAQkEMRYEFCKjfnDEDVFlnp0g+IrdE8b+RNZoMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBon2aBNvquxQ42O9wEGgIq
-# RpPQp6BM7RsuMcN/ax35m7TULF6JI4gD2b88W+ceSKMfcypt63T5S0KjYqtcVEWN
-# RImzIE4OLB4DFjKK9H3FiYJpk3xiGyH++dH4cvXSIQBHYlFKLb3CcY1cPuEBvsR2
-# nLTVmPRQLNOMxuugKwejtwIuk4Pv5bzr2Z8uuZz/7hqFMmorYz+m0QNEmk39I4nM
-# dGq8/cbxRQD04/y7e3JaLmh+SlIp/X+Tnd+P7REH4I7N+qwJczWmbzmLDfxqWU9T
-# KFyIm4OCgnoZP8Um1uqD6qPWlc0hrRsPB4hbhnFz065PGpisGJlZUo/aCvHWvO7j
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQCsrizyVAXnNVer8PytR/bn
+# FuaLWU3YJL7Acwx6wATievDhr5y87BDal4dfZYjiiZqSG65xG11IngdCjxRDARBx
+# kC8iZYwLI5WW3fbag7H53KqUt+KfCPvsTInoi+ddcc1GPLIS+iPnxe50PiefeJIK
+# 5b2Gy4CdAyl4wPw8npDWZ03d+MLItKE3o9WpmFnxwfIfmp7y8rFBVkqrdxb3kfOC
+# 05w+HEBox/iJuWca9JhsICadf7YdcwCw9EUePdvrhoNVBXHpWNhFEqbTYh5SZYIl
+# hFxRxA+rmI7gtc9LAyj4FV+F3KhsTs/dNQId4RxEkVGy6PEsOAfZRKV3QAKciwEY
 # SIG # End signature block

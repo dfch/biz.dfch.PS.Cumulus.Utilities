@@ -6,7 +6,6 @@ function Get-Credential {
 Gets a ManagementCredential from a Cumulus Server.
 
 
-
 .DESCRIPTION
 
 Gets a ManagementCredential from a Cumulus Server.
@@ -14,29 +13,14 @@ Gets a ManagementCredential from a Cumulus Server.
 Retrieves a ManagementCredential and decrypts the password if the caller has the 'ManagementCredentialHelperCanRead' permission.
 
 
-
 .OUTPUTS
 
 default | json | json-pretty | xml | xml-pretty | PSCredential | Clear
 
 
-
 .INPUTS
 
 You can either specify a name of a ManagementCredential or a complete ManagementCredential entity.
-
-
-
-.PARAMETER Name
-
-The name of the ManagementCredential entity.
-
-
-
-.PARAMETER ManagementCredential
-
-A ManagementCredential you have retrieved by returning entities from the ApplicationData.ManagementCredentials entity set.
-
 
 
 .EXAMPLE
@@ -116,9 +100,6 @@ Online Version: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-Credential/
 See module manifest for dependencies and further requirements.
 
 
-.HELPURI
-
-
 #>
 [CmdletBinding(
     SupportsShouldProcess = $false
@@ -131,9 +112,11 @@ See module manifest for dependencies and further requirements.
 )]
 Param 
 (
+	# The name of the ManagementCredential entity
 	[Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0, ParameterSetName = 'name')]
 	[string] $Name
 	,
+	# A ManagementCredential you have retrieved by returning entities from the ApplicationData.ManagementCredentials entity set
 	[Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0, ParameterSetName = 'o')]
 	[CumulusWrapper.ApplicationData.ManagementCredential] $ManagementCredential
 	,
@@ -150,11 +133,13 @@ Param
 	[alias("Registered")]
 	[switch] $ListAvailable = $false
 	,
+	# Decrypt a specified crypted password
 	[Parameter(Mandatory = $false, ParameterSetName = 'o')]
 	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
 	[alias("Decrypt")]
 	[switch] $UnScramble = $false
 	,
+	# Specifies the return format of this Cmdlet
 	[ValidateSet('default', 'json', 'json-pretty', 'xml', 'xml-pretty', 'PSCredential', 'Clear')]
 	[Parameter(Mandatory = $false, ParameterSetName = 'o')]
 	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
@@ -322,8 +307,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-Credential; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU50L1NDmOwHI5MxSx8Grq5gyP
-# p8qgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUtu36s/Hm6I9uwwiziCHQFX9U
+# mLegghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -421,25 +406,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-Credential; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQzp4VThatdsZJauEmw
-# 33LduMJSiDANBgkqhkiG9w0BAQEFAASCAQDQETYvjrDRyAH9B6V2NvQQcFxplzu6
-# itPFUw8GMilk+DlzRiuL9gEPRpXoaqbQNndNUUEUuIIzmZSI91m/4usTw3uvq9nK
-# m86elsHROeOVrCNO9OAAkIPXjHaoRiKpa2q8hmVKemgueOQF9pO6FnNRNwnC/HaB
-# TJO/cYZW1g0mf52v/kz9cm4jxH1ze2R8NAl8p5Hrve1T/SAlp/VjbsVK3R4ilOGZ
-# UP81CbN5kKksk/RUUtG7mxOvGrcT1t1D4V+Q1+pajfoKbepdJTX/NsUYT8pmU5FL
-# /wBhWHDy1y6jloghsFfHtftmPSu8Y5CzcyICcOduyzHEEtnbhzoU0bEkoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTP5BqRRYTP9ShA7dF/
+# dkTiQACZHzANBgkqhkiG9w0BAQEFAASCAQB5Pe8/DF80jRi7Fph6u9dWA/b9A49Y
+# ZXDqz9CER/LhBes3Mi5voxIOtDkCGSA8teheQTlJ5o7yHlL1iyV5M1nu70aQob8B
+# KZxG2grC9sxuyqicYFxG6yd0aTFhCvXicWgdzzz3/0k3Kx3YkvDSfz9xM2IKWsSK
+# pNFixl5Re+MmQ7GVtoiv2USnLdaz1rZotxQNl9Pm1I7HXBNhC3lGRVhbo5gbds72
+# AK9ko0h8kR5Tc4D11/Z+8OAB7PSMOpINHuZ3xBOOPt74B76CTyjgjIUBiIwzOZGf
+# r5VnO3YxOkaS6TGIr97WTTHbBtdrsQHHVElhP8YrNGVxLN2lwuSxciv8oYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# MzE1NTkzOVowIwYJKoZIhvcNAQkEMRYEFMJ1X1a/4twAqT8Bf8SfTXkeLrSoMIGd
+# NTA4NTA0MFowIwYJKoZIhvcNAQkEMRYEFOEUQS0eMquSib0LWqfAZtNiyX1pMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAgcdhglbW2Uo6uMt/afRft
-# gBFIFI46bnnIDYZop8KcpzcSFv2hvAakEKbEQd0mAI7lZg8JgROGiqDisShieQyf
-# m1Tzr+invZ/jHShJrXMcaTjmE6nCaee5i7YEvpEO7kgID3lp2gAULC4tURatZWe9
-# LvSPet74LRfRa0dZyuu6Jtt3fQWMOdRab7ynCNGO9wFaZBY93fq45qMZtQByTg15
-# 08YdE3EhPKhfPbYNBEETzRftycfKl9taIyF3Kt5yBqCGDMTxQTer2NZ5bcicNKTy
-# Z5dgOgD/dW3zDY7jjUWasrboFWkdtbejepmsGAncsCZPc6lYYwfq2z3XfiF0DjVv
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQCYThkCGnCOADM28f8ebmob
+# pFen2hlJbi9A/zrgdCK1DlbHiaRVcXbnIvKe07QcBNGKfyy1h0T7zQj1MMNr9zmK
+# DXcbDPQGM/GEUoTYEKkwr299vj6pxS9F43w2ycvtsHlVCgtBTkpy5DqsZvF682bP
+# 8wNi72/BORPHwOVUWubHaXYgAcEy1z07I3NLP4GFmo538plS3REgWODOvgwDCp/O
+# 0V2E8xOOwU+QCrh0eTesPxgnqtAkPiibtfm+pzQH2OYYgWQwUi96TXbbcFkFlSIr
+# d+w391Z806fTHdipR1WX+gT9MMR4EfA1LG/YVO12uNEG1VxmP+jBfnq3dHcQPSRC
 # SIG # End signature block
