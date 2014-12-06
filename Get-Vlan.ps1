@@ -1,257 +1,334 @@
-function Set-KeyNameValue {
+function Get-Vlan {
 <#
 .SYNOPSIS
-
-Sets or creates a K/N/V entry in Cumulus.
-
+Retrieves one or more entities from the Vlan entity set.
 
 
 .DESCRIPTION
+Retrieves one or more entities from the Vlan entity set.
 
-Sets or creates a K/N/V entry in Cumulus.
+You can retrieve one ore more entities from the entity set by specifying 
+Id, Name or other properties.
 
-By updating a K/N/V entry you can specify if you want to update the Key, Name, Value or any combination thereof.
 
+.INPUTS
+The Cmdlet can either return all available entities or filter entities on 
+specified conditions.
+See PARAMETERS section on possible inputs.
 
 
 .OUTPUTS
+default | json | json-pretty | xml | xml-pretty
 
-default | json | json-pretty | xml | xml-pretty | PSCredential | Clear
-
-.EXAMPLE
-
-Create a new K/N/V entry if it not exists.
-
-Set-CumulusKeyNameValue myKey myName myValue -CreateIfNotExist
-
-Id         : 3131
-Key        : myKey
-Name       : myName
-Value      : myValue
-CreatedBy  : SERVER1\Administrator
-Created    : 11/13/2014 11:08:46 PM +00:00
-ModifiedBy : SERVER1\Administrator
-Modified   : 11/13/2014 11:08:46 PM +00:00
-RowVersion : {0, 0, 0, 0...}
+In addition output can be filtered on specified properties.
 
 
 .EXAMPLE
+Get-Vlan -ListAvailble -Select Name
 
-Update an existing K/N/V with new key and new value.
-
-Set-CumulusKeyNameValue myKey -NewKey myNewKey myName myValue -NewValue myNewValue
-
-Id         : 3131
-Key        : myNewKey
-Name       : myName
-Value      : myNewValue
-CreatedBy  : SERVER1\Administrator
-Created    : 11/13/2014 11:08:46 PM +00:00
-ModifiedBy : SERVER1\Administrator
-Modified   : 11/13/2014 11:08:46 PM +00:00
-RowVersion : {0, 0, 0, 0...}
+Retrieves the name of all Vlans.
 
 
 .EXAMPLE
+Get-Vlan PRD100 -Select Description -ValueOnly -ConvertFrom-Json
 
-Update an existing K/N/V with new key and new value. Return format is json with pretty-print.
+Retrieves the Vlan 'PRD100' and only returns the 'Description' property 
+of it. In addition the contents of the property will be converted from JSON.
 
 
-Set-CumulusKeyNameValue myNewKey -NewKey myNewKey2 myName myNewValue -NewValue myNewValue2 -as json-pretty
-{
-  "Id":  3131,
-  "Key":  "myNewKey2",
-  "Name":  "myName",
-  "Value":  "myNewValue2",
-  "CreatedBy":  "SERVER1\\Administrator",
-  "Created":  "\/Date(1415920126010)\/",
-  "ModifiedBy":  "SERVER1\\Administrator",
-  "Modified":  "\/Date(1415920126010)\/",
-  "RowVersion":  [
-	0,
-	0,
-	0,
-	0,
-	0,
-	2,
-	152,
-	17
-    ]
-}
+.EXAMPLE
+Get-Vlan -ListAvailble -Select Name -First 3
+
+Retrieves the name of the first 3 Vlans.
+
+
+.EXAMPLE
+Get-Vlan 4005 -Select Name -ValueOnly
+
+Retrieves the name of the Vlan with Id 4005.
+
+
+.EXAMPLE
+Get-Vlan -ModifiedBy Administrator -Select Id, Name
+
+Retrieves Id and Name of all Vlans that have been modified by user 
+with name 'Administrator' (case insensitive substring match).
+
+
+.EXAMPLE
+Get-Vlan PRD100 -Select Description -ValueOnly -DefaultValue 42
+
+Retrieves the 'Description' property of a Vlan with Name 'PRD100' 
+and 42 if the entity is not found.
+
 
 .LINK
-
-Online Version: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Set-KeyNameValue/
+Online Version: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-Vlan/
 
 
 .NOTES
+See module manifest for required software versions and dependencies.
 
-See module manifest for dependencies and further requirements.
 
 #>
 [CmdletBinding(
-    SupportsShouldProcess = $false
+    SupportsShouldProcess = $true
 	,
     ConfirmImpact = "Low"
 	,
-	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Set-KeyNameValue/'
+	HelpURI = 'http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-Vlan/'
+	,
+	DefaultParameterSetName = 'list'
 )]
-Param (
-	# Specifies the key to modify
-	[Parameter(Mandatory = $true, Position = 0)]
-	[Alias("k")]
-	[string] $Key
+PARAM 
+(
+	# Specifies the name of the entity
+	[Parameter(Mandatory = $false, Position = 0, ParameterSetName = 'id')]
+	[int] $Id
 	,
-	# Specifies the new key name
-	[Parameter(Mandatory = $false)]
-	[string] $NewKey
-	,
-	# Specifies the name to modify
-	[Parameter(Mandatory = $true, Position = 1)]
+	[Parameter(Mandatory = $false, Position = 0, ParameterSetName = 'name')]
 	[Alias("n")]
 	[string] $Name
 	,
-	# Specifies the new name name
-	[Parameter(Mandatory = $false)]
-	[string] $NewName
+	# Filter by creator
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
+	[string] $CreatedBy
 	,
-	# Specifies the value to modify
-	[Parameter(Mandatory = $true, Position = 2)]
-	[Alias("v")]
-	[string] $Value
+	# Filter by modifier
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
+	[string] $ModifiedBy
 	,
-	# Specifies the new value name to modify
+	# Specify the attributes of the entity to return
 	[Parameter(Mandatory = $false)]
-	[string] $NewValue
+	[string[]] $Select = @()
 	,
-	# Specifies to create a KNV if it does not exist
+	# Specifies to return only values without header information. 
+	# This parameter takes precendes over the 'Select' parameter.
+	[ValidateScript( { if(1 -eq $Select.Count -And $_) { $true; } else { throw("You must specify exactly one 'Select' property when using 'ValueOnly'."); } } )]
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
+	[Alias("HideTableHeaders")]
+	[switch] $ValueOnly
+	,
+	# This value is only returned if the regular search would have returned no results
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
+	[Alias("default")]
+	$DefaultValue
+	,
+	# Specifies to deserialize JSON payloads
+	[ValidateScript( { if($ValueOnly -And $_) { $true; } else { throw("You must set the 'ValueOnly' switch when using 'ConvertFromJson'."); } } )]
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
+	[Alias("Convert")]
+	[switch] $ConvertFromJson
+	,
+	# Limits the output to the specified number of entries
 	[Parameter(Mandatory = $false)]
-	[Alias("c")]
-	[switch] $CreateIfNotExist = $false
+	[Alias("top")]
+	[int] $First
 	,
 	# Service reference to Cumulus
+	[ValidateScript( { if($_.Utilities -is [CumulusWrapper.Utilities.Utilities]) { $true; } else { throw("Connect to the server before using the Cmdlet."); } } )]
 	[Parameter(Mandatory = $false)]
 	[Alias("Services")]
 	[hashtable] $svc = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services
+	,
+	# Indicates to return all file information
+	[Parameter(Mandatory = $false, ParameterSetName = 'list')]
+	[switch] $ListAvailable = $false
 	,
 	# Specifies the return format of the Cmdlet
 	[ValidateSet('default', 'json', 'json-pretty', 'xml', 'xml-pretty')]
 	[Parameter(Mandatory = $false)]
 	[alias("ReturnFormat")]
 	[string] $As = 'default'
-) # Param
+)
 
-BEGIN {
+BEGIN 
+{
+	$datBegin = [datetime]::Now;
+	[string] $fn = $MyInvocation.MyCommand.Name;
+	Log-Debug -fn $fn -msg ("CALL. ls '{0}'. Name '{1}'." -f ($svc -is [Object]), $Name) -fac 1;
+	
+	$EntitySetName = 'Vlans';
+	
+	if($Select) 
+	{
+		$Select = $Select | Select -Unique;
+		$SelectString = [String]::Join(',',$Select);
+	}
+}
+# BEGIN
 
-$datBegin = [datetime]::Now;
-[string] $fn = $MyInvocation.MyCommand.Name;
-Log-Debug -fn $fn -msg ("CALL. ls '{0}'. Name '{1}'." -f ($svc -is [Object]), $Name) -fac 1;
-
-} # BEGIN
-PROCESS {
+PROCESS 
+{
 
 # Default test variable for checking function response codes.
 [Boolean] $fReturn = $false;
 # Return values are always and only returned via OutputParameter.
 $OutputParameter = $null;
-$AddedEntity = $null;
 
-try {
-
+try 
+{
 	# Parameter validation
-	if($svc.ApplicationData -isnot [CumulusWrapper.ApplicationData.ApplicationData]) {
-		$msg = "svc: Parameter validation FAILED. Connect to the server before using the Cmdlet.";
-		$e = New-CustomErrorRecord -m $msg -cat InvalidData -o $svc.ApplicationData;
-		throw($gotoError);
-	} # if
+	
+	if(!$PSCmdlet.ShouldProcess(($PSBoundParameters | Out-String)))
+	{
+		throw($gotoSuccess);
+	}
 
-	$Exp = @();
-	$KeyNameValueContents = @();
-	if($Key) { 
-		$Exp += ("(tolower(Key) eq '{0}')" -f $Key.ToLower());
-		$KeyNameValueContents += $Key;
-	} # if
-	if($Name) { 
-		$Exp += ("(tolower(Name) eq '{0}')" -f $Name.ToLower());
-		$KeyNameValueContents += $Name;
-	} # if
-	if($Value) { 
-		$Exp += ("(tolower(Value) eq '{0}')" -f $Value.ToLower());
-		$KeyNameValueContents += $Value;
-	} # if
-	$FilterExpression = [String]::Join(' and ', $Exp);
-	$KeyNameValueContentsString = [String]::Join(',', $KeyNameValueContents);
+	if($PSCmdlet.ParameterSetName -eq 'list') 
+	{
+		if($Select) 
+		{
+			if($PSBoundParameters.ContainsKey('First'))
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$orderby','Name').AddQueryOption('$top', $First) | Select -Property $Select;
+			}
+			else
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$orderby','Name') | Select -Property $Select;
+			}
+		}
+		else 
+		{
+			if($PSBoundParameters.ContainsKey('First'))
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$orderby','Name').AddQueryOption('$top', $First) | Select;
+			}
+			else
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$orderby','Name') | Select;
+			}
+		}
+	} 
+	else 
+	{
+		$Exp = @();
+		if($PSCmdlet.ParameterSetName -eq 'id')
+		{
+			$Exp += ("Id eq {0}" -f $Id);
+		}
+		if($Name) 
+		{ 
+			$Exp += ("tolower(Name) eq '{0}'" -f $Name.ToLower());
+		}
+		if($CreatedBy) { 
+			$Exp += ("(substringof('{0}', tolower(CreatedBy)) eq true)" -f $CreatedBy.ToLower());
+		} # if
+		if($ModifiedBy) { 
+			$Exp += ("(substringof('{0}', tolower(ModifiedBy)) eq true)" -f $ModifiedBy.ToLower());
+		} # if
+		$FilterExpression = [String]::Join(' and ', $Exp);
+	
+		if($Select) 
+		{
+			if($PSBoundParameters.ContainsKey('First'))
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$filter', $FilterExpression).AddQueryOption('$top', $First) | Select -Property $Select;
+			}
+			else
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$filter', $FilterExpression) | Select -Property $Select;
+			}
+		}
+		else 
+		{
+			if($PSBoundParameters.ContainsKey('First'))
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$filter', $FilterExpression).AddQueryOption('$top', $First) | Select;
+			}
+			else
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$filter', $FilterExpression) | Select;
+			}
+		}
+		if(1 -eq $Select.Count -And $ValueOnly)
+		{
+			$Response = $Response.$Select;
+		}
+		if($PSBoundParameters.ContainsKey('DefaultValue') -And !$Response)
+		{
+			$Response = $DefaultValue;
+		}
+		if($ValueOnly -And $ConvertFromJson)
+		{
+			$ResponseTemp = New-Object System.Collections.ArrayList;
+			foreach($item in $Response)
+			{
+				try
+				{
+					$null = $ResponseTemp.Add((ConvertFrom-Json -InputObject $item));
+				}
+				catch
+				{
+					$null = $ResponseTemp.Add($item);
+				}
+			}
+			$Response = $ResponseTemp.ToArray();
+		}
+	}
 
-	$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$filter', $FilterExpression).AddQueryOption('$top',1) | Select;
-	If(!$CreateIfNotExist -And !$knv) {
-		$msg = "Key/Name/Value: Parameter validation FAILED. Entity does not exist. Use '-CreateIfNotExist' to create resource: '{0}'" -f $KeyNameValueContentsString;
-		$e = New-CustomErrorRecord -m $msg -cat ObjectNotFound -o $Name;
-		throw($gotoError);
-	} # if
-	if(!$knv) {
-		$knv = New-Object CumulusWrapper.ApplicationData.KeyNameValue;
-		$knv.Key = $Key;
-		$knv.Name = $Name;
-		$knv.Value = $Value;
-		$svc.ApplicationData.AddToKeyNameValues($knv);
-		$AddedEntity = $knv;
-	} # if
-	if($NewKey) { $knv.Key = $NewKey; }
-	if($NewName) { $knv.Name = $NewName; }
-	if($NewValue) { $knv.Value = $NewValue; }
-	$svc.ApplicationData.UpdateObject($knv);
-	$r = $svc.ApplicationData.SaveChanges();
-
-	$r = $knv;
-	switch($As) {
-	'xml' { $OutputParameter = (ConvertTo-Xml -InputObject $r).OuterXml; }
-	'xml-pretty' { $OutputParameter = Format-Xml -String (ConvertTo-Xml -InputObject $r).OuterXml; }
-	'json' { $OutputParameter = ConvertTo-Json -InputObject $r -Compress; }
-	'json-pretty' { $OutputParameter = ConvertTo-Json -InputObject $r; }
-	Default { $OutputParameter = $r; }
-	} # switch
+	$r = $Response;
+	switch($As) 
+	{
+		'xml' { $OutputParameter = (ConvertTo-Xml -InputObject $r).OuterXml; }
+		'xml-pretty' { $OutputParameter = Format-Xml -String (ConvertTo-Xml -InputObject $r).OuterXml; }
+		'json' { $OutputParameter = ConvertTo-Json -InputObject $r -Compress; }
+		'json-pretty' { $OutputParameter = ConvertTo-Json -InputObject $r; }
+		Default { $OutputParameter = $r; }
+	}
 	$fReturn = $true;
 
-} # try
-catch {
-	if($gotoSuccess -eq $_.Exception.Message) {
+}
+catch 
+{
+	if($gotoSuccess -eq $_.Exception.Message) 
+	{
 		$fReturn = $true;
-	} else {
+	} 
+	else 
+	{
 		[string] $ErrorText = "catch [$($_.FullyQualifiedErrorId)]";
 		$ErrorText += (($_ | fl * -Force) | Out-String);
 		$ErrorText += (($_.Exception | fl * -Force) | Out-String);
 		$ErrorText += (Get-PSCallStack | Out-String);
 		
-		if($_.Exception -is [System.Net.WebException]) {
+		if($_.Exception -is [System.Net.WebException]) 
+		{
 			Log-Critical $fn ("[WebException] Request FAILED with Status '{0}'. [{1}]." -f $_.Status, $_);
 			Log-Debug $fn $ErrorText -fac 3;
-		} # [System.Net.WebException]
-		else {
+		}
+		else 
+		{
 			Log-Error $fn $ErrorText -fac 3;
-			if($gotoError -eq $_.Exception.Message) {
+			if($gotoError -eq $_.Exception.Message) 
+			{
 				Log-Error $fn $e.Exception.Message;
 				$PSCmdlet.ThrowTerminatingError($e);
-			} elseif($gotoFailure -ne $_.Exception.Message) { 
+			} 
+			elseif($gotoFailure -ne $_.Exception.Message) 
+			{ 
 				Write-Verbose ("$fn`n$ErrorText"); 
-			} else {
+			} 
+			else 
+			{
 				# N/A
-			} # if
-		} # other exceptions
+			}
+		}
 		$fReturn = $false;
 		$OutputParameter = $null;
-		
-		if($AddedEntity) { $svc.ApplicationData.DeleteObject($AddedEntity); }
-
-	} # !$gotoSuccess
-} # catch
-finally {
+	}
+}
+finally 
+{
 	# Clean up
 	# N/A
-} # finally
+}
 
-} # PROCESS
+}
+# PROCESS
 
-END {
+END 
+{
 
 $datEnd = [datetime]::Now;
 Log-Debug -fn $fn -msg ("RET. fReturn: [{0}]. Execution time: [{1}]ms. Started: [{2}]." -f $fReturn, ($datEnd - $datBegin).TotalMilliseconds, $datBegin.ToString('yyyy-MM-dd HH:mm:ss.fffzzz')) -fac 2;
@@ -259,25 +336,18 @@ Log-Debug -fn $fn -msg ("RET. fReturn: [{0}]. Execution time: [{1}]ms. Started: 
 # Return values are always and only returned via OutputParameter.
 return $OutputParameter;
 
-} # END
 }
-if($MyInvocation.ScriptName) { Export-ModuleMember -Function Set-KeyNameValue; } 
+# END
 
-<#
-2014-11-14; rrink; ADD: .HELPURI in inline help to fix HelpURI attribute in CmdletBinding
-2014-11-13; rrink; ADD: examples, see #1
-2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module
-2014-10-13; rrink; CHG: module variable is now loaded via PSD1 PrivateData
-2014-10-13; rrink; CHG: module is now defined via PSD1 and loads assembly via PSD1
-2014-08-17; rrink; CHG: rename ls to svc
-2014-08-16; rrink; ADD: Set-KeyNameValue.
-#>
+} # function
+
+if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-Vlan; } 
 
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU0ogFC8i2O4jxxPVllqKw1L0h
-# 7M2gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUTZRIQG1H38jz7cGEhVhTFyOd
+# U3+gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -375,25 +445,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Set-KeyNameValue; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSvh8muw1b/AoKkW+P1
-# 5EXk2LXOiTANBgkqhkiG9w0BAQEFAASCAQAxMlXq8NVF/ckbkAC0X+0bH2XxIAZl
-# aeUklnAokQ1etaV+Ymk1fH4ty6nKnSYHPnSwxPFlHegg63vhMfOOSeloFmuXf+LH
-# MkoyQ79+WE+sVXAqAjvy+errNCm8gVc7B/2LVsqF4edorualODeXp5YiKuiV4neZ
-# NOeg0/WNO6A2kM2yQBYSIrTtzVls0/WBYCsdB3BBNaGrHfvNfugyuZgw/0P61N4a
-# ugLI/CNDZXINq4rsT5cldT8oKW482uJWMmh0/Uo/WMb+57Jbe/EoICT6pB7LcJtz
-# ZqWms5gjVrj9BSzpoEvb6iAXRKD8avvwUbhs6vOtZGi5aEQyJBj/4sROoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSjfAis7CUOGS3P6RSB
+# +Vrh65PozjANBgkqhkiG9w0BAQEFAASCAQAbbdtbZeYWICp7jndyY8E4ru4KSffH
+# UR7JiHA7IEiCRL3sA8tFLtWnIIHnh4JSYEnmhIcJLprjHKhi2Nz8j+VFoM64aWCm
+# JM5ctJt0PKQ7YAQlFTh00sLILCLPXFUn6IiL7U06b6MVIIOSgQ/rqmp0ujakI6bZ
+# gBMDfnXg4u2McRr5UTMP/uaIN8dMt9D93yPOLygRwRvc76twf6hyf7C2e1GvhnR7
+# KwTw2uSQb/W39uPcBCPk2RqNV6CrKvSFzp6p/VQDSlhot+/iB1Z8MGEgmhTDNUjM
+# diVZA/8W2oc82CCcvsU/xLqUCuoCzqS7riaSLbVl9udnolNJjpdGYEMjoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# NjA4MDA0MFowIwYJKoZIhvcNAQkEMRYEFGPfO9Yb2fcIBOqaE0alEKx1KjdwMIGd
+# NjA3NTgxN1owIwYJKoZIhvcNAQkEMRYEFAMl6o8ifV3hjD9oJjE8uXpT6HMjMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBOBJ8YAyt2J3kz0JVawprJ
-# vMoUwPuHW5H75R4kep6uAnl1pSjdYvXmbEMGxrKbbObw+8opLUwUpGda0fpBPrG4
-# yiWJiBe6Qwok+SbpsBbJF5TOQ6nEig0iEYTjpcBjVoMrV6jZ/qLmJSpFy35ha/0f
-# nvJJzTOjounB5uy8GAROgN/fIFISNt4ozyTilHXzfqVatr5OHqkaRgMMu2lra3a/
-# 3vCmLSteJPplrx4Z+gIql2ixbQ/yfCCBY43JU1Uiv9lNYiebFslt/RHM6SWlsyWL
-# GwQabLtBYqFlO5/JgE30mfE+1GZkOX3ap5B8rdX02yteBWbNnUqy2IE4ACwN0qQK
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQANa0191NWcfUNNqII7y83a
+# vbKM2zdPhOcUhT6cfsJmhzx3gPcMLmC5Soib4r0k0EOnhnKaiQa8dWS7dK+uSPmJ
+# TSxnA+GDh3JwnJSevXMZjERIETDkaSG14jHdxFqmqHwS2v/n5hp84HL8Kd5srA0i
+# txLhk8breQLugRkT4aF37x7MoWerckZjwbdM2xmoUKDgUia4O/6W8qSYHiFBokH8
+# n/j+HfD5ycOGZVsfOYLuJfZRucklxiNA+44ugOu3cuiva71nFGs4bJ1wnico8Uaf
+# glSEoAOPgx5W6F59vlf3Kzz25gJHbLSAXIgfieznm+DK0Rxm7CFQCgT4B8oZu3pq
 # SIG # End signature block

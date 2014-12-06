@@ -27,7 +27,7 @@ CumulusWrapper.dll and the other (Microsoft) DLLs are not part of this Apache 2.
 See https://github.com/dfch/biz.dfch.PS.Cumulus.Utilities/wiki for a detailed description on how to use the Cmdlets in this module.
 </description>
     <summary>This Microsoft PowerShell module contains Cmdlets to perform various base actions and utilties/convenience functions with the our open-source based automation framework "Cumulus".</summary>
-    <releaseNotes>20141205</releaseNotes>
+    <releaseNotes>20141206</releaseNotes>
     <copyright>(c) 2014 d-fens GmbH</copyright>
     <language>en-US</language>
     <tags>Cumulus LightSwitch PowerShell OData</tags>
@@ -47,6 +47,7 @@ See https://github.com/dfch/biz.dfch.PS.Cumulus.Utilities/wiki for a detailed de
     <file src="Microsoft.Data.OData.dll" target="Microsoft.Data.OData.dll" />
     <file src="Microsoft.Data.Services.Client.dll" target="Microsoft.Data.Services.Client.dll" />
     <file src="System.Spatial.dll" target="System.Spatial.dll" />
+    <file src="Import-Module.ps1" target="Import-Module.ps1" />
     <file src="Enter-Server.ps1" target="Enter-Server.ps1" />
     <file src="Get-Credential.ps1" target="Get-Credential.ps1" />
     <file src="Get-HealthCheck.ps1" target="Get-HealthCheck.ps1" />
@@ -61,5 +62,18 @@ See https://github.com/dfch/biz.dfch.PS.Cumulus.Utilities/wiki for a detailed de
     <file src="Set-IaasGroup.ps1" target="Set-IaasGroup.ps1" />
     <file src="Set-Command.ps1" target="Set-Command.ps1" />
     <file src="Remove-Address.ps1" target="Remove-Address.ps1" />
+    <file src="Get-RequestItem.ps1" target="Get-RequestItem.ps1" />
+    <file src="Get-Region.ps1" target="Get-Region.ps1" />
+    <file src="Get-ManagementUri.ps1" target="Get-ManagementUri.ps1" />
+    <file src="Get-ManagementCredential.ps1" target="Get-ManagementCredential.ps1" />
+    <file src="Get-LockMutexInternal.ps1" target="Get-LockMutexInternal.ps1" />
+    <file src="Get-IaasGroup.ps1" target="Get-IaasGroup.ps1" />
+    <file src="Get-Command.ps1" target="Get-Command.ps1" />
+    <file src="Get-AuditTrail.ps1" target="Get-AuditTrail.ps1" />
+    <file src="Get-AppScreen.ps1" target="Get-AppScreen.ps1" />
+    <file src="Get-AppCategory.ps1" target="Get-AppCategory.ps1" />
+    <file src="Get-Announcement.ps1" target="Get-Announcement.ps1" />
+    <file src="Get-Computer.ps1" target="Get-Computer.ps1" />
+    <file src="Get-Vlan.ps1" target="Get-Vlan.ps1" />
   </files>
 </package>

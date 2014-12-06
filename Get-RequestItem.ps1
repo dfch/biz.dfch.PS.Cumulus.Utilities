@@ -1,23 +1,81 @@
-function Get-File {
+function Get-RequestItem {
 <#
 .SYNOPSIS
-Retrieves a file from the file store.
+Retrieves one or more entities from the RequestItem entity set.
 
 
 .DESCRIPTION
-Retrieves a file from the file store.
+Retrieves one or more entities from the RequestItem entity set.
 
-You can retrieve any files and versions from the file store. By default only the latest version is returned.
+You can retrieve one ore more entities from the entity set by specifying 
+Id, Status or other properties.
+
+
+.INPUTS
+The Cmdlet can either return all available entities or filter entities on 
+specified conditions.
+See PARAMETERS section on possible inputs.
+
+
+.OUTPUTS
+default | json | json-pretty | xml | xml-pretty
+
+In addition output can be filtered on specified properties.
 
 
 .EXAMPLE
-Get-File "myFile" -Version 4
+Get-RequestItem -ListAvailble -Select Status
 
-Retrieves the file 'myFile' with the version '4' from the file store.
+Retrieves the Status of all RequestItems.
+
+
+.EXAMPLE
+Get-RequestItem Pending -Type SccmProvisioning -Version 0 
+  -Template VirtualMachineRequestTemplate -First 1 -Select Parameters 
+ -ValueOnly -ConvertFromJson -DefaultValue 'Nothing found';
+
+Retrieves the first request item with Status Pending, Type 'SccmProvisioning', 
+Version 0 and Template 'VirtualMachineRequestTemplate'. The response includes 
+only the Parameters property which will be JSON decoded. In case no entity is 
+found the DefaultValue 'Nothing found' is returned. 
+
+
+.EXAMPLE
+Get-RequestItem PENDING -Select Description -ValueOnly -ConvertFrom-Json
+
+Retrieves the RequestItem with Status 'PENDING' and only returns the 
+'Description' property of it. In addition the contents of the property will 
+be converted from JSON.
+
+
+.EXAMPLE
+Get-RequestItem -ListAvailble -Select Status -First 3
+
+Retrieves the Status of the first 3 RequestItems.
+
+
+.EXAMPLE
+Get-RequestItem 4005 -Select Status -ValueOnly
+
+Retrieves the Status of the RequestItem with Id 4005.
+
+
+.EXAMPLE
+Get-RequestItem -ModifiedBy Administrator -Select Id, Status
+
+Retrieves Id and Status of all RequestItems that have been modified by user 
+with name 'Administrator' (case insensitive substring match).
+
+
+.EXAMPLE
+Get-RequestItem PENDING -Select Description -ValueOnly -DefaultValue 42
+
+Retrieves the 'Description' property of a RequestItem with Status 'PENDING' 
+and 42 if the entity is not found.
 
 
 .LINK
-Online Version: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-File/
+Online Version: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-RequestItem/
 
 
 .NOTES
@@ -26,40 +84,73 @@ See module manifest for required software versions and dependencies.
 
 #>
 [CmdletBinding(
-    SupportsShouldProcess = $false
+    SupportsShouldProcess = $true
 	,
     ConfirmImpact = "Low"
 	,
-	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-File/'
+	HelpURI = 'http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-RequestItem/'
 	,
 	DefaultParameterSetName = 'list'
 )]
-PARAM (
-	# Specifies the name of the entity
-	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'name')]
-	[Alias("n")]
-	[string] $Name
+PARAM 
+(
+	# Specifies the id of the entity
+	[Parameter(Mandatory = $false, Position = 0, ParameterSetName = 'id')]
+	[int] $Id
 	,
-	# Filter by version
-	[Parameter(Mandatory = $false, Position = 1, ParameterSetName = 'name')]
+	# Specifies the name of the entity
+	[Parameter(Mandatory = $false, Position = 0, ParameterSetName = 'name')]
+	[string] $Status
+	,
+	# Filter by type name
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
+	[string] $Type
+	,
+	# Filter by version number
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
 	[int] $Version
 	,
+	# Filter by template name
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
+	[string] $Template
+	,
 	# Filter by creator
-	[Parameter(Mandatory = $false, Position = 2, ParameterSetName = 'name')]
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
 	[string] $CreatedBy
 	,
 	# Filter by modifier
-	[Parameter(Mandatory = $false, Position = 3, ParameterSetName = 'name')]
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
 	[string] $ModifiedBy
 	,
-	# Specify the attribute of the file to return
-	[ValidateSet('Name', 'Version', 'Description', 'Value', 'Checksum')]
-	[Parameter(Mandatory = $false, Position = 4, ParameterSetName = 'name')]
-	[Alias("s")]
-	[Alias("Return")]
+	# Specify the attributes of the entity to return
+	[Parameter(Mandatory = $false)]
 	[string[]] $Select = @()
 	,
+	# Specifies to return only values without header information. 
+	# This parameter takes precendes over the 'Select' parameter.
+	[ValidateScript( { if(1 -eq $Select.Count -And $_) { $true; } else { throw("You must specify exactly one 'Select' property when using 'ValueOnly'."); } } )]
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
+	[Alias("HideTableHeaders")]
+	[switch] $ValueOnly
+	,
+	# This value is only returned if the regular search would have returned no results
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
+	[Alias("default")]
+	$DefaultValue
+	,
+	# Specifies to deserialize JSON payloads
+	[ValidateScript( { if($ValueOnly -And $_) { $true; } else { throw("You must set the 'ValueOnly' switch when using 'ConvertFromJson'."); } } )]
+	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
+	[Alias("Convert")]
+	[switch] $ConvertFromJson
+	,
+	# Limits the output to the specified number of entries
+	[Parameter(Mandatory = $false)]
+	[Alias("top")]
+	[int] $First
+	,
 	# Service reference to Cumulus
+	[ValidateScript( { if($_.Utilities -is [CumulusWrapper.Utilities.Utilities]) { $true; } else { throw("Connect to the server before using the Cmdlet."); } } )]
 	[Parameter(Mandatory = $false)]
 	[Alias("Services")]
 	[hashtable] $svc = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services
@@ -68,61 +159,94 @@ PARAM (
 	[Parameter(Mandatory = $false, ParameterSetName = 'list')]
 	[switch] $ListAvailable = $false
 	,
-	# Indicates to return all version information
-	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
-	[Alias("a")]
-	[switch] $AllVersions = $false
-	,
-	# Specifies to perform case sensitive search on the given name
-	[Parameter(Mandatory = $false, ParameterSetName = 'name')]
-	[Alias('MatchCase')]
-	[switch] $ExactName = $true
-	,
 	# Specifies the return format of the Cmdlet
 	[ValidateSet('default', 'json', 'json-pretty', 'xml', 'xml-pretty')]
 	[Parameter(Mandatory = $false)]
 	[alias("ReturnFormat")]
 	[string] $As = 'default'
-) # Param
+)
 
-BEGIN {
+BEGIN 
+{
+	$datBegin = [datetime]::Now;
+	[string] $fn = $MyInvocation.MyCommand.Name;
+	Log-Debug -fn $fn -msg ("CALL. ls '{0}'. Status '{1}'." -f ($svc -is [Object]), $Status) -fac 1;
+	
+	$EntitySetName = 'RequestItems';
+	
+	if($Select) 
+	{
+		$Select = $Select | Select -Unique;
+		$SelectString = [String]::Join(',',$Select);
+	}
+}
+# BEGIN
 
-$datBegin = [datetime]::Now;
-[string] $fn = $MyInvocation.MyCommand.Name;
-Log-Debug -fn $fn -msg ("CALL. ls '{0}'. Name '{1}'." -f ($svc -is [Object]), $Name) -fac 1;
-
-} # BEGIN
-PROCESS {
+PROCESS 
+{
 
 # Default test variable for checking function response codes.
 [Boolean] $fReturn = $false;
 # Return values are always and only returned via OutputParameter.
 $OutputParameter = $null;
 
-try {
-
+try 
+{
 	# Parameter validation
-	if($svc.ApplicationData -isnot [CumulusWrapper.ApplicationData.ApplicationData]) {
-		$msg = "svc: Parameter validation FAILED. Connect to the server before using the Cmdlet.";
-		$e = New-CustomErrorRecord -m $msg -cat InvalidData -o $svc.ApplicationData;
-		throw($gotoError);
-	} # if
 	
-	if($PSCmdlet.ParameterSetName -eq 'list') {
-		# $File = $svc.ApplicationData.Files.AddQueryOption('$orderby','Name asc,Version asc,Modified asc').AddQueryOption('$select','Name, Version, Modified, Checksum') | Select Name, Version, Modified, Checksum -Unique;
-		$File = $svc.ApplicationData.Files.AddQueryOption('$orderby','Name asc,Version asc,Modified asc') | Select Name, Version, Modified, Checksum -Unique;
-	} else {
+	if(!$PSCmdlet.ShouldProcess(($PSBoundParameters | Out-String)))
+	{
+		throw($gotoSuccess);
+	}
+
+	if($PSCmdlet.ParameterSetName -eq 'list') 
+	{
+		if($Select) 
+		{
+			if($PSBoundParameters.ContainsKey('First'))
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$orderby','Status').AddQueryOption('$top', $First) | Select -Property $Select;
+			}
+			else
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$orderby','Status') | Select -Property $Select;
+			}
+		}
+		else 
+		{
+			if($PSBoundParameters.ContainsKey('First'))
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$orderby','Status').AddQueryOption('$top', $First) | Select;
+			}
+			else
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$orderby','Status') | Select;
+			}
+		}
+	} 
+	else 
+	{
 		$Exp = @();
-		if($Name) { 
-			if($ExactName) {
-				$Exp += ("(tolower(Name) eq '{0}')" -f $Name.ToLower());
-			} else {
-				$Exp += ("(substringof('{0}', tolower(Name)) eq true)" -f $Name.ToLower());
-			} # if
-		} # if
-		if($Version) { 
-			$Exp += ("(Version eq {0})" -f $Version);
-		} # if
+		if($PSCmdlet.ParameterSetName -eq 'id')
+		{
+			$Exp += ("Id eq {0}" -f $Id);
+		}
+		if($Status) 
+		{ 
+			$Exp += ("tolower(Status) eq '{0}'" -f $Status.ToLower());
+		}
+		if($Type) 
+		{ 
+			$Exp += ("tolower(Type) eq '{0}'" -f $Type.ToLower());
+		}
+		if($Version) 
+		{ 
+			$Exp += ("Version eq {0}" -f $Version.ToLower());
+		}
+		if($Template) 
+		{ 
+			$Exp += ("tolower(Template) eq '{0}'" -f $Template.ToLower());
+		}
 		if($CreatedBy) { 
 			$Exp += ("(substringof('{0}', tolower(CreatedBy)) eq true)" -f $CreatedBy.ToLower());
 		} # if
@@ -131,74 +255,116 @@ try {
 		} # if
 		$FilterExpression = [String]::Join(' and ', $Exp);
 	
-		if($Select) {
-			$Select = $Select | Select -Unique;
-			$SelectString = [String]::Join(',',$Select);
-		} # if
-		if($AllVersions) {
-			if($Select) {
-				# $File = $svc.ApplicationData.Files.AddQueryOption('$filter', $FilterExpression).AddQueryOption('$orderby','Version desc,Modified desc').AddQueryOption('$select', $SelectString) | Select -Property $Select;
-				$File = $svc.ApplicationData.Files.AddQueryOption('$filter', $FilterExpression).AddQueryOption('$orderby','Version desc,Modified desc') | Select -Property $Select;
-			} else {
-			$File = $svc.ApplicationData.Files.AddQueryOption('$filter', $FilterExpression).AddQueryOption('$orderby','Version desc,Modified desc') | Select;
-			} # if
-		} else {
-			if($Select) {
-				# $File = $svc.ApplicationData.Files.AddQueryOption('$filter', $FilterExpression).AddQueryOption('$orderby','Version desc,Modified desc').AddQueryOption('$top',1).AddQueryOption('$select', $SelectString) | Select -Property $Select;
-				$File = $svc.ApplicationData.Files.AddQueryOption('$filter', $FilterExpression).AddQueryOption('$orderby','Version desc,Modified desc').AddQueryOption('$top',1) | Select -Property $Select;
-			} else {
-				$File = $svc.ApplicationData.Files.AddQueryOption('$filter', $FilterExpression).AddQueryOption('$orderby','Version desc,Modified desc').AddQueryOption('$top',1) | Select;
-			} # if
-		} # if
-	} # if
+		if($Select) 
+		{
+			if($PSBoundParameters.ContainsKey('First'))
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$filter', $FilterExpression).AddQueryOption('$top', $First) | Select -Property $Select;
+			}
+			else
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$filter', $FilterExpression) | Select -Property $Select;
+			}
+		}
+		else 
+		{
+			if($PSBoundParameters.ContainsKey('First'))
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$filter', $FilterExpression).AddQueryOption('$top', $First) | Select;
+			}
+			else
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$filter', $FilterExpression) | Select;
+			}
+		}
+		if(1 -eq $Select.Count -And $ValueOnly)
+		{
+			$Response = $Response.$Select;
+		}
+		if($PSBoundParameters.ContainsKey('DefaultValue') -And !$Response)
+		{
+			$Response = $DefaultValue;
+		}
+		if($ValueOnly -And $ConvertFromJson)
+		{
+			$ResponseTemp = New-Object System.Collections.ArrayList;
+			foreach($item in $Response)
+			{
+				try
+				{
+					$null = $ResponseTemp.Add((ConvertFrom-Json -InputObject $item));
+				}
+				catch
+				{
+					$null = $ResponseTemp.Add($item);
+				}
+			}
+			$Response = $ResponseTemp.ToArray();
+		}
+	}
 
-	$r = $File;
-	switch($As) {
-	'xml' { $OutputParameter = (ConvertTo-Xml -InputObject $r).OuterXml; }
-	'xml-pretty' { $OutputParameter = Format-Xml -String (ConvertTo-Xml -InputObject $r).OuterXml; }
-	'json' { $OutputParameter = ConvertTo-Json -InputObject $r -Compress; }
-	'json-pretty' { $OutputParameter = ConvertTo-Json -InputObject $r; }
-	Default { $OutputParameter = $r; }
-	} # switch
+	$r = $Response;
+	switch($As) 
+	{
+		'xml' { $OutputParameter = (ConvertTo-Xml -InputObject $r).OuterXml; }
+		'xml-pretty' { $OutputParameter = Format-Xml -String (ConvertTo-Xml -InputObject $r).OuterXml; }
+		'json' { $OutputParameter = ConvertTo-Json -InputObject $r -Compress; }
+		'json-pretty' { $OutputParameter = ConvertTo-Json -InputObject $r; }
+		Default { $OutputParameter = $r; }
+	}
 	$fReturn = $true;
 
-} # try
-catch {
-	if($gotoSuccess -eq $_.Exception.Message) {
+}
+catch 
+{
+	if($gotoSuccess -eq $_.Exception.Message) 
+	{
 		$fReturn = $true;
-	} else {
+	} 
+	else 
+	{
 		[string] $ErrorText = "catch [$($_.FullyQualifiedErrorId)]";
 		$ErrorText += (($_ | fl * -Force) | Out-String);
 		$ErrorText += (($_.Exception | fl * -Force) | Out-String);
 		$ErrorText += (Get-PSCallStack | Out-String);
 		
-		if($_.Exception -is [System.Net.WebException]) {
+		if($_.Exception -is [System.Net.WebException]) 
+		{
 			Log-Critical $fn ("[WebException] Request FAILED with Status '{0}'. [{1}]." -f $_.Status, $_);
 			Log-Debug $fn $ErrorText -fac 3;
-		} # [System.Net.WebException]
-		else {
+		}
+		else 
+		{
 			Log-Error $fn $ErrorText -fac 3;
-			if($gotoError -eq $_.Exception.Message) {
+			if($gotoError -eq $_.Exception.Message) 
+			{
 				Log-Error $fn $e.Exception.Message;
 				$PSCmdlet.ThrowTerminatingError($e);
-			} elseif($gotoFailure -ne $_.Exception.Message) { 
+			} 
+			elseif($gotoFailure -ne $_.Exception.Message) 
+			{ 
 				Write-Verbose ("$fn`n$ErrorText"); 
-			} else {
+			} 
+			else 
+			{
 				# N/A
-			} # if
-		} # other exceptions
+			}
+		}
 		$fReturn = $false;
 		$OutputParameter = $null;
-	} # !$gotoSuccess
-} # catch
-finally {
+	}
+}
+finally 
+{
 	# Clean up
 	# N/A
-} # finally
+}
 
-} # PROCESS
+}
+# PROCESS
 
-END {
+END 
+{
 
 $datEnd = [datetime]::Now;
 Log-Debug -fn $fn -msg ("RET. fReturn: [{0}]. Execution time: [{1}]ms. Started: [{2}]." -f $fReturn, ($datEnd - $datBegin).TotalMilliseconds, $datBegin.ToString('yyyy-MM-dd HH:mm:ss.fffzzz')) -fac 2;
@@ -206,24 +372,18 @@ Log-Debug -fn $fn -msg ("RET. fReturn: [{0}]. Execution time: [{1}]ms. Started: 
 # Return values are always and only returned via OutputParameter.
 return $OutputParameter;
 
-} # END
 }
-if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-File; } 
+# END
 
-<#
-2014-11-12; rrink; CHG: ListAvailable is now default parameter set. removed '$select' clause from query option as this breaks the WCF Data Service
-2014-11-11; rrink; CHG: dot-sourcing, Export-ModuleMember now is only invoked when loaded via module
-2014-10-13; rrink; CHG: module variable is now loaded via PSD1 PrivateData
-2014-10-13; rrink; CHG: module is now defined via PSD1 and loads assembly via PSD1
-2014-08-17; rrink; CHG: rename ls to svc
-2014-08-17; rrink; ADD: Get-File.
-#>
+} # function
+
+if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-RequestItem; } 
 
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUq8r0hHH4pWrw+3OGibKkKAkg
-# YQOgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUBKsgH4pzUH7E7EqUPrc9Yx/6
+# UHWgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -321,25 +481,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-File; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTJV+o4jGOOhF/FMXqR
-# 3LS1mFE4szANBgkqhkiG9w0BAQEFAASCAQC5+TNPGz9d+6/9xJ9tQ589ZvxLFIQO
-# cKu7t0DqQL41EipbBoGk3R7ePHrwkcbgM7E58j/phZjXMn5I7IslwzigpJeKzCtj
-# zf6TUqy3zbMcYMoZyFvUKOmGPnKTc00/o8BtAbfJN/MEdvYKbnNnGKCzGMzo5Rzk
-# heBwgf3ykExrObOC9vwCCB426rVynZnMJebVevYap9yXxqEExiVogAWRUNjbfz4/
-# mSq9M+PsBr9iKdmqbuyGqrzsPMezh+rJDtjHulmhV5E9xfLjFzlIon76OqO0/07v
-# xY3W0VPTtozNxYpkLUvouoxFUl+8NcemfXkLwIwBvUTvJB8psM7rii7ToYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQGMownPl7zLftBznvA
+# CZYm9DmLdDANBgkqhkiG9w0BAQEFAASCAQC+I2Cz13Ao1gqupH8503O0Dt84rjzh
+# p3sROYLKAEAWTkolMdW+U/CwZfE/KA0SOwvuTiuVafxP9PkUDvghK0UZIqiFis3v
+# 3E+DXxVaxflb5YKMmVokCEQP3WZvqf9DM+VVXgC0V/x5MCahozAsqCcONqWVjHLZ
+# wFSL90tja1E06en/HsX6+sK/Lc++EWiaN2/9Q0fvrDRFDLecwzcyzhMfTq/MApX3
+# EEgpMwlbcthsn2FUogzAbe1NAOcgOXXNouQ4FFBfnnrnL7rPy6mFhoeQ8Uz0VQR+
+# GaoLc3vdJJrJFjNFGkqcKCJNA2sVTKzlKB50vkmQ0pM8wr0mC4CV/getoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# NjA3NTgwN1owIwYJKoZIhvcNAQkEMRYEFEvt3oxrk8huSST9QWOzcvbFW3QvMIGd
+# NjA3NTgxNFowIwYJKoZIhvcNAQkEMRYEFCVwxIhQMMx9w0KRMvL0fwpG0iscMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQA07tlI3NEiUDCV9HX29Wbw
-# cZB/HtCZTToM6Cpddsr6uDNhZ3vyc3Qj4gOlTHWBRakZnVTynQsC6OIrOU1wJM17
-# bpn1ciDdiAjsvl84xiUbqaCuZbn+1Ni6lpMBYDQv5ZTeuVWMqjC89zFrrAoTcNGQ
-# +Bs+rkrFEA76C2fVUeleTEel9c9Rn9X0E25DT2oqXoJc4Wz1VJhq+Tb3B5JlLOvC
-# w4UCX70o5SG0We7J3YQ3pYZayjbOadG+sR/05FjXE6VIfhyV1loGjywufaCJjQf1
-# NiCpZ6kq6nwHgf+UAfbNKeWq2etwTTAVmO02mLl4lr1RzBZozBiD8QBlBHiIVu9k
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQCps8XVbk1Y8DJ016g4Bj1k
+# NoXTQj5tA8lQnHMCx1mliCwciov22kkgrMMc0xyTIFWwd79rjexPU+RObpsVs6oV
+# KZc4LGDsMKgSO4HCk0NoPSbdU69IbpcCnK6zDnZM4wVaHkeDe5ISKz6HdS4wm/Jb
+# bgaeZ5yxc9nk2hWEyRShhm4mwnoPYuEzL3AJkMDzTUGjsLuhO69gtxfkeYr9iJKM
+# xBn74xG0f8tSR5b3lSI6VX1dPNoj3aoCM7Ek85vgAZLZ8a4po5WpsDCRy9y9PkL7
+# /jluPX6yFBrrStBbXTxGl+bmIYM+NIIexm9NcMXFJ2U8t4OZHSY/uOZ28SfylYfK
 # SIG # End signature block

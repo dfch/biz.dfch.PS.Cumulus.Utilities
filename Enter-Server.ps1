@@ -1,52 +1,24 @@
 function Enter-Server {
 <#
-
 .SYNOPSIS
-
 Performs a login to a Cumulus server.
 
 
-
 .DESCRIPTION
+Performs a login to a Cumulus server. 
 
-Performs a login to a Cumulus server. This is the first Cmdlet to be executed and required for all other Cmdlets of this module. It creates service references to the routers of the application.
-
+This is the first Cmdlet to be executed and required for all other Cmdlets of this module. It creates service references to the routers of the application.
 
 
 .OUTPUTS
-
 This Cmdlet returns a hashtable with references to the DataServiceContexts of the application. On failure it returns $null.
 
 
-
 .INPUTS
-
 See PARAMETER section for a description of input parameters.
 
 
-
-.PARAMETER ServerBaseUri
-
-[Optional] The ServerBaseUri such as 'https://cumulus/'. If you do not specify this value it is taken from the module configuration file.
-
-
-
-.PARAMETER BaseUrl
-
-
-[Optional] The BaseUrl such as '/cumulus/'. If you do not specify this value it is taken from the module configuration file.
-
-
-.PARAMETER Credential
-
-Encrypted credentials as [System.Management.Automation.PSCredential] with which to perform login. Default is credential as specified in the module configuration file.
-
-
-
 .EXAMPLE
-
-Perform a login to a Cumulus server with default credentials (current user) and against server defined within module configuration xml file.
-
 $svc = Enter-Cumulus;
 $svc
 
@@ -56,120 +28,158 @@ SecurityData    CumulusWrapper.SecurityData.SecurityData
 Utilities       CumulusWrapper.Utilities.Utilities
 ApplicationData CumulusWrapper.ApplicationData.ApplicationData
 
+Perform a login to a Cumulus server with default credentials (current user) and against server defined within module configuration xml file.
 
 
 .LINK
-
 Online Version: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Enter-Server/
 
 
-
 .NOTES
+See module manifest for required software versions and dependencies at: 
+http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/biz.dfch.PS.Cumulus.Utilities.psd1/
 
-See module manifest for required software versions and dependencies at: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/biz.dfch.PS.Cumulus.Utilities.psd1/
 
 #>
 [CmdletBinding(
 	HelpURI='http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Enter-Server/'
 )]
 [OutputType([hashtable])]
-Param (
+Param 
+(
+	# [Optional] The ServerBaseUri such as 'https://cumulus/'. If you do not 
+	# specify this value it is taken from the module configuration file.
 	[Parameter(Mandatory = $false, Position = 0)]
-	[Uri] $ServerBaseUri = $biz_dfch_PS_Cumulus_Utilities.ServerBaseUri
+	[Uri] $ServerBaseUri = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).ServerBaseUri
 	, 
+	# [Optional] The BaseUrl such as '/cumulus/'. If you do not specify this 
+	# value it is taken from the module configuration file.
 	[Parameter(Mandatory = $false, Position = 1)]
-	[string] $BaseUrl = $biz_dfch_PS_Cumulus_Utilities.BaseUrl
+	[string] $BaseUrl = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).BaseUrl
 	, 
+	# Encrypted credentials as [System.Management.Automation.PSCredential] with 
+	# which to perform login. Default is credential as specified in the module 
+	# configuration file.
 	[Parameter(Mandatory = $false, Position = 2)]
 	[alias("cred")]
-	$Credential = $biz_dfch_PS_Cumulus_Utilities.Credential
-) # Param
-BEGIN {
+	$Credential = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Credential
+)
+
+BEGIN 
+{
 	$datBegin = [datetime]::Now;
 	[string] $fn = $MyInvocation.MyCommand.Name;
 	Log-Debug $fn ("CALL. ServerBaseUri '{0}'; BaseUrl '{1}'. Username '{2}'" -f $ServerBaseUri, $BaseUrl, $Credential.Username ) -fac 1;
 }
-PROCESS {
+# BEGIN 
+
+PROCESS 
+{
 
 [boolean] $fReturn = $false;
 
-try {
+try 
+{
 	# Parameter validation
 	# N/A
 	
 	[Uri] $Uri = '{0}{1}' -f $ServerBaseUri.AbsoluteUri.TrimEnd('/'), ('{0}/' -f $BaseUrl.TrimEnd('/'));
-	foreach($k in $biz_dfch_PS_Cumulus_Utilities.Controllers.Keys) { 
-		[Uri] $UriService = '{0}{1}' -f $Uri.AbsoluteUri, $biz_dfch_PS_Cumulus_Utilities.Controllers.$k;
+	foreach($k in (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Controllers.Keys) 
+	{ 
+		[Uri] $UriService = '{0}{1}' -f $Uri.AbsoluteUri, (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Controllers.$k;
 		Log-Debug $fn ("Creating service '{0}': '{1}' ..." -f $k, $UriService.AbsoluteUri);
-		switch($k) {
-		'Utilities' {
+		switch($k) 
+		{
+		'Utilities' 
+		{
 			$o = New-Object CumulusWrapper.Utilities.Utilities($UriService.AbsoluteUri);
 			$o.Credentials = $Credential;
-			if($biz_dfch_PS_Cumulus_Utilities.Format -eq 'JSON') { $o.Format.UseJson(); }
-			$biz_dfch_PS_Cumulus_Utilities.Services.$k = $o;
+			if((Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Format -eq 'JSON') { $o.Format.UseJson(); }
+			(Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services.$k = $o;
 		}
-		'ApplicationData' {
+		'ApplicationData' 
+		{
 			$o = New-Object CumulusWrapper.ApplicationData.ApplicationData($UriService.AbsoluteUri);
 			$o.Credentials = $Credential;
-			if($biz_dfch_PS_Cumulus_Utilities.Format -eq 'JSON') { $o.Format.UseJson(); }
-			$biz_dfch_PS_Cumulus_Utilities.Services.$k = $o;
+			if((Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Format -eq 'JSON') { $o.Format.UseJson(); }
+			(Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services.$k = $o;
 		}
-		'SecurityData' {
+		'SecurityData' 
+		{
 			$o = New-Object CumulusWrapper.SecurityData.SecurityData($UriService.AbsoluteUri);
 			$o.Credentials = $Credential;
-			if($biz_dfch_PS_Cumulus_Utilities.Format -eq 'JSON') { $o.Format.UseJson(); }
-			$biz_dfch_PS_Cumulus_Utilities.Services.$k = $o;
+			if((Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Format -eq 'JSON') { $o.Format.UseJson(); }
+			(Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services.$k = $o;
 		}
-		default {
+		default 
+		{
 			Log-Error $fn ("Unknown service '{0}': '{1}'. Skipping ..." -f $k, $UriService.AbsoluteUri);
 		}
-		} # switch
-	} # foreach
+		}
+	}
 
-	$OutputParameter = $biz_dfch_PS_Cumulus_Utilities.Services;
+	$OutputParameter = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services;
 	$fReturn = $true;
 
-} # try
-catch {
-	if($gotoSuccess -eq $_.Exception.Message) {
+}
+catch 
+{
+	if($gotoSuccess -eq $_.Exception.Message) 
+	{
 			$fReturn = $true;
-	} else {
+	} 
+	else 
+	{
 		[string] $ErrorText = "catch [$($_.FullyQualifiedErrorId)]";
 		$ErrorText += (($_ | fl * -Force) | Out-String);
 		$ErrorText += (($_.Exception | fl * -Force) | Out-String);
 		$ErrorText += (Get-PSCallStack | Out-String);
 		
-		if($_.Exception -is [System.Net.WebException]) {
+		if($_.Exception -is [System.Net.WebException]) 
+		{
 			Log-Critical $fn "Login to Uri '$Uri' with Username '$Username' FAILED [$_].";
 			Log-Debug $fn $ErrorText -fac 3;
-		} # [System.Net.WebException]
-		else {
+		}
+		else 
+		{
 			Log-Error $fn $ErrorText -fac 3;
-			if($gotoError -eq $_.Exception.Message) {
+			if($gotoError -eq $_.Exception.Message) 
+			{
 				Log-Error $fn $e.Exception.Message;
 				$PSCmdlet.ThrowTerminatingError($e);
-			} elseif($gotoFailure -ne $_.Exception.Message) { 
+			} 
+			elseif($gotoFailure -ne $_.Exception.Message) 
+			{ 
 				Write-Verbose ("$fn`n$ErrorText"); 
-			} else {
+			} 
+			else 
+			{
 				# N/A
-			} # if
-		} # other exceptions
+			}
+		}
 		$fReturn = $false;
 		$OutputParameter = $null;
-	} # !$gotoSuccess
-} # catch
-finally {
+	}
+}
+finally 
+{
 	# Clean up
 	# N/A
-} # finally
+}
 return $OutputParameter;
 
-} # PROCESS
-END {
+}
+# PROCESS
+
+END 
+{
 	$datEnd = [datetime]::Now;
 	Log-Debug -fn $fn -msg ("RET. fReturn: [{0}]. Execution time: [{1}]ms. Started: [{2}]." -f $fReturn, ($datEnd - $datBegin).TotalMilliseconds, $datBegin.ToString('yyyy-MM-dd HH:mm:ss.fffzzz')) -fac 2;
-} # END
+}
+# END
+
 } # function
+
 Set-Alias -Name Connect- -Value 'Enter-Server';
 Set-Alias -Name Enter- -Value 'Enter-Server';
 if($MyInvocation.ScriptName) { Export-ModuleMember -Function Enter-Server -Alias Connect-, Enter-; } 
@@ -191,8 +201,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Enter-Server -Alias
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUjatG5qWnMK0pBsgD1gG4k9mB
-# R+KgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUlTqeSL65HxJoE58hD+3Aj6pz
+# m/WgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -290,25 +300,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Enter-Server -Alias
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQE4/212K7dsCtkH/GD
-# lSU4G0ib7jANBgkqhkiG9w0BAQEFAASCAQCykKp5dSp3Yw5MjpsiprWV9nfh1FLi
-# M382skuWuUZyJ/CB5h3QF7t3mE31K9MWeeFX2kWYpyR8FeioT3i3VFKfvNQT4+n4
-# ki3PSm2FsbmQ0hOpB01uzbOryYd9ljpz35aAzBtz55+uR0gN+sC8WQA10GAYrHzO
-# s8C/o9pRs168tqo9fhPBy5QXbcFbPMBCM3hiUy3fwLviviRx1sRN9o82qO4CWgm0
-# 76MjOIWA/Y/vJNTFxhIdyiiqxMfUVeXg2ks4HKn4QbJaQHQohTnidu1izxrR62ff
-# 34Wdhvla8uS+ucAdxSs5a3UQc7xzEz7SKv4wKpEe7gj8meR2UIw3dc2doYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBT8m4IoyOUj9YXo2z8F
+# E9KGnfq/ZDANBgkqhkiG9w0BAQEFAASCAQBfBVG1oA2LxyxoR7cmj1Jyj4+RHbl7
+# ZvRV3YGgFPWDRlShVRp/dA/bl7lW68q0xpAcDS+PBLdWEh5TA9k4hvJ+vyTodSzM
+# K2H+mZmk/+n5KfXaVpqNh1hj4RgtQY9neqwKDZdWfBOqJ4lD7NhfjOxMNS+u1HCi
+# pGbeuHEiew9RtrV10yomRqUOVGBgYnvRSBQdOJ/TBh2WXLVf7uSwdZOyw7quMSOx
+# /a+FlWNh+oydpUeFXa2grkG3wY1XYtibCpeKKrM9508W1ka57Ug2LVHZ7mCsPIPo
+# tIchBKmSHufYqkzbqq8uSAwP33YuR6Fo6zNffKhS/nSv2EnA6LY1nibBoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# NTA4MTQyMVowIwYJKoZIhvcNAQkEMRYEFNxNho3Q2rB/aQYxV7s/db5xJhOgMIGd
+# NjA3NTc1OVowIwYJKoZIhvcNAQkEMRYEFDTyxVFQD9AUDut6IaSqbPBFfCwoMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAWjBFW7AQ7I2IJdPL2vLLr
-# KdlTtnQyGE79Asx/xn1WcyHO+DsXLJyg9Pbf24qxrJWA5EdyXyByK0BZ3eP19FQk
-# Htm8NhjhRvfTp0kO5w0hST8SMY/OFy2vo0Heif4KoG5r8qEBW6LoS3jpiiYvwH/y
-# 9lsUvp7HR71cLxYq1BE/TmYe+BBvjvOYfZHiAv5ThSiPfr9EV1r1IWhgBjNM6xIm
-# tgiEns16zjXyrsW4P8NFFBzjAM0UEEYra2P3LRmIMTb4l2C+3+ziP4eYVWhdDGUR
-# FDULXXgo7rli3wnEBlN+nskjoCciMYJQ0AloreaEQEKK69FS17yoByI+4su/+hnW
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAeFpFfvtKZPqkbeGvJTLII
+# m7FPc3XmVuKJ6fg69bWZ5bZOy21Oq36mg/aKyMkhSNKg3P+gB5KRBzM+lbez79uo
+# oTW30QPqr7zjuigIwkzw50p5pbnx1fDeT6pVcfQHzqjUY3TAH06I1zRuWKndQlPG
+# qfFba4Uo1IUiTRC/Hkrv2GGeC2zqfrYbSdz+pS2L45QpVjyLDPdL2lGh1RD/pdw6
+# IArhNNmqxqJX3EvSaKW47rCBuJmiEjAh3wXCRhJFxj+vpyovRG1UBdjlG8RVJMFm
+# fn04Mm8oC69IHMNkeKRMgB+stPUKVab+bB2KLs84Eh9asIH59tvWeMzpjirmhj7s
 # SIG # End signature block

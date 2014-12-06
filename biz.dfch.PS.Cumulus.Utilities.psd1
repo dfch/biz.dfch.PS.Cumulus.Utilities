@@ -12,7 +12,7 @@
 RootModule = 'biz.dfch.PS.Cumulus.Utilities.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.2.20141205'
+ModuleVersion = '1.0.2.20141206'
 
 # ID used to uniquely identify this module
 GUID = '1e56d68e-6b25-40c3-be14-0c78ef9b5be0'
@@ -107,6 +107,32 @@ NestedModules = @(
 	'Set-Command.ps1'
 	,
 	'Remove-Address.ps1'
+	,
+	'Get-RequestItem.ps1'
+	,
+	'Get-Region.ps1'
+	,
+	'Get-ManagementUri.ps1'
+	,
+	'Get-ManagementCredential.ps1'
+	,
+	'Get-LockMutexInternal.ps1'
+	,
+	'Get-IaasGroup.ps1'
+	,
+	'Get-Command.ps1'
+	,
+	'Get-AuditTrail.ps1'
+	,
+	'Get-AppScreen.ps1'
+	,
+	'Get-AppCategory.ps1'
+	,
+	'Get-Announcement.ps1'
+	,
+	'Get-Computer.ps1'
+	,
+	'Get-Vlan.ps1'
 )
 
 # Functions to export from this module
@@ -141,6 +167,8 @@ FileList = @(
 	'Microsoft.Data.Services.Client.dll'
 	,
 	'System.Spatial.dll'
+	,
+	'Import-Module.ps1'
 )
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess
@@ -160,8 +188,8 @@ DefaultCommandPrefix = 'Cumulus'
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUyqazwHoDp87aV1cFsUhlZDhv
-# 4h6gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUSMTvIVG3Ms0gHRHkaisSbiSr
+# yyWgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -259,25 +287,25 @@ DefaultCommandPrefix = 'Cumulus'
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTMBZLTf843roZrJPym
-# RZuHabsITjANBgkqhkiG9w0BAQEFAASCAQAPxEX2pnThLo2soYyHUvHbXN7RLCAm
-# bJAdYmNDpHftPjAUY/501VTvsdFon0FdMNNK/so1ZHEpRuuZ0WZZ4n0y24A4iAIw
-# Gxg0F4CGKoYWb7I2+0bm/bq1qGUWyNWEdyXpMQ72j12277qLi0BqvpXiWOS2Dcmn
-# cKwzKfr9OTANfD7Z3jBs7AxTJtheGHYUtoKJm7xNFgbQlGGTKR4MfygLfpox+Czq
-# 7k1DiL+WR/JCfRZxroIUOZucT+mXKFNAuI/cq7oh6RIkjhkS76iOIPb49l4WwStm
-# UvcDfkUXmTPKJQN7uerOmTMdpXm4jf47nr7Zdou2dSUZ+FF7WnKIcj1BoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQXmJ9X2iNmHzlsLzBu
+# 70Q7uvarUzANBgkqhkiG9w0BAQEFAASCAQBa/I0OhoQ3adIvg9Z/zzYGMblFHENO
+# KpPy65XngMkUj6WhBf9ITLNQzRCnc9TSSNM3cUnWWre2hOU55ArE4Y2kp/tXBy2N
+# peilUS3cRQI1qunquG5JlmWWFO27CJirKULdRA/6E5jiHCaL4A5L6bdho8FMgvSZ
+# WiRTZrPtTM5mYKN4+90aJW6+qPZG3/A+zbtIPR68ny8BKoiW5HoCg9ymbfZ/HQvo
+# xsKF0e7EmdN/NWiayqfwLvjks+KzXauzPwJBB6GzZnbD9uptMtAl8356neHQTlNZ
+# 7u+pCe03/80G4rdBfB5RfPfohAil+quNfbCrodBhRrlGPc5+6sHCBZyJoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# NTA4NTEzM1owIwYJKoZIhvcNAQkEMRYEFKMkbT2fZPkKeMJJ68+dv0s+cIVzMIGd
+# NjA3NTgzOFowIwYJKoZIhvcNAQkEMRYEFIW/QMDH/0NM/Hm7t3Ru3BJzEpRVMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBCAYGsTXGQegH7PEJK8Hkh
-# u7kU9yLf5PlGAi01Oojs78FdqnWjduUpNYaNkjGJmBzMzltuzP4o6rUOZpAmFFJG
-# YxXibLxtt2DbjZdM/czqK0Yv6s3skvokuoxOESEwASetl6fmqwKSINzg16vpcQM3
-# HYZZbbW4dx+dI8iE8CGKgeY4qfg+R3ecGqGW48FVTX0qvAXov7ygfKeElMPgQOZg
-# yyy5tG9Hy6D5vFB185bbmjSfFIWMzESzFjSzOkcMmtm2XuN7SRzGp9WojQwy5RTg
-# 0ilV4ZPRw2cf78CkRWIpf7FbXpsd8cuqdNiD9uqoLRK6gsF9bUy3BwLCy5BcJ9mm
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQB0AxR4gbqyz6lW0WsrgWta
+# qMnnGMM6ns/AO6tnd4FNKDIk5ioGtD01h3GvDq+zm3WkSDemzaaV+uqoQfpqLTzM
+# 2W5oLz8sNBP5LcI54YM1LHIfxIULt/00gnpc6NyZWHfXDjzwWtAT10Px3/v/CKZt
+# x+ewW5v9G1uQPhqKfc1s8NLACKhshhi0i9kusgOp66CKv0QcwVasAtCrbGjoS9D6
+# UDBHFpi/BhDfw13RCWfvMm6FEzUjdVdPcuoQYYZ7krFqxeOr9XwWSUv72u3GOoVT
+# pyFRBVHidbRXKUForLXBfFmyvlwEpxVd8s/ihsW6BtiiSdMiqgeK/tR4MRPcGod+
 # SIG # End signature block
