@@ -11,6 +11,7 @@ Retrieves keyed name/value pairs from the Cumulus server.
 Retrieves keyed name/value pairs from the Cumulus server.
 
 The K/N/V store stores arbitrary data that can be selected by either key, name, value or a combination of both. Besides specifying a selection you can furthermore define the order, the selected columns and the return format.
+If you specify 'object' as output type then all filter options such as 'Select' are ignored.
 
 
 .OUTPUTS
@@ -21,6 +22,7 @@ default | json | json-pretty | xml | xml-pretty
 .INPUTS
 
 You basically specify key, name and value to be retrieved. If one or more of these parameters are omitted all entities are returned that match these criteria.
+If you specify 'object' as output type then all filter options such as 'Select' are ignored.
 
 
 .EXAMPLE
@@ -187,6 +189,27 @@ This example shows how to decode JSON values while querying them from the KNV st
 When the returned data is not JSON it returned unchanged
 
 
+.EXAMPLE
+$r =  Get-KeyNameValue SCCM.OSDOperatingSystemType -as object ; $r.GetType()
+IsPublic IsSerial Name         BaseType
+-------- -------- ----         --------
+True     False    KeyNameValue System.Object
+PS > $r[0]
+Id         : 125
+Key        : SCCM.OSDOperatingSystemType
+Name       : Windows 2008 R2 STD
+Value      : 2008STDR2x64
+CreatedBy  : SERVER1\Administrator
+Created    : 8/16/2014 4:31:04 PM +00:00
+ModifiedBy : SERVER1\Administrator
+Modified   : 8/16/2014 4:31:04 PM +00:00
+RowVersion : {0, 0, 0, 0...}
+
+In this example the KNV is returned as an object, so it could be piped to 
+another Cmdlet like 'Remove-Entity'.
+Specifying 'object' as a return format overrides options like 'Select'.
+
+
 .LINK
 
 Online Version: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Get-KeyNameValue/
@@ -249,10 +272,6 @@ PARAM
 	[Alias("Convert")]
 	[string] $ConvertFrom
 	,
-	# [Parameter(Mandatory = $false)]
-	# [Alias("Desc")]
-	# [Switch] $Descending = $false
-	# ,
 	# Limits the output to the specified number of entries
 	[Parameter(Mandatory = $false)]
 	[Alias("top")]
@@ -273,7 +292,7 @@ PARAM
 	[switch] $ListAvailable = $false
 	,
 	# Specifies the return format of the search
-	[ValidateSet('default', 'json', 'json-pretty', 'xml', 'xml-pretty')]
+	[ValidateSet('default', 'json', 'json-pretty', 'xml', 'xml-pretty', 'object')]
 	[Parameter(Mandatory = $false)]
 	[alias("ReturnFormat")]
 	[string] $As = 'default'
@@ -281,10 +300,37 @@ PARAM
 
 BEGIN {
 
-$datBegin = [datetime]::Now;
-[string] $fn = $MyInvocation.MyCommand.Name;
-Log-Debug -fn $fn -msg ("CALL. svc '{0}'. Name '{1}'." -f ($svc -is [Object]), $Name) -fac 1;
+	$datBegin = [datetime]::Now;
+	[string] $fn = $MyInvocation.MyCommand.Name;
+	Log-Debug -fn $fn -msg ("CALL. svc '{0}'. Name '{1}'." -f ($svc -is [Object]), $Name) -fac 1;
 
+	$EntitySetName = 'KeyNameValues';
+	
+	if($svc.ApplicationData -isnot [CumulusWrapper.ApplicationData.ApplicationData]) 
+	{
+		$msg = "svc: Parameter validation FAILED. Connect to the server before using the Cmdlet.";
+		$e = New-CustomErrorRecord -m $msg -cat InvalidData -o $svc.ApplicationData;
+		throw($gotoError);
+	}
+	$OrderBy = $OrderBy | Select -Unique;
+	$OrderByString = [string]::Join(',', $OrderBy);
+	$Select = $Select | Select -Unique;
+	if($ValueOnly)
+	{
+		if('object' -eq $As)
+		{
+			throw ("'ReturnFormat':'object' and 'ValueOnly' must not be specified at the same time." );
+			$e = New-CustomErrorRecord -m $msg -cat InvalidArgument -o $PSCmdlet;
+			$PSCmdlet.ThrowTerminatingError($e);
+		}
+		$Select = 'Value';
+	}
+	if($PSBoundParameters.ContainsKey('Select') -And 'object' -eq $As)
+	{
+		$msg = ("'ReturnFormat':'object' and 'Select' must not be specified at the same time." );
+		$e = New-CustomErrorRecord -m $msg -cat InvalidArgument -o $PSCmdlet;
+		$PSCmdlet.ThrowTerminatingError($e);
+	}
 } 
 # BEGIN
 PROCESS 
@@ -294,41 +340,35 @@ PROCESS
 [Boolean] $fReturn = $false;
 # Return values are always and only returned via OutputParameter.
 $OutputParameter = $null;
-
+	
 try 
 {
-
 	# Parameter validation
-	if($svc.ApplicationData -isnot [CumulusWrapper.ApplicationData.ApplicationData]) 
-	{
-		$msg = "svc: Parameter validation FAILED. Connect to the server before using the Cmdlet.";
-		$e = New-CustomErrorRecord -m $msg -cat InvalidData -o $svc.ApplicationData;
-		throw($gotoError);
-	}
-
-	$OrderBy = $OrderBy | Select -Unique;
-	$OrderByString = [string]::Join(',', $OrderBy);
-	$Select = $Select | Select -Unique;
-	if($ValueOnly)
-	{
-		$Select = 'Value';
-	}
-	# if($Descending) {
-		# $OrderByDirection = 'desc'; 
-	# } else {
-		# $OrderByDirection = 'asc'; 
-	# } #if
+	# N/A
 	
 	if($PSCmdlet.ParameterSetName -eq 'list') 
 	{
-		# $OutputParameter = $svc.ApplicationData.KeyNameValues.AddQueryOption('$orderby', ('{0} {1}' -f $OrderByString, $OrderByDirection));
-		if($PSBoundParameters.ContainsKey('First'))
+		if($Select -And 'object' -ne $As) 
 		{
-			$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$orderby', $OrderByString).AddQueryOption('$top', $First) | Select -Property $Select -Unique;
+			if($PSBoundParameters.ContainsKey('First'))
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$orderby','Name').AddQueryOption('$top', $First) | Select -Property $Select;
+			}
+			else
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$orderby','Name') | Select -Property $Select;
+			}
 		}
-		else
+		else 
 		{
-			$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$orderby', $OrderByString) | Select -Property $Select -Unique;
+			if($PSBoundParameters.ContainsKey('First'))
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$orderby','Name').AddQueryOption('$top', $First) | Select;
+			}
+			else
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$orderby','Name') | Select;
+			}
 		}
 	} 
 	else 
@@ -351,41 +391,56 @@ try
 		}
 		$FilterExpression = [String]::Join(' and ', $Exp);
 
-		if($PSBoundParameters.ContainsKey('First'))
+		if($Select -And 'object' -ne $As) 
 		{
-			$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$filter',$FilterExpression).AddQueryOption('$orderby', $OrderByString).AddQueryOption('$top', $First) | Select -Property $Select -Unique;
+			if($PSBoundParameters.ContainsKey('First'))
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$filter', $FilterExpression).AddQueryOption('$orderby', $OrderByString).AddQueryOption('$top', $First) | Select -Property $Select;
+			}
+			else
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$filter', $FilterExpression).AddQueryOption('$orderby', $OrderByString) | Select -Property $Select;
+			}
 		}
-		else
+		else 
 		{
-			$knv = $svc.ApplicationData.KeyNameValues.AddQueryOption('$filter',$FilterExpression).AddQueryOption('$orderby', $OrderByString) | Select -Property $Select -Unique;
+			if($PSBoundParameters.ContainsKey('First'))
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$filter', $FilterExpression).AddQueryOption('$orderby', $OrderByString).AddQueryOption('$top', $First) | Select;
+			}
+			else
+			{
+				$Response = $svc.ApplicationData.$EntitySetName.AddQueryOption('$filter', $FilterExpression).AddQueryOption('$orderby', $OrderByString) | Select;
+			}
 		}
 		if('Value' -eq $Select -And $ValueOnly)
 		{
-			$knv = ($knv).Value;
+			$Response = ($Response).Value;
 		}
-		if($PSBoundParameters.ContainsKey('DefaultValue') -And !$knv)
+		if($PSBoundParameters.ContainsKey('DefaultValue') -And !$Response)
 		{
-			$knv = $DefaultValue;
+			$Response = $DefaultValue;
 		}
 		if('Value' -eq $Select -And $ConvertFrom)
 		{
-			$knvtemp = New-Object System.Collections.ArrayList;
-			foreach($item in $knv)
+			$ResponseTemp = New-Object System.Collections.ArrayList;
+			foreach($item in $Response)
 			{
 				try
 				{
-					$null = $knvtemp.Add((ConvertFrom-Json -InputObject $item));
+					$null = $ResponseTemp.Add((ConvertFrom-Json -InputObject $item));
 				}
 				catch
 				{
-					$null = $knvtemp.Add($item);
+					$null = $ResponseTemp.Add($item);
 				}
 			}
-			$knv = $knvtemp.ToArray();
+			$Response = $ResponseTemp.ToArray();
+			Remove-Variable ResponseTemp -Confirm:$false;
 		}
 	}
 	
-	$r = $knv;
+	$r = $Response;
 	switch($As) 
 	{
 		'xml' { $OutputParameter = (ConvertTo-Xml -InputObject $r).OuterXml; }
@@ -477,8 +532,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-KeyNameValue; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUiy1SSt7OItMFkQiufMGC08Va
-# KwqgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUo7Nz80ORRDPb4jyKVeNs2hHq
+# V++gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -576,25 +631,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-KeyNameValue; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQ4X75jR5LWNbgFqvwI
-# bpeoOMk1LzANBgkqhkiG9w0BAQEFAASCAQBLDD1nydqMKW8/gbuHKZUauyeUBpFx
-# AXqB95A4oT/HSrO7sMRNcE5cGrPDt0ZqqaepiOaClUSrnzfth9kZo4/ABIJW+AjN
-# 9a+GXDYRvPPyojQCf+xZaVzhK/TpGCzQSfF0x496zBdoSVwP9CEgJpfuMJ/3EsA4
-# OVr+JqZ6TRmqEkPx6Zx7bLTDKwB6w7eIKuTE9lYRNalB4zdh+8u/NLUw1B5wpCc1
-# mvbF6UfM2kXq/wIjMoR6sWmoeUOX/P7towvINXZ3pCTOlNZOCQD4b6hW3B4mv2Qx
-# 9oqgafEc0beurCd8BR82KpqQjX7siOD9U/jIa9s5C/563XAw2RzAYSRRoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTllMQsXXluZYYqO9GO
+# n/lXuu1vvDANBgkqhkiG9w0BAQEFAASCAQBK8+PRlN/xYUTgTmzfdNyXY6anwjku
+# gmVXexdQidYpnrDnecNN/rJ2pQKYmK0haKh191VuzfKj49pcnXeJ3PU/ChN9FVzq
+# 9MnXxe171jk4clKn8c0BD1ioG0ZKmp7UYOVNi/mMN1oWA3orECm8d87fP129Bhg6
+# 4nYcW8Momj8hR5zCvK2ISYCTrA1wyARdWKd8SOfALlzIbK45jHLdfp0rm8C6xK8D
+# 26882v/KnrSMIELugy/BgNDJ28f459GFOpz1nRh1udqsQXmpK+kyXCPAT0SU6fAK
+# h11rcHr7ulfKHWrstk1KiO8d2WnY4B2n9IAJeBsbv1QbUomgLXGksHpWoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# NjA3NTgwOVowIwYJKoZIhvcNAQkEMRYEFIsWiAT5cMqazg57vz5zh5WnXAj1MIGd
+# NzE2Mzc1NVowIwYJKoZIhvcNAQkEMRYEFFJGWRZA7n+89sX/RWbsId3ckw30MIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQCPWFM2He4VSrr3vpbLzKmq
-# fxLmJh+vkdhMpaQMU7v865nK2NGAepQah/s269UM96lQhI03j3ACDVTylDqnnGTP
-# cPRTpdJiEMBybYwYJZ2JEaLGBnX7kfy4eEu5h9OQTkghDRyiihyL7gGdOEb4PwTu
-# 0n1KygDdvhMmYYO7L2Zcm0XQxqrfdkzPz290EugUyMEBElUaLMbE3xx8N7AQg8Vz
-# lfyEl7wY45A/cGhwFsxXLjYdBb+xOvXgrHtlmfbc+Mu7bvVNnEQnBPfWAqOT87Rw
-# E/4FhmT4biQrhptIojAxcHvYvYSMcQZtbSrbuqooOfdQkGrDaTw0ALJMp9cwoFQZ
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQB91fLSXNWhchHfQw0TxeK8
+# TTY3O8kAPCjTwHq9m2zISDpZ0Ba1m5GS5hDKdKLpBp/pota2I69rAQkDTzJqL2A7
+# 0vnF7LKE3TBuI0/rl4F/jYf04PTQ6KOcUACk16k/MZynGpCGs3Uc+NXckY3PzCC7
+# uETEtMYtFArTftQvx7sSoDfKViiGJ0ekkeCl4yXgg32gZLPwdXJLVnLvSitYd5Xr
+# siHp9oS7sHutLtOvUxlyq/wnGA58cQTHWbMykleqI12qrrOrsrACJxlA0WDzS44g
+# 9UGRuLySjZnuwVpvrOgoirOTq6PdqpEip9WARVmkTSqVsKT9IYiwZ1s9XDuRkWXV
 # SIG # End signature block
