@@ -126,7 +126,6 @@ PARAM
 	[int] $First
 	,
 	# Service reference to Cumulus
-	[ValidateScript( { if($_.Utilities -is [CumulusWrapper.Utilities.Utilities]) { $true; } else { throw("Connect to the server before using the Cmdlet."); } } )]
 	[Parameter(Mandatory = $false)]
 	[Alias("Services")]
 	[hashtable] $svc = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services
@@ -149,6 +148,13 @@ BEGIN
 	Log-Debug -fn $fn -msg ("CALL. ls '{0}'. Name '{1}'." -f ($svc -is [Object]), $Name) -fac 1;
 	
 	$EntitySetName = 'Regions';
+	
+	# Parameter validation
+	if($svc.ApplicationData -isnot [CumulusWrapper.ApplicationData.ApplicationData]) {
+		$msg = "svc: Parameter validation FAILED. Connect to the server before using the Cmdlet.";
+		$e = New-CustomErrorRecord -m $msg -cat InvalidData -o $svc.ApplicationData;
+		$PSCmdlet.ThrowTerminatingError($e);
+	} # if
 	
 	if($Select) 
 	{
@@ -346,8 +352,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-Region; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUKPY5j/aX2rjtxuSi0SAAZbFG
-# 9yugghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUpq11Y7+etONKzzL0tIfa2aLI
+# wV+gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -445,25 +451,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-Region; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSKjnLEYgH4hRtuYMvb
-# fayS2jmsOjANBgkqhkiG9w0BAQEFAASCAQBF4LBjWHkVZVMlQSdfGvwXet8EkQdI
-# 8hjMQFuW0TmUHYp0ug7aE0t7w5XzMma471SqTYPx3ld17j5HsyGVQCOWw1JbfFWe
-# jGji0mKC96eSxMUt6fI++36ipN264+jLEpEGQSZOLcc4itJ9Jop7F5LsqtMENC1m
-# iu31AwIiVGkJlNL++zd1ikhQ06iy5yPshYsyNRzSMKn+VyW/zwdxqxUduiQFlXd0
-# nrfCMEh5L3o4jnSkgpSEi6lLmlhwl0n5iXuNfYbjrZo3QnlxDBAD98sjP/1cPptj
-# 2Ul7/t+ReNdx2yYtKylMSAfHDBIeGEo9oepWthFAMUk4muRHNwj+huMUoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSZ+FUlQ6WzJ6anCtN9
+# wAXeL2YtkjANBgkqhkiG9w0BAQEFAASCAQBr7gkt2QVZspVT3leUqfu4DKzgv9zE
+# zH9u2l+haAVSDs1uiM3WTZXbZlPkLHBH1FLO8uLr1DCF7XTn9/+ltNh/yZbgZdpA
+# tht1YBc0kjbYjhHfgU0XmwTOSYKXz80yOprivLn0eDWLaI8cezAZbfGOXAhoRiSx
+# 4wIknknk/GuEzb/j/IR4z7BtkIUfndGp3rx1EagnlZ6YSwnOmBy9oNdSz7RJqAA8
+# bn3jqgRhillszFtQmtGmwZ7Qa/g8E18r2IAUu1/v/F+Lg71fQed/51lo3WHxgy2e
+# mdJ3+kgZw3EvSQ1F1bmltutMibfnxGfkvx4KKxFGc9Lg+zAKNvNA0E4EoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# NjA3NTgxM1owIwYJKoZIhvcNAQkEMRYEFGAV7kUQaH6nYBRNa84vkgAaSXZSMIGd
+# NzExMjQxN1owIwYJKoZIhvcNAQkEMRYEFN3smpOrUn8KobWUJ5coZdr/DWv2MIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQCjws0KIf0A8E0us/vvbwpC
-# o9hfm8yv8kxCP0lr6Of1Hxk99mNOyDqY35tKhsScbbXZg4+PrIqYIlBtM8vTROo9
-# RTOI/tZkJZxt7SnlCfuUf9o2Rp+afnuqA7fXZBK1qjHyqNDy9BH2gRqaVHr5fPNu
-# kYImA8wS+U3g2qbt/Cud65628v1HQOXUBXZK+vVFQHYnEDkOwEDEsYL/gwyEt6YY
-# xC1xPlhXZCAr0npfWmSAq8iwagesPQH5Vae4Wce56/jo5vO1tu39wsQmlE95zLnv
-# ZSoLHIpvzM2RSmC8/eE1/8gatWnngEr3aKRUP2dNgPXjTgTcbH0KdHvXjPEL4J/a
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAKNn8VPEYCRXqfJ7xYVHnf
+# EdF/pFhuGTAh7GcWs6AUwADTlEj6sqyYyEwHwcl60k59V3z8NBb3uDwjbFp7nY3Z
+# 0PZF3HJN9W0d1YVd8EDh0RBCSHSWTvCFl4SuGFNP54MN/4HP1AGSeJyHV5R550oi
+# 7HE7OexbKb1a1HgugQPJ8x8fLdGSc/c35VWq1XnOsgDNef3I43M6rjNNhQcCap86
+# /hEWLxEhcCfvqpwQLPdtSEyubic2KLiXSxrJA+N8u5uKRC4T15oq/3RxlFli2TC9
+# iRO3sgeuj25q3Kji4AuA9bLCacoqtA2aTJ3CxCwKZpchk48FMid6eyFMu6ZTI1me
 # SIG # End signature block

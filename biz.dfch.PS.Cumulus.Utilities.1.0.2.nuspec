@@ -27,7 +27,7 @@ CumulusWrapper.dll and the other (Microsoft) DLLs are not part of this Apache 2.
 See https://github.com/dfch/biz.dfch.PS.Cumulus.Utilities/wiki for a detailed description on how to use the Cmdlets in this module.
 </description>
     <summary>This Microsoft PowerShell module contains Cmdlets to perform various base actions and utilties/convenience functions with the our open-source based automation framework "Cumulus".</summary>
-    <releaseNotes>20141206</releaseNotes>
+    <releaseNotes>20141207</releaseNotes>
     <copyright>(c) 2014 d-fens GmbH</copyright>
     <language>en-US</language>
     <tags>Cumulus LightSwitch PowerShell OData</tags>
