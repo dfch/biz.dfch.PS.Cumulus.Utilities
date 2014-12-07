@@ -131,7 +131,6 @@ PARAM
 	,
 	# Service reference to Cumulus
 	[Parameter(Mandatory = $false)]
-	[ValidateNotNullOrEmpty()]
 	[Alias("Services")]
 	[hashtable] $svc = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services
 	,
@@ -150,7 +149,7 @@ BEGIN
 {
 	$datBegin = [datetime]::Now;
 	[string] $fn = $MyInvocation.MyCommand.Name;
-	Log-Debug -fn $fn -msg ("CALL. ls '{0}'. Name '{1}'." -f ($svc -is [Object]), $Name) -fac 1;
+	Log-Debug -fn $fn -msg ("CALL. svc '{0}'. Name '{1}'." -f ($svc -is [Object]), $Name) -fac 1;
 	
 	$EntitySetName = 'Commands';
 	
@@ -360,8 +359,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-Command; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUjL4XoOGGsAbMp046JTh8ZZG7
-# IIygghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUSU6h+o/yEzRT9k2DwSgLO7Ut
+# pAGgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -459,25 +458,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-Command; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQKnTZ3s6Syyejcu3HJ
-# Hc5dCIQqJjANBgkqhkiG9w0BAQEFAASCAQA6/GWyXzVJE2LfYO+3/MTtycWmkLSU
-# gGN2hNGhQl5gfPygRG11LztyUaZ5xHiJqLQlGaDEbSt44zaoYMJ74UhXbCPEZYig
-# TSiZd9/e+g72xv9QSNZ30/2u4HQl5aKqFkyFiWaOgnY0SQ6nL29/z+u9tcQW0pqP
-# mTu33OQdLjWuss+ET6GlFYollWX2ovokRizuAAbDvw/vvnk3iYAQgxCHgODgbzW8
-# Zf6frNXg3uBC5K3EFyBoNJm22+9YGi3W4B+RSYh0L+j66VOAyTy32SprNpChIIT0
-# UilfspXNqzC1QuKQo8PfhTjAH65jhLbq48toeM4ZZUhYLsR6rNIg4i0doYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTmk0jgVguG9HwitK7A
+# yIO0ezw14jANBgkqhkiG9w0BAQEFAASCAQC8MJLQtkvq+Xhs7mptc3JKqt++kaei
+# 4XiMWv8uBpn9yHtELPZ+5EhdOhmr5bqHWMJ95F0BqksKkoT7x25xJr+FgtJPu/8Y
+# t0XoDzrCTLJ8dfPy3ZmzkEAja9eKOe5SNtVvigD+wb6hqJOXv6xzg6VL5buzHLpS
+# 0+Y3+dyzDQ+IVrSva1Jxhyn72H6Ci74xw8F+0gh3KBEwtQaLguk856tuGPbMQDhA
+# 1c0r14Nq2fzhI3hnQllQ+xHnT3TBa4dNpSODcqel5jtIQF0gRUEp3dKLIlx4Z7kK
+# PiKUAKhXjWaQTeHRpz5LWGX7mFBrobCxBitPdbAtIBpqIcMefOpXdu+OoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# NzExMjQxMVowIwYJKoZIhvcNAQkEMRYEFPjqZ6CjmdS7pDAvek1l5LiDuLCkMIGd
+# NzE2Mzc1MlowIwYJKoZIhvcNAQkEMRYEFIa8U1/SyL37WPGjanKTi0W6zNRNMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQA+UFrCY/1aqBwkfE6W5QJM
-# ewYiLzuhW4A81ScBplIIgh7TyG3FdzqL+GSHde0rts/B6gxC8UbeTwbTTcuy9jFh
-# Ca7/NOvTwCARnbL26maduzH4bo604MHT9OLvsN/m+K25dBGq9OmiqEvb9yAmX91Z
-# u850EaiUJhvHK1ZbOEFU9K2y09lYbKYsZvMo2nHvSUrB1eTHR0Da4iODrH6ginmq
-# NNvlRQw3MF/b4S51uawfNS5quxg3wdqZpRRg4bwivFvQb8WpVqgcmYoCZPo7G6j3
-# WAXS5jICo8+x+N7PDnoIulm6oIRm+d0nXjCxWMWM24iiz8SBlhF92NvwY02dHwWN
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAgpB5l/owIJXA9Ot0IRcGW
+# LCNSJ82kDW6jTxc2nBbUnQowFlnZfzq4wc1uN+E9ZO9pTxu8MaIDeTikx3jX0XW+
+# IsygKRCP6qJ+x4AOAu6oPD5PdzkwLWGvejZNTuaE6vFdrViTVmoJ0ov72CBN7Ajk
+# siUqGtfNur23kP9QObodrN1VLDSeYMe6/WfLOjy0tJLOzJXnWuR83HSQ1uU12mx1
+# 2Rj1/KnOaG8L9l3VEsmi2qGmzDhl06TFxyO94MElAyP5E3hmaAazyVmFLe4TspS9
+# muvdGjSw85STGTYN6MfcNZp5RlIru9Zxg3LW+ih18YYaIEDxOu8hPQqIH+oSTz6p
 # SIG # End signature block
