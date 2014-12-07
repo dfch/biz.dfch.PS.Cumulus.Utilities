@@ -75,5 +75,6 @@ See https://github.com/dfch/biz.dfch.PS.Cumulus.Utilities/wiki for a detailed de
     <file src="Get-Announcement.ps1" target="Get-Announcement.ps1" />
     <file src="Get-Computer.ps1" target="Get-Computer.ps1" />
     <file src="Get-Vlan.ps1" target="Get-Vlan.ps1" />
+    <file src="Remove-Entity.ps1" target="Remove-Entity.ps1" />
   </files>
 </package>
