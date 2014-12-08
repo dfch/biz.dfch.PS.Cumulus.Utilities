@@ -151,11 +151,12 @@ BEGIN
 	$EntitySetName = 'AuditTrails';
 	
 	# Parameter validation
-	if($svc.ApplicationData -isnot [CumulusWrapper.ApplicationData.ApplicationData]) {
+	if($svc.ApplicationData -isnot [CumulusWrapper.ApplicationData.ApplicationData]) 
+	{
 		$msg = "svc: Parameter validation FAILED. Connect to the server before using the Cmdlet.";
 		$e = New-CustomErrorRecord -m $msg -cat InvalidData -o $svc.ApplicationData;
 		$PSCmdlet.ThrowTerminatingError($e);
-	} # if
+	}
 	
 	if($Select) 
 	{
@@ -218,12 +219,14 @@ try
 		{ 
 			$Exp += ("tolower(FunctionName) eq '{0}'" -f $Name.ToLower());
 		}
-		if($CreatedBy) { 
+		if($CreatedBy) 
+		{ 
 			$Exp += ("(substringof('{0}', tolower(CreatedBy)) eq true)" -f $CreatedBy.ToLower());
-		} # if
-		if($ModifiedBy) { 
+		}
+		if($ModifiedBy) 
+		{ 
 			$Exp += ("(substringof('{0}', tolower(ModifiedBy)) eq true)" -f $ModifiedBy.ToLower());
-		} # if
+		}
 		$FilterExpression = [String]::Join(' and ', $Exp);
 	
 		if($Select) 
