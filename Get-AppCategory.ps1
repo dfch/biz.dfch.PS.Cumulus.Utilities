@@ -148,7 +148,6 @@ BEGIN
 	Log-Debug -fn $fn -msg ("CALL. svc '{0}'. Name '{1}'." -f ($svc -is [Object]), $Name) -fac 1;
 	
 	$EntitySetName = 'AppCategories';
-	
 	# Parameter validation
 	if($svc.ApplicationData -isnot [CumulusWrapper.ApplicationData.ApplicationData]) {
 		$msg = "svc: Parameter validation FAILED. Connect to the server before using the Cmdlet.";
