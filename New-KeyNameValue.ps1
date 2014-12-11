@@ -1,27 +1,19 @@
 function New-KeyNameValue {
 <#
 .SYNOPSIS
-
 Creates a K/N/V entry in Cumulus.
-
 
 
 .DESCRIPTION
-
 Creates a K/N/V entry in Cumulus.
 
-By updating a K/N/V entry you can specify if you want to update the Key, Name, Value or any combination thereof.
-
+You must specify all three parameters 'Key', 'Name' and 'Value'. If the entry already exists no update of the existing entry is performed.
 
 
 .OUTPUTS
-
 default | json | json-pretty | xml | xml-pretty | PSCredential | Clear
 
 .EXAMPLE
-
-Create a new K/N/V entry if it not exists.
-
 New-KeyNameValue myKey myName myValue
 
 Id         : 3131
@@ -34,19 +26,37 @@ ModifiedBy : SERVER1\Administrator
 Modified   : 11/13/2014 11:08:46 PM +00:00
 RowVersion : {0, 0, 0, 0...}
 
+Create a new K/N/V entry if it not already exists.
+
+
+.EXAMPLE
+New-KeyNameValue -Key myKey -Name myName -Value myValue
+
+Id         : 3131
+Key        : myKey
+Name       : myName
+Value      : myValue
+CreatedBy  : SERVER1\Administrator
+Created    : 11/13/2014 11:08:46 PM +00:00
+ModifiedBy : SERVER1\Administrator
+Modified   : 11/13/2014 11:08:46 PM +00:00
+RowVersion : {0, 0, 0, 0...}
+
+Create a new K/N/V entry if it not already exists.
+
 
 .LINK
-
 Online Version: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/New-KeyNameValue/
+Set-KeyNameValue: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/Set-KeyNameValue/
 
 
 .NOTES
-
 See module manifest for dependencies and further requirements.
+
 
 #>
 [CmdletBinding(
-    SupportsShouldProcess = $false
+    SupportsShouldProcess = $true
 	,
     ConfirmImpact = "Low"
 	,
@@ -136,8 +146,11 @@ try
 		$e = New-CustomErrorRecord -m $msg -cat ResourceExists -o $KeyNameValueContentsString;
 		throw($gotoError);
 	}
-	$r = Set-KeyNameValue -Key $Key -Name $Name -Value $Value -CreateIfNotExist -svc $svc -As $As;
-	$OutputParameter = $r;
+	if($PSCmdlet.ShouldProcess($KeyNameValueContents))
+	{
+		$r = Set-KeyNameValue -Key $Key -Name $Name -Value $Value -CreateIfNotExist -svc $svc -As $As;
+		$OutputParameter = $r;
+	}
 	# $r = $knv;
 	# switch($As) 
 	# {
@@ -217,8 +230,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function New-KeyNameValue; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUcw9pIgOI0O0mSkdfLP3Ty0Vw
-# 69WgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUue8fhbbwolDhnRf9TXPJUsPE
+# jTygghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -316,25 +329,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function New-KeyNameValue; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQK2IpD1GUIL6hHWwvQ
-# Qz5xjIpqojANBgkqhkiG9w0BAQEFAASCAQBuOY9JE8OupYhLgK8j7eODFU9OeJtO
-# cBIuOc11eSqhjC0ZWKCNKVgRL/fQAdDLS+/Ypi/w2QPlsZqRUrGd3TdAurpZJHUd
-# Xp48QxTrKtKj/Y8CfXeQWy/CC0oYTxbcEgPpgxwdLpDhK/0jagM1YHE8mpcD9L4E
-# iOh4iwjxRrImSNZSKSzQgPSY5vFP2kLUdAwYr077qb1EPvDep6JaYq0YAXEeMXER
-# 2JGW3h5E9eJA677qbNZvwkPtFls0+i/1WC4YuB/iv+kRWI5YZ/biifkbTmS2SXRa
-# CRgRhGn4m6Lp+8peft2Gp6tdLtXqJL75+nHRewiw07uZBcsvyqMtieqGoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQrapLmYuhcF/vH45/L
+# R8nu/DVbADANBgkqhkiG9w0BAQEFAASCAQAPogNKy/hI2doPMJxpOXbptsVw8AyF
+# a5H5sXV/KJeF30ZQfKGnwAEHYKhNunrDX3r274dA48JooOgRWfsfl5evUDxa/btz
+# D9D2bggsnkbRnDSxrW85Ftb4H8vmfxDv2/nFUPlLcEJc0plAHyuZOors4v1bVz1O
+# DUIvZ5OXNp/7d/NUyXNCmotoPdh3yCLkrNGftNgRlr8Gh3eH1cTHp9V4cBUXO9jq
+# 0kIpP32ZZ/vT8vhBQOWz6iA+2LKFgSF8ZCsuy33A0E2eQz1K8uu8dykkjkFeJH/p
+# Nn4ZAmgPBiEXK7yLNLCzgkMnPotWsI6TOXlGZwLS8Iiby6Om1AsgjIH7oYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIx
-# MTA4MDgyMFowIwYJKoZIhvcNAQkEMRYEFAh/9+lc84kLQ/ItA8s/Jn3SCLGfMIGd
+# MTA4MzEyNlowIwYJKoZIhvcNAQkEMRYEFI/59tfTRM1itSJ7TXdSSQC8jh9fMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBIpR8KDpFUHKAYMTJqx3h+
-# Y4y0ZyrbNGANTAeHdsLuV/Fua0lPn+rpJBEWMPTpjiLaWPxb6q9BYf3vLytQ77uG
-# +iu16pAcPQRpRMIcXQvKAMqfTXuzrxUuCi5BRBjdz3gr3umnZ9V3B2Ls+8GRIhjG
-# JKPvU5+cjj2OpMZ57hMXNSQibUBePhgLrnowDF0BeIAeXCwBV3U9NX/9H/2Up5mV
-# 4hpAeJP3GH2evFWIPSiSWacTn/7yZ1GpUs0oiHXAFlyHXJQJC+GCxwQ+D4p54Kp4
-# 1zg91bpMoa1g0qC8uQUUgBtTcO1vh/Mle4vigo7Kot6dUAqYvWHZSFyQrTfUOX0W
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAUXBpmsN8C8cuHZ9V8FjyQ
+# ZkuyzixUJ2OPA/EgSr3YMVyYP2YEfajSu65RgbDaUBD0Bxi6e8ei5fad7s4jdFHi
+# 9Nn27z92s82eak1m3dLqHDKJiNsCt/BDGQWExxiSxw6Ib38Xz/Hfg6eWVvGeFs2l
+# Ps6JB+TEXEK+KcvW4HnkgpkZvTigigOqijiw6Ek3yfyK9FU098fWW+CI+ry7RYRK
+# LVu5Ab19XWHdzI2hG7ECaWosQIOy3+up84TPQzyNWVeBri+CwOfQTiQxlo2zE6bL
+# Jwt8M57RJxyGs5VXiR/x0EbmeLSt+WtkXWSX8enhzmng7rMQH8kWbHs5YNHKTZfO
 # SIG # End signature block
