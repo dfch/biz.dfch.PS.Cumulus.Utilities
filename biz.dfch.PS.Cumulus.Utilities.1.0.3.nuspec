@@ -28,7 +28,7 @@ CumulusWrapper.dll and the other (Microsoft) DLLs are not part of this Apache 2.
 See https://github.com/dfch/biz.dfch.PS.Cumulus.Utilities/wiki for a detailed description on how to use the Cmdlets in this module.
 </description>
     <summary>This Microsoft PowerShell module contains Cmdlets to perform various base actions and utilties/convenience functions with the our open-source based automation framework "Cumulus".</summary>
-    <releaseNotes>20141208</releaseNotes>
+    <releaseNotes>20141211</releaseNotes>
     <copyright>(c) 2014 d-fens GmbH</copyright>
     <language>en-US</language>
     <tags>dfch PowerShell Cumulus LightSwitch OData</tags>
@@ -81,5 +81,6 @@ See https://github.com/dfch/biz.dfch.PS.Cumulus.Utilities/wiki for a detailed de
     <file src="Get-Computer.ps1" target="Get-Computer.ps1" />
     <file src="Get-Vlan.ps1" target="Get-Vlan.ps1" />
     <file src="Remove-Entity.ps1" target="Remove-Entity.ps1" />
+    <file src="New-KeyNameValue.ps1" target="New-KeyNameValue.ps1" />
   </files>
 </package>

@@ -22,7 +22,7 @@ default | json | json-pretty | xml | xml-pretty | PSCredential | Clear
 
 Create a new K/N/V entry if it not exists.
 
-Set-CumulusKeyNameValue myKey myName myValue -AllowDuplicate
+New-KeyNameValue myKey myName myValue
 
 Id         : 3131
 Key        : myKey
@@ -34,50 +34,6 @@ ModifiedBy : SERVER1\Administrator
 Modified   : 11/13/2014 11:08:46 PM +00:00
 RowVersion : {0, 0, 0, 0...}
 
-
-.EXAMPLE
-
-Update an existing K/N/V with new key and new value.
-
-Set-CumulusKeyNameValue myKey -NewKey myNewKey myName myValue -NewValue myNewValue
-
-Id         : 3131
-Key        : myNewKey
-Name       : myName
-Value      : myNewValue
-CreatedBy  : SERVER1\Administrator
-Created    : 11/13/2014 11:08:46 PM +00:00
-ModifiedBy : SERVER1\Administrator
-Modified   : 11/13/2014 11:08:46 PM +00:00
-RowVersion : {0, 0, 0, 0...}
-
-
-.EXAMPLE
-
-Update an existing K/N/V with new key and new value. Return format is json with pretty-print.
-
-
-Set-CumulusKeyNameValue myNewKey -NewKey myNewKey2 myName myNewValue -NewValue myNewValue2 -as json-pretty
-{
-  "Id":  3131,
-  "Key":  "myNewKey2",
-  "Name":  "myName",
-  "Value":  "myNewValue2",
-  "CreatedBy":  "SERVER1\\Administrator",
-  "Created":  "\/Date(1415920126010)\/",
-  "ModifiedBy":  "SERVER1\\Administrator",
-  "Modified":  "\/Date(1415920126010)\/",
-  "RowVersion":  [
-	0,
-	0,
-	0,
-	0,
-	0,
-	2,
-	152,
-	17
-    ]
-}
 
 .LINK
 
@@ -261,8 +217,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function New-KeyNameValue; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUXhoA6NgJuJvnlDNXbp33Rltj
-# b/+gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUcw9pIgOI0O0mSkdfLP3Ty0Vw
+# 69WgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -360,25 +316,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function New-KeyNameValue; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRKYOmY2xW8tonokFh5
-# ZxGqmCW1mzANBgkqhkiG9w0BAQEFAASCAQBqGbOtMwzSBTCwyN+scHxPXL5Ei9MW
-# HC0H5e13+cVMTWT9Fe9NZEBcAzqtj6tLy49hIC6qjhZ5WiAm5gbWfnsBU5t6XCAK
-# pdETiup2AED65M3DnafWEjxLK9QVQStPjJDo9fPLMajQjHqbmmjh7EKw8dxOlK+h
-# V7aCxAfLUeK7I0PCwHirq5a6MkqJSXaH4P65cwsCMcjaRQUkdSBtudzgcJQhyz/Q
-# fVrwU8RW02qx+g+lZITmtzsG3s8ZnR1wBjGeulf05bhdKuPjd2ehrZTn0R224/4w
-# plUs3PQ9Md/m7cX7tkl9IWKzJEhhWyzGSP9+mJcHs+DnE95/TREzHjxnoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQK2IpD1GUIL6hHWwvQ
+# Qz5xjIpqojANBgkqhkiG9w0BAQEFAASCAQBuOY9JE8OupYhLgK8j7eODFU9OeJtO
+# cBIuOc11eSqhjC0ZWKCNKVgRL/fQAdDLS+/Ypi/w2QPlsZqRUrGd3TdAurpZJHUd
+# Xp48QxTrKtKj/Y8CfXeQWy/CC0oYTxbcEgPpgxwdLpDhK/0jagM1YHE8mpcD9L4E
+# iOh4iwjxRrImSNZSKSzQgPSY5vFP2kLUdAwYr077qb1EPvDep6JaYq0YAXEeMXER
+# 2JGW3h5E9eJA677qbNZvwkPtFls0+i/1WC4YuB/iv+kRWI5YZ/biifkbTmS2SXRa
+# CRgRhGn4m6Lp+8peft2Gp6tdLtXqJL75+nHRewiw07uZBcsvyqMtieqGoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIx
-# MTA4MDAzMlowIwYJKoZIhvcNAQkEMRYEFJ6VOT3s4NA8e11fPu2VVMLeBinEMIGd
+# MTA4MDgyMFowIwYJKoZIhvcNAQkEMRYEFAh/9+lc84kLQ/ItA8s/Jn3SCLGfMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBu3sV9g6C6uyMRYe1jXxW1
-# xN52u/kAwL6y6QQtkACxcUbSLpPpNx8IaSMYPUABlJsqD0OfYuQR0EhWXrDwZky9
-# HxRR4SVppVUkXxhEISBwVgVmKW1FtWqGHsAA1HKonK906Tdc5WDaSQuNyd2wNf/d
-# 5WjM7B/JRJfWhtbv6xqE24/nsmwghfWl2lLTfxQjIlVYwQaETRk069QaQYHqlm5l
-# jVfZjCiLOYGhdat0ERNkfCoOt7t8SqY8i1CXii856JQ0iUhzfH87pJ+kTmBUgA/p
-# fw+R2tWgaaCDAY3eV1MVB7Err3PUAJpcGzCV4zJblxa2BR9N/jVbiOUhpcZLIKtX
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBIpR8KDpFUHKAYMTJqx3h+
+# Y4y0ZyrbNGANTAeHdsLuV/Fua0lPn+rpJBEWMPTpjiLaWPxb6q9BYf3vLytQ77uG
+# +iu16pAcPQRpRMIcXQvKAMqfTXuzrxUuCi5BRBjdz3gr3umnZ9V3B2Ls+8GRIhjG
+# JKPvU5+cjj2OpMZ57hMXNSQibUBePhgLrnowDF0BeIAeXCwBV3U9NX/9H/2Up5mV
+# 4hpAeJP3GH2evFWIPSiSWacTn/7yZ1GpUs0oiHXAFlyHXJQJC+GCxwQ+D4p54Kp4
+# 1zg91bpMoa1g0qC8uQUUgBtTcO1vh/Mle4vigo7Kot6dUAqYvWHZSFyQrTfUOX0W
 # SIG # End signature block
