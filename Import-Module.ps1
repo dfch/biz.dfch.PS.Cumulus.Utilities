@@ -9,11 +9,27 @@
 # show up as loaded module, see the bug on Microsoft Connect below: 
 # https://connect.microsoft.com/PowerShell/feedback/details/903654/scripts-loaded-via-a-scriptstoprocess-attribute-in-a-module-manifest-appear-as-if-they-are-loaded-modules
 
+# 
+# Copyright 2014-2015 Ronald Rink, d-fens GmbH
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+# http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# 
+
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUCDg5J0kx+ImoIwMjqpK6L5zh
-# 9vqgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUIVkCsjZzjoi27i42QyBZC0xj
+# seKgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -111,25 +127,25 @@
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRAnFI61WQmLMYlLUhz
-# UOtgpi1A+zANBgkqhkiG9w0BAQEFAASCAQCvMbVy32U8+diIOxRm+xfuhD9xJPDe
-# Ijq7jGnYcavueIOfUJHo4KG+gVU/5fQJwRoiKfgb62QJ/8ye8FZ0pOGfiFoDqQzN
-# oga0uqC4rmFQSI3J/1EnP43GNnQdJMRcbfoAs6pmHqs5eX51SCmJd2cmRqRHVgko
-# Tjkr4Eu1SrIm863H/ULrJalb8lnbHLfn2JJ3H64+wipvNtV9q/t2p7ELXvYUJ8OU
-# KgBRTYCQQpojOgonwXmIman8y1r2bfML+ltxJb49WX9yCgCX2ch8EJ6OFajg//79
-# EL5HST13ul5ahjsPtZarVAHJnG4ZIssvgpzGVoNBhGSSzQ2ZruDiwn4ioYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQiUS7DSbQXT6eSfjhz
+# fYexxsRF/zANBgkqhkiG9w0BAQEFAASCAQA11lTkBtoPrj64l56tuNuQhLGnQzGJ
+# M5JmJGKcQdA/mO7hNynh81vrJX0ZpNCQvH+41U7Lm2x6CB/98tLjnWdhV3bofVmk
+# u1uS89AXO263bTSzhaidtyQnFONYNFxb2rxwgjm9vvwa4BXfIcUbjegucNLWXZyk
+# fGNKuIusDSuWoTkjhKc/RZ+B4bfqmhjwHd+2tMbtdPfhgl++nHn86wq5WVJO+Jzr
+# IRsOkao+D59lEqQrB3/SRwoQehQZgeFkIbodSp3xzMDnuAmTpPmNc3971L4SMJUn
+# wwZcJPTcX4GvDHCLZt1EH66fPv7zbTvWd4soZeRdghgc6xqGuVJ2jty/oYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
-# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTEy
-# NTE2MjUyOFowIwYJKoZIhvcNAQkEMRYEFCihp5BOhZ55FeN7Mb2nDtzFYbMdMIGd
+# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1MDEx
+# MzE4MjY0N1owIwYJKoZIhvcNAQkEMRYEFDwigPwWZmBGPDErKnxK32TBccbhMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAjpKRbL/8evdzgkGT3Ck6/
-# 2IDcMQivM0KUkt7BTmOTrrIUXQE3tum1kCUeWXxBIlP3ovge0HfPXHQglHzndsyt
-# IquqX4zCFJS1o037JxZhNM2qnJOYxE4Ror0Cx62zJDRUIvllHyOuz52oJYeURIOP
-# KDq3MKl1e6a8Fq2nIzJ87m4VPnyw5Tm/d7MXbMeRGJs5l0wkktNXYufRmQPfT1/8
-# FAQQCT95MNCja6c1CNS/ViYrzzDohW4wL3GvROCskRk6VVGDYfUUK5ATbI7Qnmwx
-# WsLGXUV432NS+RWNHlIxS3JV73SoSpWsVc3tFNu/CkXCjvbNPDWEt5tYQ7PBXfSK
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBvcWrq/BOxPecJsoQ40roA
+# Vs0adqisNV87L7FWmDDGnRgY7huHRsfpYQ9EEaQNrZUpAqNu5Lotg8Kgnln5Ig+u
+# 8mQdGSbf53MdVmGTa1vEjQ+biCQ29MztKji3PXzagJLIQdm4P7Yd+Dx+Nkw0pl5Q
+# wDU5kisKw4FbZTaLVVcx4N4uAeM0p78ELqb6/RCuSDfchOmbLvXkEnLCuI/Nmg65
+# Dsd9juJgMnFCTod2d8Jn+4mlQqZORLLhwOIAdCISFIytMuiITplitVujVQzmAn22
+# MFTDAqMuvsoulrCKq/Po01bxK4I7OEb+F5G/ow2UaHNZkD+lPEvL5t2+tYsklq7X
 # SIG # End signature block

@@ -348,11 +348,27 @@ return $OutputParameter;
 
 if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-AppCategory; } 
 
+# 
+# Copyright 2014-2015 Ronald Rink, d-fens GmbH
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+# http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# 
+
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUboWrB/vpO9l70htmUpLQkVXw
-# tGigghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUAbreTrKhaCfUL8DX+6hQZ72e
+# VgmgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -450,25 +466,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-AppCategory; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSr8BPXEGb6Z/X0lbuY
-# Ont3V018PDANBgkqhkiG9w0BAQEFAASCAQBUmq1B9UR7cKxWdrXGo8/7RcI/MfiH
-# IbGU/jfrgAFTBTJ2gj5suN48kk/tk8iT8qqJDIWwWWp67ixzFs7opy+/G5MYdWQA
-# sPCSpe7vg24ypcRYjORRJ2OekX1WtNx1837jh8lBdYn+i/8ENVQHuzW1KA/ysLsw
-# 2eLj0Ky9GEX8CW8Lvsbv4nMU2GfMNnGZeGk2a2lKnxnony0O16771U4WJFs1So4b
-# 8BUXRohoaeuHWvks9XCsdvg+CoBTE3D9rYJ7ineoHIG4xN0Ys60zUI+ckSE2kaT5
-# RxsdUcz/gA7pvWway5dUUytr8M0cTD7vTbkFjPotR+OI6NWH9ZVbDr1soYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRVg97i6QmLdwdMF213
+# FH/kiQY+1DANBgkqhkiG9w0BAQEFAASCAQBOCgLybeN3d2mMBCrVl8SVQrzlcJMv
+# VpmqrM2sdoiXfyzD7r4bMn8FiHnkhh6BNnhzt9PBiyc/58RUBYAfNpsUjzDkhyqg
+# oKg09LF6MkltlqL0iGEFldPe1cBm85sc3Ie/dNbmRyWnzm1OymWjfuzASCZa3p0T
+# SLJglKvZA/mCFXARpknF6l1wPCEYXtzgnDn+Z6oiXy9he+waE8BgOTE8ZruIed0M
+# b2dlfPDwgJoukxyK8jmnJINGApz27MHtDSEOw1pzSzC8uPxlO8f1zZRc3es91oED
+# zxd1FazYUU8a0zVLTLBJ54Fn3zRdr7HkKRvNg13T/YZjmfym7x/44UOToYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
-# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIw
-# ODE0NTYxMlowIwYJKoZIhvcNAQkEMRYEFF1y+LznoHR3gVMXxRMMzu0eWXA6MIGd
+# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1MDEx
+# MzE4MjY0MFowIwYJKoZIhvcNAQkEMRYEFHxSu780JLyqEvoZ5VHTRBlcUCFJMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAibW72GzYJvL1d0JfaKp4v
-# HbCcIsdkPdhadPL+d8UypTT5X2Mix4gzwEV5YGp/+5tDtz77tGfiWQPcyTcbuz5P
-# Ov6EoWHRdcNYDUZ7moMoAH5c1RVSFylQ26D9J7upKbJldysQkY7kAjyIaAac7BuR
-# lupeJS+Z8fdx89C9zb+wK9pzD0SBxm9IRaqJBCqF7VlMWnQzTt8pcsEWNfltml5O
-# r03R05Oq7GV4q0uD/L5AaZsCppa97ueBsUrD+DElPt/n/ViHPuxINh+9b0muWZX5
-# kzxh8xXLmnWnQzFkzDclsLHD57bBxJss/YUGxRuOnhKtlxXSpv+XuQvmCemPdt/j
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAEm9uxsnswfxOCT2BILRj1
+# MdUyOh88DU0s6DGUuEFvWOmObd58fsAT7xKkDexSYW3fMfHRAqpV/sl4hJ+FhJTV
+# yiUfPRu+VV4+BGlr/h8gjAC28twsOLetWYwaJWnesIqePlniPn830WJ1YzGmjP61
+# zpTa/IZmF9zgmmS0EpJH/Ww0EjWfyJPz0FSma+FMhOENnDWx4403RR2gWshRQkpC
+# vBCqNSgxtRlT368yyGJRDgNrcxjbEAPnTvfRmMYPQKZYv6EcpyBjLiOhC2wzb+h7
+# k3gFG8a6t+NS1N9jYT1FKzKCc//MiVRYI20Dk1k8poL0suzI9Wt17EOeq2Y7EsFo
 # SIG # End signature block
