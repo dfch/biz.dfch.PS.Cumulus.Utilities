@@ -7,11 +7,27 @@ Creates a new IP address
 .DESCRIPTION
 Creates a new IP address
 
-Creates a new IP address in Cumulus and in its connected backend systems.
+Creates a new IP address in Cumulus and in its connected backend IPAM and DNS systems.
 
 
 .LINK
 Online Version: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/New-Address/
+
+
+.EXAMPLE
+$address = New-Address -Name Server42 -Description 'This is a new server entry' -VlanName 'VAR000'
+$address
+
+Id           : 31337
+Name         : Server42
+Value        : 192.0.2.15
+Description  : This is a new server entry
+Reference    : fixedaddress/496ca00323a7405781d25212cd17e6ee10.243.56.110/default
+Type         : fixedaddress
+Status       : Allocated
+Address_Vlan : 000
+
+This creates a new entry 'Server42' in the VLAN 'VAR000' and assigns the next available IP address to it
 
 
 .NOTES
@@ -46,7 +62,7 @@ PARAM
 	[Parameter(Mandatory = $false)]
 	[string] $Status = 'Allocated'
 	,
-	# Specifies the description of the new address
+	# Specifies the name of Vlan from which the address should be allocated
 	[ValidateNotNullOrEmpty()]
 	[Parameter(Mandatory = $true)]
 	[string] $VlanName
@@ -200,6 +216,7 @@ END
 if($MyInvocation.ScriptName) { Export-ModuleMember -Function New-Address; } 
 
 <#
+2015-01-13; rrink; ADD: example
 2015-01-13; rrink; ADD: support for VlanName.
 2015-01-13; rrink; DEL: $Reference parameter
 2015-01-13; rrink; ADD: $As additional OutputParameter (native address entity (now default) and OperationResponse)
@@ -225,8 +242,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function New-Address; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUTJ8lqP/TFqsWPpUAb2lcFwRO
-# nDSgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUuTLkR0NeCxsCU4iB7rRv5owM
+# OxCgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -324,25 +341,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function New-Address; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTPsu8ZBK7u8YXpe5dq
-# fIbDqOU6ATANBgkqhkiG9w0BAQEFAASCAQAmDhifPUJmar7M9Y2YtdOnWvvEkcvv
-# xW+pWsW5OoZI6wRyCIHF+y2BhDs4Q3zPSPoTyKP4UcIqGuqLTlmiRv1YOEUYVjrn
-# LODBML5NHL4NyZ1bntSAFJlxCaz10SUJV6GAM6QcZXXxdlAW7l7mzdetWY3B7v3i
-# 5qTziibdKuhkPGuzyzdk4DPMdaNEymV/Ug7ECwMaFzde39g/dwTzEiFb7NL9mZn3
-# Kc6w/A8dTJTSQnUkguFXJFCa6DO+RFOuCmyaj5lJePfBNWbVjKNljT44LOB4Q6y0
-# vFQKqnELDe8KrVdGJdo6I9tOdFrNoQWyhXOTSJ++NvztqaBf4+QCN4o7oYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTUp+hYfIqoao4BJkFH
+# 5B0c6XSsHDANBgkqhkiG9w0BAQEFAASCAQAQRCpZu0TfQDL8Ote1E5mcWfCDNCXu
+# CR1IKYuQsAx2/BxGdOThdN65XWEcACxYsU5B/ZP20eibWb/YjDV2peJq61rVGPEh
+# N/PYos9uDiGIwjWXNBIJ+00YvVrYpDr/d10LkoggAZLujIe9vIg/4/5hdBPABVND
+# LizmrTnFQGRgryryM91zu5MSaHJtW6fuYCHN53P2ieAHOqL/se4bhOhtYAUA+Bt5
+# Z8MNpu0le9uTEktUIl0TTHBvxQbPgf7Iw/xDmIUW8hspTPYILK84E5w8BztyOsVp
+# 6fWFkh3G5ewRS1jG6/Y1X1t/ylZvtFOdPhKLRfE0GDevasWwDmACekA+oYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
-# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MTIx
-# MTEwMjQzN1owIwYJKoZIhvcNAQkEMRYEFMdYew9ETSFDfKG+QmOK3zyc5xT2MIGd
+# MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1MDEx
+# MzE4MjA1M1owIwYJKoZIhvcNAQkEMRYEFITcZOjyRVr+uW3dEM5L99Ih3VN6MIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAnVrzwI/8LrsYZ4OhlKLUu
-# MaBEW0hvgWcHvEJ5WKolFemQ3uI//4SKs12VFlv71ZL50h9O92ZWkGQ0XLX/ybzB
-# BilSH/fqP9IqMXVeDibzOfTjKTpCH4eoFtYVmj7bDwzu0XLKsz4xbC8N2IqUXgw3
-# 3SUw3V4wdbkuK38YNuRP2Tk3shr2q2135NAUknmZ4y+A4X2X5kYmALQjCLX1Jp2S
-# bNL7P43DKZoqAvowKMKU10msEeHuZZAExomcPR59s6fhxf1QVbPAMlG8E6bGe5OZ
-# sJ5P/EgrH5XEBieUurp3K3O9YHir+RVISWLYimgdU6XHMV9yg4kIHv0sdn+aUh1w
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAjC8HRSc2XCkY6erflfRDa
+# giv1MrwvN54fVS37em2nc9YpRSm9PHMl3cK6I1tceiEdN0VdfEwAUyC3nHACvGIj
+# xgK5QezhNZS1PsVmaI7AhmvSb6X8NOQNSmEd4leXCyOWPSAKKlb0Xb/TFI9WJuAR
+# pB+QccC36/q7XOivwa7LF31w1nleGRc40PMJjtaslUfNU8Pt2pafviYYHozZy3N4
+# 5pkxevTTWlIXQIfNYCeiuARao/Z0zWvivLiFiYgpV/G0tGJyd3a/l7haTacwYmr8
+# dqWsYKJgkzfA84S6B6za0IxSn3NZAd89eiaWRAEQFI+1kly9Oqx0ejpGTXSjvijf
 # SIG # End signature block
