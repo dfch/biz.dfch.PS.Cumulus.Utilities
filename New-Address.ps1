@@ -9,8 +9,6 @@ Creates a new IP address
 
 Creates a new IP address in Cumulus and in its connected backend systems.
 
-Currently no VLAN can be specified.
-
 
 .LINK
 Online Version: http://dfch.biz/biz/dfch/PS/Cumulus/Utilities/New-Address/
@@ -38,11 +36,6 @@ PARAM
 	[Parameter(Mandatory = $false)]
 	[string] $Description
 	,
-	# Specifies the reference to the Infoblox backend system
-	[ValidatePattern('^(fixedaddress/)')]
-	[Parameter(Mandatory = $true)]
-	[string] $Reference
-	,
 	# Specifies the address type to create. Currently only 'fixedaddress' supported
 	[ValidateSet('fixedaddress')]
 	[Parameter(Mandatory = $false)]
@@ -53,13 +46,18 @@ PARAM
 	[Parameter(Mandatory = $false)]
 	[string] $Status = 'Allocated'
 	,
+	# Specifies the description of the new address
+	[ValidateNotNullOrEmpty()]
+	[Parameter(Mandatory = $true)]
+	[string] $VlanName
+	,
 	# Service reference to Cumulus
 	[Parameter(Mandatory = $false)]
 	[Alias("Services")]
 	[hashtable] $svc = (Get-Variable -Name $MyInvocation.MyCommand.Module.PrivateData.MODULEVAR -ValueOnly).Services
 	,
 	# Specifies the return format of the Cmdlet
-	[ValidateSet('default', 'json', 'json-pretty', 'xml', 'xml-pretty')]
+	[ValidateSet('default', 'json', 'json-pretty', 'xml', 'xml-pretty', 'entity', 'OperationResponse')]
 	[Parameter(Mandatory = $false)]
 	[Alias("ReturnFormat")]
 	[string] $As = 'default'
@@ -102,16 +100,30 @@ try
 		$PSCmdlet.ThrowTerminatingError($e);
 		# throw($gotoError);
 	}
+	
+	$Vlan = $svc.ApplicationData.Vlans.AddQueryOption('$filter',("Name eq '{0}'" -f $VlanName)).AddQueryOption('$top', 1) | Select;
+	if(!$Vlan)
+	{
+		$msg = "VlanName: Parameter validation FAILED. '{0}' does not exist. Cannot create new address." -f $VlanName;
+		Log-Error $fn $msg;
+		$e = New-CustomErrorRecord -m $msg -cat ObjectNotFound -o $Value;
+		$PSCmdlet.ThrowTerminatingError($e);
+		# throw($gotoError);
+	}
+
 	$entity = New-Object CumulusWrapper.ApplicationData.Address;
+	$svc.ApplicationData.AddToAddresses($entity);
 	$entity.Name = $Name;
 	$entity.Value = $Value.IPAddressToString;
 	$entity.Type = $Type;
 	$entity.Status = $Status;
+	$entity.Reference = ' ';
 	if($PSBoundParameters.ContainsKey('Description'))
 	{
 		$entity.Description = $Description;
 	}
-	$svc.ApplicationData.AddToAddresses($entity);
+	$entity.Address_Vlan = $Vlan.Id;
+	$svc.ApplicationData.SetLink($entity, 'Vlan', $Vlan);
 	$svc.ApplicationData.UpdateObject($entity);
 	$r = $svc.ApplicationData.SaveChanges();
 	switch($As) 
@@ -120,7 +132,9 @@ try
 		'xml-pretty' { $OutputParameter = Format-Xml -String (ConvertTo-Xml -InputObject $r).OuterXml; }
 		'json' { $OutputParameter = ConvertTo-Json -InputObject $r -Compress; }
 		'json-pretty' { $OutputParameter = ConvertTo-Json -InputObject $r; }
-		Default { $OutputParameter = $r; }
+		'OperationResponse' { $OutputParameter = $r; }
+		'entity' { $OutputParameter = $entity; }
+		Default { $OutputParameter = $entity; }
 	}
 	$fReturn = $true;
 }
