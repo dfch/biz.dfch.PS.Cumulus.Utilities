@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>biz.dfch.PS.Cumulus.Utilities</id>
+    <version>1.0.4</version>
+    <title>biz.dfch.PS.Cumulus.Utilities</title>
+    <authors>d-fens GmbH</authors>
+    <owners>Ronald Rink</owners>
+    <licenseUrl>https://github.com/dfch/biz.dfch.PS.Cumulus.Utilities/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/dfch/biz.dfch.PS.Cumulus.Utilities</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/dfch/fragments/master/logo-32x32.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>biz.dfch.PS.Cumulus.Utilities
+=============================
+
+Module: biz.dfch.PS.Cumulus.Utilities
+
+d-fens GmbH, General-Guisan-Strasse 6, CH-6300 Zug, Switzerland
+
+This Microsoft PowerShell module contains Cmdlets to perform various base actions and utility/convenience functions with the our open-source based automation framework "Cumulus".
+
+You can also download this module via [NuGet](http://nuget.org) with [Install-Package biz.dfch.PS.Cumulus.Utilities](https://www.nuget.org/packages/biz.dfch.PS.Cumulus.Utilities/)
+
+See http://d-fens.ch/2014/11/03/module-biz-dfch-ps-cumulus-utilities/
+
+CumulusWrapper.dll and the other (Microsoft) DLLs are not part of this Apache 2.0 licensed project but are only put here for convenience.
+
+See https://github.com/dfch/biz.dfch.PS.Cumulus.Utilities/wiki for a detailed description on how to use the Cmdlets in this module.
+</description>
+    <summary>This Microsoft PowerShell module contains Cmdlets to perform various base actions and utilties/convenience functions with the our open-source based automation framework "Cumulus".</summary>
+    <releaseNotes>20150113</releaseNotes>
+    <copyright>(c) 2014 d-fens GmbH</copyright>
+    <language>en-US</language>
+    <tags>dfch PowerShell Cumulus LightSwitch OData</tags>
+    <dependencies>
+      <dependency id="biz.dfch.PS.System.Logging" version="1.0.3" />
+      <dependency id="biz.dfch.PS.System.Utilities" version="1.0.2" />
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.Data.Entity" targetFramework="" />
+      <frameworkAssembly assemblyName="System.Data.Services.Client" targetFramework="" />
+    </frameworkAssemblies>
+  </metadata>
+  <files xmlns="">
+    <file src="biz.dfch.PS.Cumulus.Utilities.psm1" target="biz.dfch.PS.Cumulus.Utilities.psm1" />
+    <file src="biz.dfch.PS.Cumulus.Utilities.psd1" target="biz.dfch.PS.Cumulus.Utilities.psd1" />
+    <file src="LICENSE" target="LICENSE" />
+    <file src="NOTICE" target="NOTICE" />
+    <file src="README.md" target="README.md" />
+    <file src="biz.dfch.PS.Cumulus.Utilities.xml" target="biz.dfch.PS.Cumulus.Utilities.xml" />
+    <file src="Microsoft.Data.Edm.dll" target="Microsoft.Data.Edm.dll" />
+    <file src="Microsoft.Data.OData.dll" target="Microsoft.Data.OData.dll" />
+    <file src="Microsoft.Data.Services.Client.dll" target="Microsoft.Data.Services.Client.dll" />
+    <file src="System.Spatial.dll" target="System.Spatial.dll" />
+    <file src="Import-Module.ps1" target="Import-Module.ps1" />
+    <file src="Enter-Server.ps1" target="Enter-Server.ps1" />
+    <file src="Get-Credential.ps1" target="Get-Credential.ps1" />
+    <file src="Get-HealthCheck.ps1" target="Get-HealthCheck.ps1" />
+    <file src="Set-HealthCheck.ps1" target="Set-HealthCheck.ps1" />
+    <file src="Get-KeyNameValue.ps1" target="Get-KeyNameValue.ps1" />
+    <file src="Set-KeyNameValue.ps1" target="Set-KeyNameValue.ps1" />
+    <file src="Remove-KeyNameValue.ps1" target="Remove-KeyNameValue.ps1" />
+    <file src="Get-File.ps1" target="Get-File.ps1" />
+    <file src="Set-File.ps1" target="Set-File.ps1" />
+    <file src="Remove-File.ps1" target="Remove-File.ps1" />
+    <file src="Get-DispatchItem.ps1" target="Get-DispatchItem.ps1" />
+    <file src="Set-IaasGroup.ps1" target="Set-IaasGroup.ps1" />
+    <file src="Set-Command.ps1" target="Set-Command.ps1" />
+    <file src="Remove-Address.ps1" target="Remove-Address.ps1" />
+    <file src="Get-RequestItem.ps1" target="Get-RequestItem.ps1" />
+    <file src="Get-Region.ps1" target="Get-Region.ps1" />
+    <file src="Get-ManagementUri.ps1" target="Get-ManagementUri.ps1" />
+    <file src="Get-ManagementCredential.ps1" target="Get-ManagementCredential.ps1" />
+    <file src="Get-LockMutexInternal.ps1" target="Get-LockMutexInternal.ps1" />
+    <file src="Get-IaasGroup.ps1" target="Get-IaasGroup.ps1" />
+    <file src="Get-Command.ps1" target="Get-Command.ps1" />
+    <file src="Get-AuditTrail.ps1" target="Get-AuditTrail.ps1" />
+    <file src="Get-AppScreen.ps1" target="Get-AppScreen.ps1" />
+    <file src="Get-AppCategory.ps1" target="Get-AppCategory.ps1" />
+    <file src="Get-Announcement.ps1" target="Get-Announcement.ps1" />
+    <file src="Get-Computer.ps1" target="Get-Computer.ps1" />
+    <file src="Get-Vlan.ps1" target="Get-Vlan.ps1" />
+    <file src="Remove-Entity.ps1" target="Remove-Entity.ps1" />
+    <file src="New-KeyNameValue.ps1" target="New-KeyNameValue.ps1" />
+    <file src="New-Address.ps1" target="New-Address.ps1" />
+    <file src="Get-Address.ps1" target="Get-Address.ps1" />
+  </files>
+</package>
