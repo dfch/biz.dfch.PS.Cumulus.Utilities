@@ -22,10 +22,10 @@ Author = 'Ronald Rink'
 CompanyName = 'd-fens GmbH'
 
 # Copyright statement for this module
-Copyright = '(c) 2014 d-fens GmbH. Distributed under Apache 2.0 license.'
+Copyright = '(c) 2014-2015 d-fens GmbH. Distributed under Apache 2.0 license.'
 
 # Description of the functionality provided by this module
-# Description = ''
+# Description = 'Cumulus abstraction module for PowerShell automation'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '3.0'
@@ -137,6 +137,8 @@ NestedModules = @(
 	'New-KeyNameValue.ps1'
 	,
 	'New-Address.ps1'
+	,
+	'Get-Address.ps1'
 )
 
 # Functions to export from this module
@@ -207,8 +209,8 @@ DefaultCommandPrefix = 'Cumulus'
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUsTLASFWTap3K3v5sqerAz4dL
-# F9mgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU5gWGaJ64WGjKBacHulzsDhJB
+# cdigghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -306,25 +308,25 @@ DefaultCommandPrefix = 'Cumulus'
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTNQCqcAXayUXb2EQpJ
-# zw+b35GNrTANBgkqhkiG9w0BAQEFAASCAQBUFzLAxifh4UFaqaUSzdCken/JxRGv
-# e8YYq2phHDGA0/ozcJ9BLDdcnrRYv+qxvq2Tej1Ds1n+fIpwn8MrN7e01CwnZtnR
-# MjY49bAtSr09/48ycGrfep81vb+KeS8MRLiAIR9EePsiPxwgFhkvVTRE70vsB4Zy
-# citinjGSUMq/pUFYDeyYgQkBZgC0SuneY4KrN5cp+pvGc/eHNH/8VuGQo+XcxLOz
-# kZpPf7+ZTigSbIrOmlzNdvT3XmhQTnQeVum7JrL6WT6NTFFZIUfYfq3PgOKyh4qs
-# uzHzmBEKto8x5WcxEKV+5Ic+Bb+aagPDaaKv7nppgoj6XJkTcgRc6sQAoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBT3zf0q2ayDJcTcayXZ
+# V+EuqNOs1DANBgkqhkiG9w0BAQEFAASCAQC1qzrrAIDoVxqDPvU9Ay9o02fF6JJK
+# qO2Ktw27M/jLkkfanHosQ6HtIIzqfSExdySE0viTNQbJxJawiZOA375Hq1Qky7Tv
+# Btwu/+61JBCAr5NEjcPxTw5Xiu/6zwexPAGGNEbjW4GMfexO4lVsbf6lnuRwqSr+
+# +aQ8fLL6ZNAtSpes1I7clJ8DuHLC+N2SgW7em/Bm4EGjxrywk32YtghwsvXN7lI2
+# mprvXTO/Rdea65oqdtZxkAE3KdVin6I/G4uzpK4GGihrF1aQZBrso1H0tWZvTPil
+# jjIkcKQdCUWs42SZj29/9fBLhkEmxpvQCBy2V4N/ba7XtldDijuuM5BMoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1MDEx
-# MzE4MjYzOFowIwYJKoZIhvcNAQkEMRYEFNyVAplkjgcnH7DJx5CAyv6hH58WMIGd
+# MzE4NDQ0NFowIwYJKoZIhvcNAQkEMRYEFNjWbww3eWonJSOBoBlgnQz6yD8qMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBB7RW7yU1uPldrApSN/ctf
-# kaC2a6AS3FATo6/cgzZ6jraehjA4juNJ3ih8jsjLm3o2fAV2+H9RsmGDlVtllOIq
-# fvRvhM9dtvZVOGETHOuInonld2FWT6BVWeTV5Hp+E0pdu5KoZXRcQJKq1iuzZaIh
-# EIDMljfSuIJh/TRZTLtABFUOsMPqNbMe/oYqPqkb7a11MVMu+gAmJgdNfgtmbdsx
-# tXdXK/7uwndpceTOLzhOmMiYFQCT0CfJvczlnty8qIBtTdQf3K++5ADV+6kRK6oT
-# /i4RDwuv/MQVmMfCsWUO1OH8pIh9tBXQIASzwQJRid8DeeWd5xl6xbZQ5C/BYv/w
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQCDB0ls6Svrg8upHptZMV1C
+# 6FuBnwz/nuq6r0BRJXMwMGlXqHmb4U4K5XY5jTa3Ww6isG4rLwgOChXdccM7wUtV
+# gy5ufh0C4Mt7jhD3fppsxoz3Cn/x+hGpFU3LJc6w8P4dg8cOzkhZktbDx63qaNlu
+# w1XmMDl6WRkGwjoAng4TFiI0gN1Kdly9rI6FhpBbPc2u6hamNw+FjZe3iHwAcJAX
+# YDvUioSQt9IF5u5CBVVyB+ErEpWu5nCX32UiYHuk2Plr1f1g7oa+/RhRHSYp3//Z
+# h/7LGYIBR3/eVswMU20AP8B5OKzEgjUfB0mq6mMkPejzNThgPrkdOalkIzRisz61
 # SIG # End signature block
