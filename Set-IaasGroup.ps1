@@ -78,6 +78,10 @@ PARAM
 	[Parameter(Mandatory = $false)]
 	[int] $Version = 1
 	,
+	# Specifies whether the IaasGroup shoud be active or not
+	[Parameter(Mandatory = $false)]
+	[Switch] $Active = $true
+	,
 	# Specify this switch to create a new IaasGroup if no existing is found.
 	[Parameter(Mandatory = $false)]
 	[Alias("c")]
@@ -185,6 +189,7 @@ try
 	
 	$ig.Version = $Version;
 	$ig.Type = $Type;
+	$ig.Active = $Active;
 	$ig.Name = $ClusterName;
 	$ig.Description = $mu.Description;
 
@@ -389,8 +394,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Set-IaasGroup; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUVCOCY3l4t1wZCC248JvfmCKi
-# Y/agghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQULTKQNo/mTslNFtHYrT/QQRQ6
+# ZZ+gghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -488,25 +493,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Set-IaasGroup; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSKAtHNVwtS4S68abyP
-# 1lf5gSKmEjANBgkqhkiG9w0BAQEFAASCAQBUJqSrZLjMwSLjJOdIB30+kI24Vf89
-# JO8N2C6fOPNKtck3OoyM6AWgneQDS1aTcR/KyrxVIuc/7IRSSzufTz9zAE7dj3hv
-# rinN40lc8T7nBH0FN2MDWYx89G05VzZcEVBzuOs2ny++UIARGMGVzQgfU9JtW+0J
-# TlQ6c57am5FRORwVEUwExtpxqn+VD5/uzGl9v0RNAVxtsPDym6gshm2bKMWj1Vj8
-# F6tewoF0lhotG3IocUfviE5GE1CldjNQ1QUkUkCdYGp62MQaqw2kVey16mVuMhO2
-# fqZHIiYC/7ITk+KEXDjz2GRbkis5tmrK2hPY/NckMZxSetbtdARo4HUYoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBReQ0xWzakPpb2Avrl0
+# r7WpGnCKXjANBgkqhkiG9w0BAQEFAASCAQBleQE0agW0OOR5pp2onAcgffTaI6J4
+# qsnLuwhrkCNtbbtY45iZdGUOtlppF+gp2o+5Nb+c30ol536n2OzfHhix2mg/QCRM
+# 25VsIRrIfsWwl4YsTHDwt2axyTgENJ/rrjk0tA/w8s+6gKwqlJ3gqqlpxBy4vO4G
+# Xoi+o6YH5794Zn26lbrnHCpJNxfVN4CdrIcQuXPfIthUn/1NiQ4eFkNTLMt3NaMJ
+# QnA0kdgV43RLumGITswQ6wwu2YhS9eUl8c7wUKGwiLEm/aJIuZ0r1qqBC1MpUT1m
+# Sm/p+alYZq6hu/s97CLbfeLWHOVNxATOEFDeiRtkVdlRyN2nRC4qhpngoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1MDEx
-# MzE4MjY1M1owIwYJKoZIhvcNAQkEMRYEFKdipagaPJhofD8OioGUOW9fY0CoMIGd
+# NDE3MjAwNlowIwYJKoZIhvcNAQkEMRYEFCez/LJxGg3xjgKWiejLIsSofHO4MIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBs6C7pVfUaD5wf/n8JFPqY
-# Quv0x/+VWTsae/5Wj1R6dJtnsHpCAWMdUx5V7zAeRLsn7HYociXafoUyPwY1GEID
-# +CRtZJtTZ+Cqnio/hoUf38iC3c6eayftv6kh34FxHZo/FbCPgds5qdxzqcgtUvyp
-# 6VKTT7r20WLz+gnXxtvERvjRmlZCNnCloUlXmxFZD0PYLF1X5k48HajwTOp5+J9Z
-# oRogESfaRt5b9GLDwVABoy8HiTKIEbRUGWoRoCBrsYB+wtYToBLGPc4puStDS0jo
-# DyJCY8mip61CDH88KcsFmc7RwNCx3iU4zhFwPAM0n8SpjLQaRylMxpwpEjIl+ZbI
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQApOoMqZkVBFpraQt+XmXEW
+# mt8EaDhu8xa2oSm47a4Y+4kQ3j+q5iepcp91Ut/LTeA7nG7BSiDy/Q+K8DQljNhF
+# lwWYNCfHJGOtOEu6CUseT8Vf8OK/YPGaE1j9MY/KeWE5gQpHL55F34czj1gWQjta
+# 1OmtYaA4nVVtAStYMvt9ExfSqrmMtJyextu/GCc7s2EdbEz2WotgLeOi1xOp+Eym
+# gaxKA+MsWUaEigV1tjTB/erPBFPi9Wq1w1kzbDMdITsW46u2dR8/INr+rnqYovGl
+# +aUoaYzLeSh3lTcdVTXC4/QDsL+3VaJxgaXx6Zh8jOZs79i/bLdpTvY5XvIreGdW
 # SIG # End signature block
