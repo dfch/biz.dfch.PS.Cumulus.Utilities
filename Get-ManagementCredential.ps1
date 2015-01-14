@@ -24,7 +24,7 @@ In addition output can be filtered on specified properties.
 
 
 .EXAMPLE
-Get-ManagementCredential -ListAvailble -Select Name
+Get-ManagementCredential -ListAvailable -Select Name
 
 Retrieves the name of all ManagementCredentials.
 
@@ -37,7 +37,7 @@ of it. In addition the contents of the property will be converted from JSON.
 
 
 .EXAMPLE
-Get-ManagementCredential -ListAvailble -Select Name -First 3
+Get-ManagementCredential -ListAvailable -Select Name -First 3
 
 Retrieves the name of the first 3 ManagementCredentials.
 
@@ -368,8 +368,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-ManagementCrede
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU505KTb4xgLiogwioxmmnzr0q
-# BkegghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUcaSShmZwwLOkZ5K1/egr21Xz
+# GKagghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -467,25 +467,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-ManagementCrede
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSI3/JjUPvOlFBh43fk
-# BG8qN1WeCjANBgkqhkiG9w0BAQEFAASCAQCwPSlQCt/HAWGTt1l2pLHje95l85B6
-# cBKyEbaWOFsIZKmbUoXSn/wt2mvkXp8POaGGQKaHGLUTJJMI3p/sYyXAFkJFMW7c
-# 03CyD1+FcT9AbQOnAHTh4DRN5MpxRhx36/fB0s90mmsOKJL4Y+X8pE0nk3+lD68E
-# XIQ5GdVwtGXvuKMaalWnHEgnLDirBiGL5GCRWU5VjkTPNi9+MuaE1M9w29/KP6di
-# dNveyJNvFxPDJAcPcQVV3/snhxavUX5qolMA0B5Pccwono1XhkqKiaegJ/flk9+0
-# lCm3GqQjbCKRAUtqwljWzzSBy4VHmAoWKqHcADdvNxrZNdrmmXy4043PoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQvLafyIecgaSMDwY6j
+# QgHS4Thd/TANBgkqhkiG9w0BAQEFAASCAQCsLO3T2wjfEXLeWlN2JlIwrKjuZrfZ
+# zkN+MgklYfMjHNeYTg00v8sXEf+vZg/vaUXwH4jdzQDGHzjHQ4ARXAk9/hLUNH//
+# qCCujHzAC+OBwCj8MV+PqtuwuxcVhk+9cJZiy1eHD2AML7+4pevT7HIxgX/7E/Lj
+# YJ64MxOznQaYYF2IPGMXtb0sG5dg51c8gpQqkuKAEMcFNc/QhhzBDz6gRgQ+rxpx
+# ZQOa4oAhOSMNH5slBp4tbZUKws2KN02qbSmKIU1BvyOuOUy/2Pr44U2PIFt9ohkx
+# s/eU7K5XvmxC6JANoZl+bQVcLS1elPRRZwom7j23BJ0ecl9JvK1jxflVoYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1MDEx
-# MzE4MjY0NVowIwYJKoZIhvcNAQkEMRYEFHD9+vjolYj8zUxPdcgWTY50B31KMIGd
+# NDA5MjgwMFowIwYJKoZIhvcNAQkEMRYEFHBPYk+SJQ9KnwULiu0ZXZ441ecbMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAqWhMZRMYdLA/wpyRm1UCM
-# z8J+8KytUZYvt9iYpBfNS8x9x1lHsrtQ4Ayk8TsQVCv2yg0L/OYeAcVyTVjMDLEG
-# 1zbbnDONTh/1paBl08jk5Pd5Te5COiXVo0S8/YBRRl82i40RgOqoUOhH0IpZriVM
-# MfMyaD6LakkNz9DswpkOjquIrgbu9G6ACX7k8g67hB9cyuQr4t2gaLEtEGNOFg0k
-# oxlFPkFdJrAjBr3gxLzbdArYJhxg12ACmwqTQSuVPtVD+ytktSPDv+8knt6pZYiA
-# b2Q8GhcHY3c46L/P/pcWHCM1xZUhYLQg20xPakuZxqoSeRjOWrfNmgx1qAjnwHad
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQCMcTgZf3UiJCX9fFOrZwPD
+# kltAcFGchYQ5yByR8xWde3hsK/3te58ModXb41TEvSkrE8F06hZqgRa8hTRpTw6t
+# wV0F6DgAE2gpoKRJPmG7vPxcIsQjzZiQPg2SjR4xA+/5G03fsLw3I+4gFaX0EdtO
+# qt2hNcTKkOBIv16xs7nVld+r334CFxVBDilVw5MffBgP55dUhSvUuxe4WWLFSyLc
+# jr7pJjdpEY6V8FjeiIhyYBjw/3C8QMmhLmy/e5iYFskCNIWcdjfRvlfgF9TbVLhI
+# aeQWj6AQ6oGQwWtHc9rBkvEj/1o1fMmDqVW5XpoubvVKEQWxD3ZtD+jStaNhgvBH
 # SIG # End signature block

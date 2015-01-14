@@ -24,7 +24,7 @@ In addition output can be filtered on specified properties.
 
 
 .EXAMPLE
-Get-AppCategory -ListAvailble -Select Name
+Get-AppCategory -ListAvailable -Select Name
 
 Retrieves the name of all AppCategories.
 
@@ -37,7 +37,7 @@ of it. In addition the contents of the property will be converted from JSON.
 
 
 .EXAMPLE
-Get-AppCategory -ListAvailble -Select Name -First 3
+Get-AppCategory -ListAvailable -Select Name -First 3
 
 Retrieves the name of the first 3 AppCategories.
 
@@ -367,8 +367,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-AppCategory; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUAbreTrKhaCfUL8DX+6hQZ72e
-# VgmgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU/zZas63eyO3SVUyLjBr2K+Ro
+# J5agghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -466,25 +466,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-AppCategory; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRVg97i6QmLdwdMF213
-# FH/kiQY+1DANBgkqhkiG9w0BAQEFAASCAQBOCgLybeN3d2mMBCrVl8SVQrzlcJMv
-# VpmqrM2sdoiXfyzD7r4bMn8FiHnkhh6BNnhzt9PBiyc/58RUBYAfNpsUjzDkhyqg
-# oKg09LF6MkltlqL0iGEFldPe1cBm85sc3Ie/dNbmRyWnzm1OymWjfuzASCZa3p0T
-# SLJglKvZA/mCFXARpknF6l1wPCEYXtzgnDn+Z6oiXy9he+waE8BgOTE8ZruIed0M
-# b2dlfPDwgJoukxyK8jmnJINGApz27MHtDSEOw1pzSzC8uPxlO8f1zZRc3es91oED
-# zxd1FazYUU8a0zVLTLBJ54Fn3zRdr7HkKRvNg13T/YZjmfym7x/44UOToYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTkIUbbiaK1srvynaMv
+# tUL9ApxazzANBgkqhkiG9w0BAQEFAASCAQBNP4bBfxOsXnCqutDdCXPGdcrbfRI4
+# FtgNOKH+m1WmeK1dku3rsV1Ou/70m/9P2hkQ5TJbbi6pz8jaIl8x8cImhRg4+VGu
+# ZzrltW5Fd+ngmowo4XOcSwnCOIMEDt8elh6SaQgrwh6C9fqaPDm274o8UmkEFGb5
+# wXdDlXZhitdZk/HDmu5/z9Orj+F1xOyTxc60BesSPni8fHkjXBH9ZD0xPXhEgTSD
+# c+728aoQePrb1pBCQUmgWGxdCFlggX941D5dBKybhphHGkvp29udNPLLOPqwa+P7
+# PYCxrBE2yV8Ka9haaP5m8cRJTjO0hgQtb9Gm6/0AjndAq4tk10114Om6oYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1MDEx
-# MzE4MjY0MFowIwYJKoZIhvcNAQkEMRYEFHxSu780JLyqEvoZ5VHTRBlcUCFJMIGd
+# NDA5Mjc1N1owIwYJKoZIhvcNAQkEMRYEFOPtEsMyUxooSkJlO2fFdli/Ic5DMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAEm9uxsnswfxOCT2BILRj1
-# MdUyOh88DU0s6DGUuEFvWOmObd58fsAT7xKkDexSYW3fMfHRAqpV/sl4hJ+FhJTV
-# yiUfPRu+VV4+BGlr/h8gjAC28twsOLetWYwaJWnesIqePlniPn830WJ1YzGmjP61
-# zpTa/IZmF9zgmmS0EpJH/Ww0EjWfyJPz0FSma+FMhOENnDWx4403RR2gWshRQkpC
-# vBCqNSgxtRlT368yyGJRDgNrcxjbEAPnTvfRmMYPQKZYv6EcpyBjLiOhC2wzb+h7
-# k3gFG8a6t+NS1N9jYT1FKzKCc//MiVRYI20Dk1k8poL0suzI9Wt17EOeq2Y7EsFo
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAIvr+fDnHR4ZLcO9YDpAMc
+# I/weK+6jkkM+rmnJ6FYwUVehnNrbaEMfxVdO0DRUJtFW+ajzI6tfervYB8uRJ5NF
+# Y+z4X5cpqrhawQvMHxxfgORDS69bYJScLB0ymi6myQ2j1mw3BfWY319r7uER5Bhh
+# XVW5AudOVQ73D/P9aYBpWZQ6GT93MaGvGRvlG9AAH4eyZcjImHG2XKmHekMvxTW4
+# yEfphDscS6yRfbAo9/soYPQauhM1YlLzsJekgdhAz7ucHhimM/WnIxi07D7sZ2OX
+# Vm1qmKAYagUcCzMievNTh/ZAPex4mHtCM8gVJzPVsyCorxg49axV6HZI5RFHAK3z
 # SIG # End signature block

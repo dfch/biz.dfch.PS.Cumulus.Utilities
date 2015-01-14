@@ -24,20 +24,20 @@ In addition output can be filtered on specified properties.
 
 
 .EXAMPLE
-Get-IaasGroup -ListAvailble -Select Name
+Get-IaasGroup -ListAvailable -Select Name
 
 Retrieves the name of all IaasGroups.
 
 
 .EXAMPLE
-Get-IaasGroup myCluster -Select Parametera -ValueOnly -ConvertFrom-Json
+Get-IaasGroup myCluster -Select Parameters -ValueOnly -ConvertFrom-Json
 
-Retrieves the IaasGroup 'myCluster' and only returns the 'Parametera' property 
+Retrieves the IaasGroup 'myCluster' and only returns the 'Parameters' property 
 of it. In addition the contents of the property will be converted from JSON.
 
 
 .EXAMPLE
-Get-IaasGroup -ListAvailble -Select Name -First 3
+Get-IaasGroup -ListAvailable -Select Name -First 3
 
 Retrieves the name of the first 3 IaasGroups.
 
@@ -56,9 +56,9 @@ with name 'Administrator' (case insensitive substring match).
 
 
 .EXAMPLE
-Get-IaasGroup myCluster -Select Parametera -ValueOnly -DefaultValue 42
+Get-IaasGroup myCluster -Select Parameters -ValueOnly -DefaultValue 42
 
-Retrieves the 'Parametera' property of a IaasGroup with Name 'myCluster' 
+Retrieves the 'Parameters' property of a IaasGroup with Name 'myCluster' 
 and 42 if the entity is not found.
 
 
@@ -368,8 +368,8 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-IaasGroup; }
 # SIG # Begin signature block
 # MIIW3AYJKoZIhvcNAQcCoIIWzTCCFskCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQURa1PQr7I3twfnepyfww7MQli
-# VkWgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUe28EnO0um3yLE+liuYe6gh3g
+# 7DSgghGYMIIEFDCCAvygAwIBAgILBAAAAAABL07hUtcwDQYJKoZIhvcNAQEFBQAw
 # VzELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNV
 # BAsTB1Jvb3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xMTA0
 # MTMxMDAwMDBaFw0yODAxMjgxMjAwMDBaMFIxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
@@ -467,25 +467,25 @@ if($MyInvocation.ScriptName) { Export-ModuleMember -Function Get-IaasGroup; }
 # bnYtc2ExJzAlBgNVBAMTHkdsb2JhbFNpZ24gQ29kZVNpZ25pbmcgQ0EgLSBHMgIS
 # ESFgd9/aXcgt4FtCBtsrp6UyMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQow
 # CKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcC
-# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBS7BR8/dCK3pVHT6+q6
-# dWXE1VvcEjANBgkqhkiG9w0BAQEFAASCAQAW22ngdrnzyRPo6wQwkivbx5wxR5uh
-# lgkqLhh4FPE1qvmBirpbN+PtyHwQLdC5YpW/QzyJbccRADkJvO0uFf6MeyzjN9iI
-# riqzn20IA/wELkIYAL6bzGWh/Z5Rxp3dQYPUtMBKldWih1/hyvhiCBS/Mk9NXgvU
-# tZm7BFsPHt55Z2vW8OqHWMSa/B9/GMdQytvj+cSKufhfyrGvyoOIN1IYC5Ydhtea
-# 1EQoHKcqtUbJ9uXEmIoFknqTjlgb+CRSJeZ7QiE9LiIxpH7T9ZGImA+HPQKPrX3g
-# G9rjWCCXPHlYxACkmT0dVK01jAdf1dVGiHIHQjy0f2Cd3TEVFdHpqgkSoYICojCC
+# AQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRe6UG2xeczqYKPjalR
+# IM1cswD+ezANBgkqhkiG9w0BAQEFAASCAQA5KRGEkWgUOfMfjb5vSDNfR/nuXR2G
+# 1BvbYdQn8JJ8Cg9Pm20OGExUPeiHqoSpxT1F5yW+4D8mvZTpolU0S306Vtf5sniP
+# A71BGZwpvchPDV0++ILuThIw1/e6ScFYMamlJhRSKXFtWpLGDDPm2bKqznaw1OVt
+# 6Kk8YpQljVA2qS+aTwIJaNBTq7yDxXkP4tKywEbqjwYLGLvjfvJ1X0s357bDI+Nr
+# szzDJAXhnuk4MVkBiJsQxLmyXQ8KoTG8Jql+rmsCTrsP3p1o+LpEdpy+rKHpwwzh
+# /w8XVEQkLNvPHxo+XmFesTvhN8G0TywG1XFTMOmQtYjKLFn+2+ehfJB+oYICojCC
 # Ap4GCSqGSIb3DQEJBjGCAo8wggKLAgEBMGgwUjELMAkGA1UEBhMCQkUxGTAXBgNV
 # BAoTEEdsb2JhbFNpZ24gbnYtc2ExKDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0
 # YW1waW5nIENBIC0gRzICEhEhQFwfDtJYiCvlTYaGuhHqRTAJBgUrDgMCGgUAoIH9
 # MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1MDEx
-# MzE4MjY0NFowIwYJKoZIhvcNAQkEMRYEFO7Rz8aLuRemg8iTKhNNQd1dJyMPMIGd
+# NDA5MjcwNlowIwYJKoZIhvcNAQkEMRYEFE44zoLu/bNONNrGeOwU+7nmnutaMIGd
 # BgsqhkiG9w0BCRACDDGBjTCBijCBhzCBhAQUjOafUBLh0aj7OV4uMeK0K947NDsw
 # bDBWpFQwUjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2Ex
 # KDAmBgNVBAMTH0dsb2JhbFNpZ24gVGltZXN0YW1waW5nIENBIC0gRzICEhEhQFwf
-# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQAQ/pIasHgrIgxShTL1ekLW
-# X1bkDwerQBycf5W+v+KRs0UI0JNlbA8h3QK8hZAqZVtBeeJlJgpu5E9erGWu135J
-# 6tPw946nKHMkhVelFUhJS/9ewf/XC2lrtYPsUdO3USA3UQDsXRzhjtlBPBGDevcb
-# o9hm+wFvnJ96CTnYAb8Y/I0AzwY63PWeYMSsQrjdfT/C+ClNZC/beEqOZLNTf7Z0
-# fGxOaFrY50IXtUgl2IrV3DNW4+7cAPIpjEGF5YwEqCMTkghbiu16uBhCWt/8oMdb
-# 7LrzMgMNACCU1fSQJrVdjREVKWbKzkAUVIMoUci+k5vluqkJDXtNciotNvruEXkg
+# DtJYiCvlTYaGuhHqRTANBgkqhkiG9w0BAQEFAASCAQBk8fd5uxxLT2ZBHLCOozsl
+# nwCuJmFVSpEGWOGqFF1fy1DDw16iY5KkgV87PHi5nGcHjyrZoxL47hN9IbkYADR7
+# NpVERWNKGK6Tms1LuzW2nQRulBJdOe3G2D3BgkwjrAUCc9K8KBZkz9lheFMaXF2s
+# 53eD+ndPQSiVV6AwFx+9UkhPJpBwxnpYyuTmR1G1fxGU8MggFOEXofmfX0WXvYwz
+# V9lp/dMzn6wBPdbdcUFkGD8sn319qhPRlL72ucCEX/1+wsL/lcMOxju7c7803Uoa
+# 0twriTrMqkG/pBQ68PWaoJMrBKP+VWXh3qps5ujiD6g/WVqXOBMqzRDo+lu68f6N
 # SIG # End signature block
